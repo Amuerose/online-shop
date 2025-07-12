@@ -18,8 +18,18 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: [
+      '@floating-ui/react-dom-interactions',
+      '@floating-ui/react'
+    ]
+  },
   build: {
     rollupOptions: {
+      external: [
+        '@floating-ui/react-dom-interactions',
+        '@floating-ui/react'
+      ],
       output: {
         manualChunks: {
           react: ['react', 'react-dom'],
