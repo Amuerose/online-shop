@@ -6,7 +6,7 @@ import './i18n.js';
 import { CartProvider } from './contexts/CartContext.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { BrowserRouter as Router } from 'react-router-dom';
-import './styles/datePicker.css';
+import './styles/datepicker.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Router>
