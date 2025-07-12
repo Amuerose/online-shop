@@ -1,0 +1,110 @@
+.react-datepicker {
+  background-color: rgba(75, 46, 43, 0.05);
+  border: 1px solid rgba(75, 46, 43, 0.1);
+  backdrop-filter: blur(16px);
+  border-radius: 12px;
+  color: #4B2E1D;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 8px 24px rgba(75, 46, 43, 0.2);
+}
+
+.react-datepicker__header {
+  background-color: transparent;
+  border-bottom: 1px solid rgba(75, 46, 43, 0.1);
+}
+
+.react-datepicker__day,
+.react-datepicker__day-name {
+  color: #4B2E1D;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #BDA47A;
+  color: #4B2E1D;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(75, 46, 43, 0.1);
+}
+
+.react-datepicker__time-container,
+.react-datepicker__time-box {
+  background-color: transparent !important;
+  backdrop-filter: blur(16px);
+  color: #4B2E1D !important;
+  border-left: 1px solid rgba(75, 46, 43, 0.1);
+  
+}
+
+/* Consolidated time list styling */
+.react-datepicker__time-list {
+  max-height: calc(100% - 12px) !important;
+  overflow-y: auto;
+  background-color: transparent !important;
+  backdrop-filter: blur(16px);
+}
+
+/* make inner time wrapper transparent */
+.react-datepicker__time-container .react-datepicker__time {
+  background-color: transparent !important;
+}
+
+.react-datepicker__time-list-item {
+  color: #4B2E1D !important;
+  padding: 8px 12px;
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: rgba(189, 164, 122, 0.2) !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background-color: rgba(189, 164, 122, 0.3) !important;
+  color: #4B2E1D !important;
+}
+
+.react-datepicker__time-box {
+  max-height: calc(6 * 2.5rem) !important;
+  overflow-y: auto !important;
+}
+
+/* Shrink all time picker wrappers by 12px to align with calendar */
+.react-datepicker__time-container,
+.react-datepicker__time,
+.react-datepicker__time-box {
+  height: calc(100% - 12px) !important;
+  overflow: hidden !important;
+}
+
+/* Limit visible time slots to 6 rows */
+.react-datepicker__time-list-item {
+  height: 2.5rem !important;
+  line-height: 2.5rem !important;
+  box-sizing: border-box !important;
+}
+.react-datepicker__time-list {
+  max-height: calc(6 * 2.5rem) !important;
+  overflow-y: auto !important;
+}
+
+/* Uniformly shrink time picker container via zoom to match calendar height */
+.react-datepicker__time-container {
+  zoom: 0.96 !important;
+}
+
+/* Hide disabled time slots only */
+.react-datepicker__time-list-item--disabled,
+.react-datepicker__time-list-item[aria-disabled="true"] {
+  display: none !important;
+}
+
+/* Ensure disabled calendar days remain visible and aligned */
+.react-datepicker__day--disabled,
+.react-datepicker__day[aria-disabled="true"] {
+  display: inline-block !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
