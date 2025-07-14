@@ -1,4 +1,5 @@
 [build]
+  base = "."
   command = "npm ci && npm run build"
   publish = "dist"
 
@@ -9,3 +10,8 @@
 [git]
   # Do not attempt to clone submodules
   submodules = false
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
