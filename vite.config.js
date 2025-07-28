@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer';
 import ignore from 'rollup-plugin-ignore';
 
+const API_URL = process.env.VITE_API_URL || 'https://amuerose.cz';
+
 export default defineConfig({
   plugins: [
     react(),
@@ -10,13 +12,6 @@ export default defineConfig({
   ],
   server: {
     host: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:1337',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
   },
   optimizeDeps: {
     include: [
