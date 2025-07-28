@@ -37,6 +37,6 @@
     "rollup-plugin-ignore": "^1.0.10",
     "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "^3.4.3",
-    "vite": "^5.2.10"
+    "vite": "^5.4.19"
   }
 }

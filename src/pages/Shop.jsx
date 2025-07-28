@@ -28,7 +28,7 @@ const Shop = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`http://localhost:1337/api/products?populate=images&locale=${i18n.language}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/products?populate=images&locale=${i18n.language}`)
       .then(res => res.json())
       .then(json => setProducts(json.data))
       .catch(console.error);

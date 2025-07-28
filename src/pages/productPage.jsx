@@ -22,7 +22,7 @@ function ProductPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:1337/api/products/${id}?populate=images&locale=${i18n.language}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}?populate=images&locale=${i18n.language}`)
       .then(res => res.json())
       .then(({ data }) => {
         setProduct({
