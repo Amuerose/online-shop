@@ -1,11 +1,16 @@
-import path from 'path';
-
-export default () => ({
+export default ({ env }) => ({
   connection: {
-    client: 'sqlite',
+    client: 'postgres',
     connection: {
-      filename: path.join(__dirname, '..', '..', 'data.db'),
+      host: env('PGHOST'),
+      port: env.int('PGPORT', 5432),
+      database: env('PGDATABASE', 'strapi'),
+      user: env('PGUSER', 'strapi'),
+      password: env('PGPASSWORD', 'strapi'),
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
-    useNullAsDefault: true,
+    pool: { min: 0, max: 10 },
   },
 });
