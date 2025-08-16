@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 
 function Register() {
-  const { register, loginWithGoogle, loginWithFacebook } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -122,14 +122,18 @@ function Register() {
         <div className="flex flex-col gap-4">
           <button
             type="button"
-            onClick={loginWithGoogle}
+            onClick={() => {
+              window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+            }}
             className="w-full px-4 py-2 rounded bg-white text-black hover:bg-gray-100 transition"
           >
             {t('register.google')}
           </button>
           <button
             type="button"
-            onClick={loginWithFacebook}
+            onClick={() => {
+              window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/facebook`;
+            }}
             className="w-full px-4 py-2 rounded bg-[#1877F2] text-white hover:bg-[#165cbe] transition"
           >
             {t('register.facebook')}
