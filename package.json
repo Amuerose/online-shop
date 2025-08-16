@@ -12,6 +12,7 @@
     "@floating-ui/react": "^0.27.13",
     "@floating-ui/react-dom-interactions": "^0.13.3",
     "@stripe/stripe-js": "^2.1.1",
+    "@supabase/supabase-js": "^2.55.0",
     "axios": "^1.10.0",
     "firebase": "^11.10.0",
     "framer-motion": "^10.16.1",
