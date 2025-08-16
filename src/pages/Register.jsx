@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 
 function Register() {
-  const { register, loginWithGoogle } = useAuth();
+  const { register, loginWithProvider } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -122,8 +122,13 @@ function Register() {
         <div className="flex flex-col gap-4">
           <button
             type="button"
-            onClick={() => {
-              window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+            onClick={async () => {
+              try {
+                await loginWithProvider('google');
+              } catch (err) {
+                setError(t('register.errorRegister'));
+                console.error('OAuth Google error:', err);
+              }
             }}
             className="w-full px-4 py-2 rounded bg-white text-black hover:bg-gray-100 transition"
           >
@@ -131,8 +136,13 @@ function Register() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/facebook`;
+            onClick={async () => {
+              try {
+                await loginWithProvider('facebook');
+              } catch (err) {
+                setError(t('register.errorRegister'));
+                console.error('OAuth Facebook error:', err);
+              }
             }}
             className="w-full px-4 py-2 rounded bg-[#1877F2] text-white hover:bg-[#165cbe] transition"
           >

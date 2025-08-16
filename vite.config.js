@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer';
 import ignore from 'rollup-plugin-ignore';
 
-const API_URL = process.env.VITE_API_URL || 'https://amuerose.cz';
-
 export default defineConfig({
   plugins: [
     react(),
@@ -45,8 +43,6 @@ export default defineConfig({
         }
       },
       plugins: [
-        // Ignore all date-fns locale files to reduce bundle size
-        ignore(['date-fns/locale/*'])
       ]
     }
   },

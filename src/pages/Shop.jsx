@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "../lib/supabase";
 
 const Shop = () => {
   const { addToCart } = useCart();
@@ -28,10 +29,52 @@ const Shop = () => {
   }, []);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products?populate=images&locale=${i18n.language}`)
-      .then(res => res.json())
-      .then(json => setProducts(json.data))
-      .catch(console.error);
+    let cancelled = false;
+
+    async function load() {
+      try {
+        // Запрашиваем данные из таблицы products
+        // Подстроено под минимальную схему: id, name_cs, name_en, name_ru, price, image_url
+        const { data: rows, error } = await supabase
+          .from("products")
+          .select("id, name_cs, name_en, name_ru, price, image_url");
+
+        if (error) throw error;
+
+        // Приводим к форме, ожидаемой текущим UI (имитация структуры Strapi)
+        const mapped =
+          (rows || []).map((r) => ({
+            id: r.id,
+            attributes: {
+              name: {
+                cs: r.name_cs ?? r.name_en ?? r.name_ru ?? "",
+                en: r.name_en ?? r.name_cs ?? r.name_ru ?? "",
+                ru: r.name_ru ?? r.name_en ?? r.name_cs ?? "",
+              },
+              price: r.price ?? 0,
+              images: {
+                data: [
+                  {
+                    attributes: {
+                      url: r.image_url ?? "",
+                    },
+                  },
+                ],
+              },
+            },
+          })) || [];
+
+        if (!cancelled) setProducts(mapped);
+      } catch (err) {
+        console.error("Supabase load products error:", err);
+        if (!cancelled) setProducts([]);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [i18n.language]);
 
   const categories = [

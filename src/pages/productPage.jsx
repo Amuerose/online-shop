@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
 import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import useIsDesktop from "../hooks/useIsDesktop";
 
 // NOTE: Ensure global.css includes:
@@ -21,17 +22,59 @@ function ProductPage() {
   const isDesktop = useIsDesktop();
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
-    fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}?populate=images&locale=${i18n.language}`)
-      .then(res => res.json())
-      .then(({ data }) => {
-        setProduct({
-          id: data.id,
-          ...data.attributes
-        });
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+
+    async function load() {
+      try {
+        const { data: row, error } = await supabase
+          .from("products")
+          .select("id, name_cs, name_en, name_ru, description_cs, description_en, description_ru, price, image_url")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+
+        const mapped = row
+          ? {
+              id: row.id,
+              // Сохраняем форму, совместимую с существующей разметкой
+              name: {
+                cs: row.name_cs ?? row.name_en ?? row.name_ru ?? "",
+                en: row.name_en ?? row.name_cs ?? row.name_ru ?? "",
+                ru: row.name_ru ?? row.name_en ?? row.name_cs ?? "",
+              },
+              description: {
+                cs: row.description_cs ?? "",
+                en: row.description_en ?? "",
+                ru: row.description_ru ?? "",
+              },
+              price: row.price ?? 0,
+              images: {
+                data: [
+                  {
+                    attributes: {
+                      url: row.image_url ?? "",
+                    },
+                  },
+                ],
+              },
+            }
+          : null;
+
+        if (!cancelled) setProduct(mapped);
+      } catch (err) {
+        console.error("Supabase load product error:", err);
+        if (!cancelled) setProduct(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [id, i18n.language]);
 
   if (loading) {

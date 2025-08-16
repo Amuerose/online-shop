@@ -1,3 +1,4 @@
+import { supabase } from "../lib/supabase";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,16 +8,43 @@ function GlobalSearch({ isMobile = false }) {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products?populate=images&locale=${i18n.language}`)
-      .then(res => res.json())
-      .then(({ data }) => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (isMounted) {
         const items = data.map(item => ({
           id: item.id,
-          ...item.attributes
+          name: {
+            cs: item.name_cs,
+            en: item.name_en,
+            ru: item.name_ru,
+          },
+          description: {
+            cs: item.description_cs,
+            en: item.description_en,
+            ru: item.description_ru,
+          },
+          price: item.price,
+          image: item.image_url,
         }));
         setProducts(items);
-      })
-      .catch(console.error);
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
   }, [i18n.language]);
 
   const filteredProducts = products.filter((product) => {

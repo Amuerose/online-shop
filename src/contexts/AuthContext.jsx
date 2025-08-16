@@ -55,20 +55,16 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithProvider = async (provider) => {
     try {
-      return await signInWithRedirect(auth, googleProvider);
+      // Google uses redirect, Facebook uses popup
+      if (provider === googleProvider) {
+        return await signInWithRedirect(auth, provider);
+      } else {
+        return await signInWithPopup(auth, provider);
+      }
     } catch (error) {
-      console.error('Ошибка Google входа (redirect):', error);
-      throw error;
-    }
-  };
-
-  const loginWithFacebook = async () => {
-    try {
-      return await signInWithPopup(auth, facebookProvider);
-    } catch (error) {
-      console.error('Ошибка Facebook входа:', error);
+      console.error('Ошибка входа через провайдера:', error);
       throw error;
     }
   };
@@ -81,8 +77,7 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
-        loginWithGoogle,
-        loginWithFacebook,
+        loginWithProvider,
       }}
     >
       {!loading && children}
