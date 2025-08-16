@@ -1,16 +1,7 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-  signInWithPopup,
-  signInWithRedirect,
-} from 'firebase/auth';
-import { auth, googleProvider, facebookProvider } from '../firebase';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -20,66 +11,67 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user profile via Firebase
+  // Initialize from current session and subscribe to changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
+    let isMounted = true;
+
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (isMounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    })();
+
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
     });
-    return unsubscribe;
+
+    return () => {
+      isMounted = false;
+      // new SDK returns { data: { subscription } }
+      subscription?.subscription?.unsubscribe?.();
+      subscription?.unsubscribe?.();
+    };
   }, []);
 
-
   const login = async (email, password) => {
-    try {
-      return await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      console.error('Ошибка входа:', error);
-      throw error;
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
   };
 
   const register = async (email, password, name) => {
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(result.user, { displayName: name });
-      setUser({ ...result.user });
-      return result;
-    } catch (error) {
-      console.error('Ошибка регистрации:', error);
-      throw error;
-    }
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    });
+    if (error) throw error;
+    return data;
   };
 
-  const logout = () => {
-    return signOut(auth);
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
+  /**
+   * OAuth via provider name: 'google' | 'facebook' | 'github' | ...
+   */
   const loginWithProvider = async (provider) => {
-    try {
-      // Google uses redirect, Facebook uses popup
-      if (provider === googleProvider) {
-        return await signInWithRedirect(auth, provider);
-      } else {
-        return await signInWithPopup(auth, provider);
-      }
-    } catch (error) {
-      console.error('Ошибка входа через провайдера:', error);
-      throw error;
-    }
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) throw error;
+    return data;
   };
+
+  const value = { user, loading, login, register, logout, loginWithProvider };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        register,
-        logout,
-        loginWithProvider,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );

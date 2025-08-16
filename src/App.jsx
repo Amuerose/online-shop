@@ -3,18 +3,19 @@ import { Routes, Route } from 'react-router-dom';
 import { CartProvider } from './contexts/CartContext';
 import i18n from './i18n';
 
-const Home = lazy(() => import('./pages/Home'));
-const About = lazy(() => import('./pages/About'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Shop = lazy(() => import('./pages/Shop'));
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Shop from './pages/Shop';
+import CartPage from './pages/Cart';
+import Login from './pages/Login';
+import Profile from './pages/Profile';
+import Partnership from './pages/Partnership';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+
 const ProductPage = lazy(() => import('./pages/productPage'));
-const CartPage = lazy(() => import('./pages/Cart'));
-const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
-const Profile = lazy(() => import('./pages/Profile'));
 const Gallery = lazy(() => import('./pages/Gallery'));
-const Partnership = lazy(() => import('./pages/Partnership'));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 
 // UI Components
 import Header from './components/Header';
