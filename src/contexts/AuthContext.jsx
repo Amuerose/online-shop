@@ -23,15 +23,13 @@ export function AuthProvider({ children }) {
       }
     })();
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
     return () => {
       isMounted = false;
-      // new SDK returns { data: { subscription } }
-      subscription?.subscription?.unsubscribe?.();
-      subscription?.unsubscribe?.();
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -60,9 +58,10 @@ export function AuthProvider({ children }) {
    * OAuth via provider name: 'google' | 'facebook' | 'github' | ...
    */
   const loginWithProvider = async (provider) => {
+    const redirectTo = import.meta.env?.VITE_SITE_URL || window.location.origin;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo },
     });
     if (error) throw error;
     return data;

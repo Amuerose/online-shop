@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabaseClient";
 
 const Shop = () => {
   const { addToCart } = useCart();
