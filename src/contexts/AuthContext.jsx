@@ -58,16 +58,27 @@ export function AuthProvider({ children }) {
    * OAuth via provider name: 'google' | 'facebook' | 'github' | ...
    */
   const loginWithProvider = async (provider) => {
-    const redirectTo = import.meta.env?.VITE_SITE_URL || window.location.origin;
+    // Always send users back to the current site after OAuth completes
+    const redirectTo = window.location.origin;
+
+    // Some providers (e.g., Facebook) may require explicit scopes
+    const options = { redirectTo };
+    if (provider === 'facebook') {
+      options.scopes = 'email';
+    }
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo },
+      options,
     });
     if (error) throw error;
     return data;
   };
 
-  const value = { user, loading, login, register, logout, loginWithProvider };
+  const loginWithGoogle = () => loginWithProvider('google');
+  const loginWithFacebook = () => loginWithProvider('facebook');
+
+  const value = { user, loading, login, register, logout, loginWithProvider, loginWithGoogle, loginWithFacebook };
 
   return (
     <AuthContext.Provider value={value}>
