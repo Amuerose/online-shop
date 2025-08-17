@@ -11,6 +11,15 @@ const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [products, setProducts] = useState([]);
 
+  // Safely resolve image URL: absolute URL stays as-is; otherwise, build a public URL from the Supabase bucket
+  const resolveImageUrl = (path) => {
+    if (!path) return "";
+    if (/^https?:\/\//i.test(path)) return path; // already absolute
+    // Assume we store only the object path inside the `product-images` bucket
+    const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+    return data?.publicUrl || "";
+  };
+
   useEffect(() => {
     const handler = (e) => {
       const elCategories = document.querySelector('.categories-scroll');
@@ -56,7 +65,7 @@ const Shop = () => {
                 data: [
                   {
                     attributes: {
-                      url: r.image_url ?? "",
+                      url: resolveImageUrl(r.image_url),
                     },
                   },
                 ],
@@ -145,14 +154,14 @@ const Shop = () => {
             >
               <div className="w-full h-56">
                 <img
-                  src={product.attributes.images.data[0]?.attributes.url}
+                  src={product.attributes.images.data[0]?.attributes.url || ""}
                   alt=""
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="p-4 flex flex-col justify-between flex-1">
                 <h3 className="text-sm font-[Inter] font-semibold tracking-wide mb-2 leading-tight text-[#BDA47A]">
-                  {product.attributes.name[i18n.language]}
+                  {product.attributes.name[i18n.language] || product.attributes.name.en}
                 </h3>
                 <p className="text-xs text-[#7A4E35]/60 mb-4 leading-snug">&nbsp;</p>
                 <div className="flex items-center justify-between mt-auto">
@@ -177,6 +186,11 @@ const Shop = () => {
               </div>
             </div>
           ))}
+          {products.length === 0 && (
+            <div className="col-span-full text-center text-[#7A4E35]/70 py-10">
+              {t('messages.noProducts', 'Пока нет товаров.')} 
+            </div>
+          )}
         </div>
       </div>
     </div>

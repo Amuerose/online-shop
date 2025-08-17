@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Partnership from './pages/Partnership';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 const ProductPage = lazy(() => import('./pages/productPage'));
 const Register = lazy(() => import('./pages/Register'));
@@ -30,22 +31,48 @@ function App() {
     <CartProvider>
       <>
         <Header />
-        <Suspense fallback={<div>Загрузка...</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/partnership" element={<Partnership />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route
+            path="/product/:id"
+            element={
+              <Suspense fallback={<div>Загрузка...</div>}>
+                <ProductPage />
+              </Suspense>
+            }
+          />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/register"
+            element={
+              <Suspense fallback={<div>Загрузка...</div>}>
+                <Register />
+              </Suspense>
+            }
+          />
+          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/gallery"
+            element={
+              <Suspense fallback={<div>Загрузка...</div>}>
+                <Gallery />
+              </Suspense>
+            }
+          />
+          <Route path="/partnership" element={<Partnership />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/data-deletion" element={<div style={{ padding: "2rem", textAlign: "center", color: "#4b3832" }}>
+            <h1>Удаление данных Facebook</h1>
+            <p>Если вы хотите удалить свои данные, полученные через вход с помощью Facebook,
+            пожалуйста, отправьте запрос на наш email: <a href="mailto:support@amuerose.cz">support@amuerose.cz</a>.</p>
+            <p>Мы удалим все данные, связанные с вашей учетной записью, в течение 30 дней после получения запроса.</p>
+          </div>} />
+        </Routes>
         <FloatingInfoPanel />
       </>
     </CartProvider>

@@ -216,3 +216,45 @@ const products = [
 ];
 
 export default products;
+
+/**
+ * Returns products with localized fields pre-resolved.
+ * @param {('cs'|'ru'|'en')} locale
+ */
+export function getProducts(locale = 'cs') {
+  return products.map((p) => ({
+    ...p,
+    name: typeof p.name === 'object' ? (p.name?.[locale] ?? p.name?.en ?? '') : p.name,
+    description:
+      typeof p.description === 'object'
+        ? (p.description?.[locale] ?? p.description?.en ?? '')
+        : (p.description ?? ''),
+  }));
+}
+
+/**
+ * Find a single product by id with localization.
+ * @param {number|string} id
+ * @param {('cs'|'ru'|'en')} locale
+ */
+export function findProductById(id, locale = 'cs') {
+  const p = products.find((x) => String(x.id) === String(id));
+  if (!p) return null;
+  return {
+    ...p,
+    name: typeof p.name === 'object' ? (p.name?.[locale] ?? p.name?.en ?? '') : p.name,
+    description:
+      typeof p.description === 'object'
+        ? (p.description?.[locale] ?? p.description?.en ?? '')
+        : (p.description ?? ''),
+  };
+}
+
+/**
+ * Filter by category with localization.
+ * @param {string} category
+ * @param {('cs'|'ru'|'en')} locale
+ */
+export function getProductsByCategory(category, locale = 'cs') {
+  return getProducts(locale).filter((p) => p.category === category);
+}
