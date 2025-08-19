@@ -5,7 +5,40 @@ import { useTranslation } from "react-i18next";
 const DatePicker = lazy(() => import("react-datepicker"));
 import "react-datepicker/dist/react-datepicker.css";
 import { Link } from "react-router-dom";
+
 import { Trash2 } from "lucide-react";
+
+// Resolve best image URL for a cart item (supports plain URLs, relative storage paths, and legacy shapes)
+function resolveCartItemImage(item) {
+  const supa = import.meta.env.VITE_SUPABASE_URL || "";
+
+  const candidates = [
+    item?.image,
+    item?.image_url,
+    item?.coverUrl,
+    Array.isArray(item?.images) ? item.images[0] : null,
+    Array.isArray(item?.attributes?.images)
+      ? (item.attributes.images[0]?.url ?? item.attributes.images[0])
+      : null,
+    item?.attributes?.images?.data?.[0]?.attributes?.url,
+  ];
+
+  const raw = candidates.find((v) => typeof v === "string" && v.trim());
+  if (!raw) return "/placeholder.png";
+
+  const url = raw.trim();
+  // Absolute URL – return as is
+  if (/^https?:\/\//i.test(url)) return url;
+
+  // Already a Supabase storage path starting with /storage/...
+  if (url.startsWith("/storage/")) {
+    return `${supa}${url}`;
+  }
+
+  // Fallback: treat as a filename/key inside the public bucket `product-images`
+  const key = url.replace(/^\/+/, "");
+  return `${supa}/storage/v1/object/public/product-images/${key}`;
+}
 
 function Cart() {
   const { cartItems, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -471,13 +504,7 @@ function Cart() {
                 >
                   <div className="w-16 h-16 flex-shrink-0 overflow-hidden">
                     <img
-                      src={
-                        // Prefer normalized field coming from add-to-cart, then fall back to legacy attribute paths
-                        item.image
-                        || (Array.isArray(item.attributes?.images) ? item.attributes.images[0]?.url : null)
-                        || item.attributes?.images?.data?.[0]?.attributes?.url
-                        || "/placeholder.png"
-                      }
+                      src={resolveCartItemImage(item)}
                       alt={
                         // Localized name from normalized shape first
                         (typeof item.name === "object"
