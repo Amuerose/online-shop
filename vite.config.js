@@ -14,7 +14,6 @@ export default ({ mode }) => {
     },
     optimizeDeps: {
       include: [
-        '@floating-ui/react-dom-interactions',
         '@floating-ui/react',
         '@supabase/supabase-js'
       ]

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Pencil, Trash, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AccountCard from '../components/AccountCard';
+import UserAvatar from '../components/UserAvatar';
 
 const TABS = {
   PROFILE: 'profile',
@@ -21,10 +22,18 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState(TABS.PROFILE);
   const [burgerOpen, setBurgerOpen] = useState(false);
   const menuRef = useRef(null);
-  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [displayName, setDisplayName] = useState(
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.displayName || ''
+  );
   const [email, setEmail] = useState(user?.email || '');
   const [avatarFile, setAvatarFile] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(user?.photoURL || '');
+  const [avatarPreview, setAvatarPreview] = useState(
+    user?.user_metadata?.picture ||
+    user?.user_metadata?.avatar_url ||
+    user?.photoURL || ''
+  );
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -130,19 +139,17 @@ export default function Profile() {
       case TABS.PROFILE:
         return (
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <img
-              src={user.photoURL}
-              alt="User Avatar"
-              className="w-24 h-24 rounded-full object-cover mx-auto sm:mx-0"
-            />
+            <UserAvatar user={user} size={96} className="mx-auto sm:mx-0" showName={false} showEmail={false} />
             <div className="flex flex-col text-white gap-2 w-full">
-              <p className="text-xl font-semibold break-words text-center sm:text-left">{user.displayName}</p>
-              <p className="text-sm opacity-80 text-center sm:text-left">{user.email}</p>
+              <p className="text-xl font-semibold break-words text-center sm:text-left">
+                {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.displayName || 'User'}
+              </p>
+              <p className="text-sm opacity-80 text-center sm:text-left">{user?.email}</p>
 
               {/* Address row */}
               <div className="flex justify-between items-center text-sm">
                 <span className="opacity-80">Адрес</span>
-                {user.address ? (
+                {user?.address ? (
                   <span>{user.address}</span>
                 ) : (
                   <button
@@ -157,7 +164,7 @@ export default function Profile() {
               {/* Phone row */}
               <div className="flex justify-between items-center text-sm">
                 <span className="opacity-80">Телефон</span>
-                {user.phoneNumber ? (
+                {user?.phoneNumber ? (
                   <span>{user.phoneNumber}</span>
                 ) : (
                   <button

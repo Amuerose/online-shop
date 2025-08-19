@@ -72,35 +72,76 @@ function Cart() {
     try {
       const { loadStripe } = await import("@stripe/stripe-js");
       const stripe = await loadStripe("pk_live_51RfLTPEjkcQUPdY6XMOMOIukGrSyHFMVQ4T4bXV6SqxdgSkNFT39OdNwJ2eCaBV7fZ6fIgioZwhb3tPMRbdPDk2h00IWSPxQr4");
+
+      // Normalize items to a clean, backend‑friendly shape
+      const items = cartItems.map((item) => {
+        const name =
+          typeof item.name === "object"
+            ? item.name[i18n.language] ||
+              item.name.cs ||
+              item.name.en ||
+              item.name.ru ||
+              "Product"
+            : item.name;
+
+        // Try flat price first, then nested price (for legacy objects)
+        const price =
+          Number(item.price ?? item.attributes?.price ?? 0);
+
+        // Try several common places where an image may live
+        const image =
+          item.image ||
+          item.coverUrl ||
+          (item.attributes?.images &&
+            (Array.isArray(item.attributes.images)
+              ? item.attributes.images[0]?.url
+              : item.attributes.images?.data?.[0]?.attributes?.url)) ||
+          null;
+
+        return {
+          name,
+          price,
+          quantity: item.quantity || 1,
+          image,
+        };
+      });
+
       const customerData = { ...form }; // capture delivery form
 
-      console.log("🚀 Sending request to create-checkout-session with items:", cartItems);
-      const response = await fetch("http://localhost:4242/create-checkout-session", {
+      // Resolve checkout endpoint:
+      // 1) VITE_STRIPE_CHECKOUT_URL (recommended, full https URL),
+      // 2) fallback to Pages Function path: /api/create-checkout-session
+      const endpoint =
+        import.meta.env.VITE_STRIPE_CHECKOUT_URL ||
+        "/api/create-checkout-session";
+
+      console.log("🚀 Sending request to create-checkout-session with items:", items);
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        // currency is important for correct amounts on backend
         body: JSON.stringify({
-          cartItems: cartItems.map((item) => ({
-            name: typeof item.name === "object"
-              ? item.name[i18n.language] || item.name["cs"]
-              : item.name,
-            price: item.price,
-            quantity: item.quantity
-          })),
-          customer: customerData
+          items,
+          customer: customerData,
+          currency: "czk",
         }),
       });
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        const txt = await response.text().catch(() => "");
+        console.error("❌ Checkout endpoint responded with", response.status, txt);
+        return;
+      }
 
       const session = await response.json();
       console.log("✅ Session created:", {
         id: session.id,
         mode: session.mode,
-        url: session.url
+        url: session.url,
       });
-      console.log("🚀 Session ID received:", session.id);
 
       if (!session.id) {
         console.error("❌ No session ID in response");
