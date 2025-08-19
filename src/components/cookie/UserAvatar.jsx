@@ -1,4 +1,4 @@
-// src/components/UserAvatar.jsx
+// src/components/cookie/UserAvatar.jsx
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -24,17 +24,18 @@ export default function UserAvatar({
     user?.user_metadata?.preferred_username ||
     (user?.email ? user.email.split('@')[0] : 'User');
 
-  // Аватар: собираем из всех популярных мест
-  const providerAvatar =
-    // Часто Google кладёт сюда
-    user?.user_metadata?.picture ||
-    // Иногда провайдеры кладут avatar_url
-    user?.user_metadata?.avatar_url ||
-    // Бывает custom поле avatar
-    user?.user_metadata?.avatar ||
-    // Попробуем вытащить из identities (Google/Facebook)
-    user?.identities?.find(i => i?.identity_data?.picture)?.identity_data?.picture ||
-    null;
+  // Helper to resolve avatar from all known places (Google, Facebook, Supabase custom)
+  const resolveAvatarUrl = (user) => {
+    return (
+      user?.user_metadata?.picture ||
+      user?.user_metadata?.avatar_url ||
+      user?.user_metadata?.photoURL ||
+      user?.user_metadata?.avatar ||
+      user?.identities?.find(i => i?.identity_data?.picture)?.identity_data?.picture ||
+      null
+    );
+  };
+  const providerAvatar = resolveAvatarUrl(user);
 
   const initials = displayName?.slice(0, 2).toUpperCase();
 
@@ -48,8 +49,8 @@ export default function UserAvatar({
           height={size}
           className="rounded-full object-cover"
           style={{ width: size, height: size }}
-          // для Google-аватаров важно:
           referrerPolicy="no-referrer"
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/placeholder.png"; }}
         />
       ) : (
         <div
