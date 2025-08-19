@@ -10,6 +10,8 @@ const Shop = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([{ id: 'all', slug: 'all', name: t('categories.all') }]);
+  const [categoriesById, setCategoriesById] = useState({});
 
   // Safely resolve image URL: absolute URL stays as-is; otherwise, build a public URL from the Supabase bucket
   const resolveImageUrl = (path) => {
@@ -18,6 +20,12 @@ const Shop = () => {
     // Assume we store only the object path inside the `product-images` bucket
     const { data } = supabase.storage.from('product-images').getPublicUrl(path);
     return data?.publicUrl || "";
+  };
+
+  // Главная картинка товара для карточки/корзины с безопасным запасным вариантом
+  const getMainImage = (p) => {
+    const fromAttr = p?.attributes?.images?.data?.[0]?.attributes?.url;
+    return fromAttr || '/images/placeholder-image.jpg';
   };
 
   useEffect(() => {
@@ -40,25 +48,92 @@ const Shop = () => {
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
+    async function loadCategories() {
       try {
-        // Запрашиваем данные из таблицы products
-        // Подстроено под минимальную схему: id, name_cs, name_en, name_ru, price, image_url
-        const { data: rows, error } = await supabase
-          .from("products")
-          .select("id, name_cs, name_en, name_ru, price, image_url");
+        const { data, error } = await supabase
+          .from('categories')
+          .select('id, slug, name');
 
         if (error) throw error;
 
-        // Приводим к форме, ожидаемой текущим UI (имитация структуры Strapi)
+        const dynamic = (data || []).map((c) => ({
+          id: c.id,
+          slug: c.slug || String(c.id),
+          name: c.name || c.slug || String(c.id),
+        }));
+
+        const withAll = [
+          { id: 'all', slug: 'all', name: t('categories.all') },
+          ...dynamic,
+        ];
+
+        if (!cancelled) {
+          setCategories(withAll);
+          const map = {};
+          withAll.forEach((c) => (map[c.id] = c));
+          if (!cancelled) setCategoriesById(map);
+        }
+      } catch (e) {
+        // Fallback to static list if categories table doesn't exist
+        const fallback = [
+          { id: 'all', slug: 'all', name: t('categories.all') },
+          { id: 'strawberries', slug: 'strawberries', name: t('categories.strawberries') },
+          { id: 'blueberries', slug: 'blueberries', name: t('categories.blueberries') },
+          { id: 'raspberries', slug: 'raspberries', name: t('categories.raspberries') },
+          { id: 'bananas', slug: 'bananas', name: t('categories.bananas') },
+          { id: 'dates', slug: 'dates', name: t('categories.dates') },
+          { id: 'cherries', slug: 'cherries', name: t('categories.cherries') },
+          { id: 'sets', slug: 'sets', name: t('categories.sets') },
+          { id: 'gifts', slug: 'gifts', name: t('categories.gifts') },
+        ];
+        if (!cancelled) {
+          setCategories(fallback);
+          const map = {};
+          fallback.forEach((c) => (map[c.id] = c));
+          if (!cancelled) setCategoriesById(map);
+        }
+      }
+    }
+
+    loadCategories();
+    return () => {
+      cancelled = true;
+    };
+    // re-run when language changes to refresh t() for "all"
+  }, [i18n.language]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        // First try to include category_id if it exists
+        let rows, error;
+
+        ({ data: rows, error } = await supabase
+          .from('products')
+          .select('id, name, description, price, image_url, category_id, created_at')
+          .order('created_at', { ascending: false }));
+
+        if (error) {
+          // Retry without category_id for older schema
+          ({ data: rows, error } = await supabase
+            .from('products')
+            .select('id, name, description, price, image_url, created_at')
+            .order('created_at', { ascending: false }));
+          if (error) throw error;
+        }
+
         const mapped =
           (rows || []).map((r) => ({
             id: r.id,
+            category_id: r.category_id || null,
             attributes: {
+              // Держим старую форму, но заполняем одинаковым значением под все языки
               name: {
-                cs: r.name_cs ?? r.name_en ?? r.name_ru ?? "",
-                en: r.name_en ?? r.name_cs ?? r.name_ru ?? "",
-                ru: r.name_ru ?? r.name_en ?? r.name_cs ?? "",
+                cs: r.name || '',
+                en: r.name || '',
+                ru: r.name || '',
               },
               price: r.price ?? 0,
               images: {
@@ -73,9 +148,19 @@ const Shop = () => {
             },
           })) || [];
 
-        if (!cancelled) setProducts(mapped);
+        // Применяем фильтрацию по выбранной категории, если она не "all"
+        const filtered =
+          selectedCategory === 'all'
+            ? mapped
+            : mapped.filter((p) => {
+                if (!p.category_id) return false;
+                const cat = categoriesById[p.category_id];
+                return cat && (cat.slug === selectedCategory || cat.id === selectedCategory);
+              });
+
+        if (!cancelled) setProducts(filtered);
       } catch (err) {
-        console.error("Supabase load products error:", err);
+        console.error('Supabase load products error:', err);
         if (!cancelled) setProducts([]);
       }
     }
@@ -84,19 +169,7 @@ const Shop = () => {
     return () => {
       cancelled = true;
     };
-  }, [i18n.language]);
-
-  const categories = [
-    'all',
-    'strawberries',
-    'blueberries',
-    'raspberries',
-    'bananas',
-    'dates',
-    'cherries',
-    'sets',
-    'gifts',
-  ];
+  }, [i18n.language, selectedCategory, categoriesById]);
 
   return (
     <div
@@ -127,16 +200,16 @@ const Shop = () => {
           <div className="flex justify-start md:justify-center gap-4 px-4">
             {categories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                key={cat.slug || cat.id}
+                onClick={() => setSelectedCategory(cat.slug || cat.id)}
                 className={`shrink-0 text-sm sm:text-base px-4 py-2 rounded-full border backdrop-blur transition
                   ${
-                    selectedCategory === cat
+                    selectedCategory === (cat.slug || cat.id)
                       ? 'bg-white/20 text-[#BDA47A] border-white/40'
                       : 'bg-white/10 text-[#BDA47A] border-white/20 hover:bg-white/20'
                   }`}
               >
-                {t(`categories.${cat}`)}
+                {cat.name || cat.slug}
               </button>
             ))}
           </div>
@@ -154,7 +227,7 @@ const Shop = () => {
             >
               <div className="w-full h-56">
                 <img
-                  src={product.attributes.images.data[0]?.attributes.url || ""}
+                  src={getMainImage(product)}
                   alt=""
                   className="w-full h-full object-cover"
                 />
@@ -173,7 +246,20 @@ const Shop = () => {
                       e.stopPropagation();
                       console.log("🛒 Adding to cart:", product);
                       try {
-                        addToCart(product);
+                        const item = {
+                          id: product.id,
+                          title:
+                            typeof product?.attributes?.name === 'string'
+                              ? product.attributes.name
+                              : (product?.attributes?.name?.[i18n.language]
+                                  || product?.attributes?.name?.en
+                                  || product?.attributes?.name?.ru
+                                  || ''),
+                          price: Number(product?.attributes?.price) || 0,
+                          qty: 1,
+                          imageUrl: getMainImage(product),
+                        };
+                        addToCart(item);
                       } catch (error) {
                         console.error("❌ Error adding to cart:", error);
                       }
