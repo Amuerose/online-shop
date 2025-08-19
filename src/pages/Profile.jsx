@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Pencil, Trash, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AccountCard from '../components/AccountCard';
-import UserAvatar from '../components/UserAvatar';
+import UserAvatar from '../components/cookie/UserAvatar';
 
 const TABS = {
   PROFILE: 'profile',

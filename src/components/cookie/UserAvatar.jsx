@@ -1,6 +1,6 @@
 // src/components/cookie/UserAvatar.jsx
 import React from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * Универсальный аватар + имя/почта.
