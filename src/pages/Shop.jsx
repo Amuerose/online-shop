@@ -24,8 +24,25 @@ const Shop = () => {
 
   // Главная картинка товара для карточки/корзины с безопасным запасным вариантом
   const getMainImage = (p) => {
+    // 1) Новый формат: attributes.images.data[0].attributes.url
     const fromAttr = p?.attributes?.images?.data?.[0]?.attributes?.url;
-    return fromAttr || '/images/placeholder-image.jpg';
+    if (typeof fromAttr === 'string' && fromAttr.length) return fromAttr;
+
+    // 2) Вариант: attributes.images как массив строк или объектов {url}
+    const ai = p?.attributes?.images;
+    if (Array.isArray(ai) && ai.length) {
+      const u = ai[0]?.url || ai[0];
+      if (typeof u === 'string' && u.length) return u;
+    }
+
+    // 3) Прямо на продукте: image_url (путь в бакете) — конвертим в публичный URL
+    if (typeof p?.image_url === 'string' && p.image_url.length) {
+      const url = resolveImageUrl(p.image_url);
+      if (url) return url;
+    }
+
+    // 4) Запасной вариант: плейсхолдер
+    return '/images/placeholder-image.jpg';
   };
 
   useEffect(() => {
@@ -257,7 +274,7 @@ const Shop = () => {
                                   || ''),
                           price: Number(product?.attributes?.price) || 0,
                           qty: 1,
-                          imageUrl: getMainImage(product),
+                          image: getMainImage(product),
                         };
                         addToCart(item);
                       } catch (error) {
