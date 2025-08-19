@@ -86,7 +86,12 @@ function ProductPage() {
 
   const handleAdd = () => {
     if (quantity > 0) {
-      addToCart(product, quantity);
+      addToCart({
+        id: product.id,
+        name: product.name?.[i18n.language] || t("noName"),
+        price: product.price,
+        image: product.images.data[0]?.attributes.url || "",
+      }, quantity);
     }
   };
 
