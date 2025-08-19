@@ -71,7 +71,7 @@ function Cart() {
   const handleStripeCheckout = async () => {
     try {
       const { loadStripe } = await import("@stripe/stripe-js");
-      const stripe = await loadStripe("pk_live_51RfLTPEjkcQUPdY6XMOMOIukGrSyHFMVQ4T4bXV6SqxdgSkNFT39OdNwJ2eCaBV7fZ6fIgioZwhb3tPMRbdPDk2h00IWSPxQr4");
+      const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
       // Normalize items to a clean, backend‑friendly shape
       const items = cartItems.map((item) => {
@@ -471,19 +471,34 @@ function Cart() {
                 >
                   <div className="w-16 h-16 flex-shrink-0 overflow-hidden">
                     <img
-                      src={item.image || "/placeholder.jpg"}
-                      alt={typeof item.name === "object" ? item.name[i18n.language] || item.name.en : item.name}
-                      className="w-full h-full object-cover"
+                      src={
+                        // Prefer normalized field coming from add-to-cart, then fall back to legacy attribute paths
+                        item.image
+                        || (Array.isArray(item.attributes?.images) ? item.attributes.images[0]?.url : null)
+                        || item.attributes?.images?.data?.[0]?.attributes?.url
+                        || "/placeholder.png"
+                      }
+                      alt={
+                        // Localized name from normalized shape first
+                        (typeof item.name === "object"
+                          ? (item.name[i18n.language] || item.name.cs || item.name.en || item.name.ru)
+                          : item.name)
+                        || (item.attributes?.name?.[i18n.language] || item.attributes?.name?.en)
+                        || "Product image"
+                      }
+                      className="w-full h-full object-cover rounded"
                     />
                   </div>
                   <div className="pr-8">
                     <h2 className="text-sm sm:text-base font-semibold font-[Inter] leading-tight break-words text-[#4B2E1D]">
-                      {typeof item.name === "object"
-                        ? item.name[i18n.language] || item.name.en
-                        : item.name}
+                      {(typeof item.name === "object"
+                        ? (item.name[i18n.language] || item.name.cs || item.name.en || item.name.ru)
+                        : item.name)
+                        || (item.attributes?.name?.[i18n.language] || item.attributes?.name?.en)
+                        || "Product"}
                     </h2>
                     <p className="text-[11px] font-medium font-[Inter] text-[#4B2E1D]">
-                      {item.price} Kč × {item.quantity}
+                      {((item.price ?? item.attributes?.price ?? 0) * (item.quantity || 1))} Kč
                     </p>
                   </div>
                     <button
