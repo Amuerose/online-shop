@@ -21,7 +21,7 @@ function FloatingInfoPanel() {
     <div className="fixed bottom-3 left-0 right-0 z-50 flex items-end justify-start gap-4 px-6">
       {/* Instagram */}
       <a
-        href="https://instagram.com"
+        href="https://www.instagram.com/amuerose"
         target="_blank"
         rel="noopener noreferrer"
         className="w-14 h-14 min-w-[56px] flex items-center justify-center rounded-full backdrop-blur-[22px] bg-[rgba(255,255,255,0.06)] hover:bg-[rgba(255,255,255,0.12)] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_12px_rgba(0,0,0,0.25)] text-[#BDA47A]"
@@ -75,7 +75,7 @@ function FloatingInfoPanel() {
               {/* Center */}
               <div className="flex flex-col items-center space-y-0.5 text-[11px] sm:text-xs opacity-80 leading-tight">
                 <a
-                  href="/privacy"
+                  href="/privacy-policy"
                   className="underline hover:opacity-100 transition-opacity"
                 >
                   Политика конфиденциальности

@@ -100,7 +100,9 @@ function Header() {
           </div>
 
           <div className="absolute left-1/2 -translate-x-1/2">
-            <img src={logo} alt="Logo" className="h-16 object-contain" />
+            <Link to="/">
+              <img src={logo} alt="Logo" className="h-16 object-contain" />
+            </Link>
           </div>
 
           <div className="flex items-center gap-1.5 justify-end flex-grow max-w-[calc(50%-80px)] min-w-[200px]">
