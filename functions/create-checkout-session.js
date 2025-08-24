@@ -1,33 +1,53 @@
-// /functions/create-checkout-session.js
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2022-11-15",
-});
-
 export async function onRequestPost(context) {
   try {
-    const body = await context.request.json();
+    const { request, env } = context;
+    const body = await request.json();
     const { cartItems } = body;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: cartItems.map((item) => ({
-        price_data: {
-          currency: "czk",
-          product_data: {
-            name: typeof item.name === "object" ? item.name["cs"] : item.name,
-          },
-          unit_amount: item.price * 100,
+    const line_items = cartItems.map((item) => ({
+      price_data: {
+        currency: "czk",
+        product_data: {
+          name: typeof item.name === "object" ? item.name["cs"] : item.name,
         },
-        quantity: item.quantity,
-      })),
-      success_url: "https://amuerose.cz/success",
-      cancel_url: "https://amuerose.cz/cart",
+        unit_amount: item.price * 100,
+      },
+      quantity: item.quantity,
+    }));
+
+    const response = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        "payment_method_types[]": "card",
+        mode: "payment",
+        success_url: "https://amuerose.cz/success",
+        cancel_url: "https://amuerose.cz/cart",
+        ...line_items.reduce((acc, item, idx) => {
+          acc[`line_items[${idx}][price_data][currency]`] = item.price_data.currency;
+          acc[`line_items[${idx}][price_data][product_data][name]`] =
+            item.price_data.product_data.name;
+          acc[`line_items[${idx}][price_data][unit_amount]`] =
+            item.price_data.unit_amount;
+          acc[`line_items[${idx}][quantity]`] = item.quantity;
+          return acc;
+        }, {}),
+      }),
     });
 
-    return new Response(JSON.stringify({ id: session.id, url: session.url }), {
+    const session = await response.json();
+
+    if (session.error) {
+      return new Response(JSON.stringify({ error: session.error }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify(session), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
