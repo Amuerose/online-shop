@@ -143,10 +143,10 @@ function Cart() {
 
       // Resolve checkout endpoint:
       // 1) VITE_STRIPE_CHECKOUT_URL (recommended, full https URL),
-      // 2) fallback to backend URL
+      // 2) fallback to relative API path
       const endpoint =
         import.meta.env.VITE_STRIPE_CHECKOUT_URL ||
-        "https://stripe-server-2z4z.onrender.com/create-checkout-session"; // fallback to backend URL
+        "/create-checkout-session"; // fallback to relative API path
 
       console.log("🚀 Sending request to create-checkout-session with items:", items);
 
