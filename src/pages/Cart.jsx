@@ -157,7 +157,7 @@ function Cart() {
         },
         // currency is important for correct amounts on backend
         body: JSON.stringify({
-          items,
+          cartItems: items,
           customer: customerData,
           currency: "czk",
         }),
@@ -458,7 +458,7 @@ function Cart() {
   </div>
   <div className="p-4 bg-white/10 border border-white/10 rounded-xl backdrop-blur mt-6 text-sm text-[#4B2E1D]">
     {t("deliveryInfo", {
-      defaultValue: "We will deliver your order within 2 hours. You will be contacted by phone.",
+      defaultValue: "We will deliver your order within 3 hours. You will be contacted by phone.",
     })}
   </div>
 </div>

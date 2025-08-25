@@ -41,19 +41,30 @@ export async function onRequestPost(context) {
     const session = await response.json();
 
     if (session.error) {
+      console.error("❌ Stripe API error:", session.error || session);
       return new Response(JSON.stringify({ error: session.error }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
       });
     }
 
     return new Response(JSON.stringify(session), {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   } catch (err) {
+    console.error("❌ Function crashed:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 }
