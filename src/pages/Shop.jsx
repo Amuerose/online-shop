@@ -214,7 +214,7 @@ const Shop = () => {
           className="overflow-x-auto w-full overscroll-contain touch-pan-x categories-scroll scrollbar-hide pb-[30px] mb-[-30px]"
           style={{ WebkitOverflowScrolling: 'touch', clipPath: 'inset(0 0 30px 0)' }}
         >
-          <div className="flex justify-start md:justify-center gap-4 px-4">
+          <div className="flex justify-start gap-4 px-4">
             {categories.map((cat) => (
               <button
                 key={cat.slug || cat.id}
