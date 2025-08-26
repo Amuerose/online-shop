@@ -85,14 +85,25 @@ function ProductPage() {
   }
 
   const handleAdd = () => {
-    if (quantity > 0) {
-      addToCart({
-        id: product.id,
-        name: product.name?.[i18n.language] || t("noName"),
-        price: product.price,
-        image: product.images.data[0]?.attributes.url || "",
-      }, quantity);
+    // Защитимся от неверных значений и отсутствия товара
+    if (!product) return;
+
+    const lang = i18n.language;
+    const name = product.name?.[lang] || t("noName");
+    const image = product.images?.data?.[0]?.attributes?.url || "";
+    const price = Number(product.price) || 0;
+
+    // Количество всегда минимум 1, явное приведение к числу
+    const qty = Math.max(1, Number(quantity) || 1);
+
+    // Текущий CartContext.addToCart принимает один товар за вызов,
+    // поэтому добавляем по одному `qty` раз.
+    for (let i = 0; i < qty; i += 1) {
+      addToCart({ id: product.id, name, price, image });
     }
+
+    // Опционально можно вернуть селектор в "1"
+    setQuantity(1);
   };
 
   return (
@@ -218,6 +229,7 @@ function ProductPage() {
               </button>
             </div>
             <button
+              type="button"
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
@@ -249,6 +261,7 @@ function ProductPage() {
               </button>
             </div>
             <button
+              type="button"
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
