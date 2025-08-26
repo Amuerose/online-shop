@@ -22,10 +22,8 @@ const pickLocale = (obj, lang) => {
 
 // Normalize DB row to UI product
 const normalizeProduct = (r, lang = 'cs') => {
-  const nameObj = typeof r.name === 'object' ? r.name : { cs: r.name || '', en: r.name || '', ru: r.name || '' };
-  const descObj = typeof r.description === 'object'
-    ? r.description
-    : { cs: r.description || '', en: r.description || '', ru: r.description || '' };
+  const nameObj = typeof r.name === 'object' ? r.name : r.name || '';
+  const descObj = typeof r.description === 'object' ? r.description : r.description || '';
 
   const mainUrl = r.image_url ? r.image_url : '';
   return {
