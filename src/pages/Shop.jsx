@@ -14,16 +14,28 @@ const resolveImageUrl = (path) => {
 
 import { supabase } from "../lib/supabaseClient";
 
-// Pick a localized value from {cs,en,ru} with sensible fallbacks
-const pickLocale = (obj, lang) => {
-  if (!obj || typeof obj !== 'object') return '';
-  return obj[lang] || obj.en || obj.cs || obj.ru || '';
+// Pick a localized value from {cs,en,ru} or accept plain strings
+const pickLocale = (val, lang) => {
+  if (val == null) return '';
+  if (typeof val === 'string') return val; // already a plain string
+  if (typeof val === 'object') {
+    return (
+      val[lang] ??
+      val.en ??
+      val.cs ??
+      val.ru ??
+      // fallback to the first non-empty value in object, if any
+      Object.values(val).find(v => typeof v === 'string' && v.trim().length > 0) ??
+      ''
+    );
+  }
+  return '';
 };
 
 // Normalize DB row to UI product
 const normalizeProduct = (r, lang = 'cs') => {
-  const nameObj = typeof r.name === 'object' ? r.name : r.name || '';
-  const descObj = typeof r.description === 'object' ? r.description : r.description || '';
+  const nameObj = r.name ?? '';
+  const descObj = r.description ?? '';
 
   const mainUrl = r.image_url ? r.image_url : '';
   return {
