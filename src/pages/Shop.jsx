@@ -4,6 +4,36 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "../lib/supabaseClient";
 
+// Pick a localized value from {cs,en,ru} with sensible fallbacks
+const pickLocale = (obj, lang) => {
+  if (!obj || typeof obj !== 'object') return '';
+  return obj[lang] || obj.en || obj.cs || obj.ru || '';
+};
+
+// Normalize DB row to UI product
+const normalizeProduct = (r, lang = 'cs') => {
+  const nameObj = typeof r.name === 'object' ? r.name : { cs: r.name || '', en: r.name || '', ru: r.name || '' };
+  const descObj = typeof r.description === 'object'
+    ? r.description
+    : { cs: r.description || '', en: r.description || '', ru: r.description || '' };
+
+  const mainUrl = r.image_url ? r.image_url : '';
+  return {
+    id: r.id,
+    category_id: r.category_id || null,
+    attributes: {
+      name: nameObj,
+      description: descObj,
+      price: Number(r.price ?? 0),
+      images: {
+        data: [
+          { attributes: { url: mainUrl ? resolveImageUrl(mainUrl) : '' } }
+        ]
+      }
+    }
+  };
+};
+
 const Shop = () => {
   const { addToCart } = useCart();
   const { t, i18n } = useTranslation();
@@ -141,29 +171,7 @@ const Shop = () => {
           if (error) throw error;
         }
 
-        const mapped =
-          (rows || []).map((r) => ({
-            id: r.id,
-            category_id: r.category_id || null,
-            attributes: {
-              // Держим старую форму, но заполняем одинаковым значением под все языки
-              name: {
-                cs: r.name || '',
-                en: r.name || '',
-                ru: r.name || '',
-              },
-              price: r.price ?? 0,
-              images: {
-                data: [
-                  {
-                    attributes: {
-                      url: resolveImageUrl(r.image_url),
-                    },
-                  },
-                ],
-              },
-            },
-          })) || [];
+        const mapped = (rows || []).map((r) => normalizeProduct(r, i18n.language));
 
         // Применяем фильтрацию по выбранной категории, если она не "all"
         const filtered =
@@ -250,13 +258,15 @@ const Shop = () => {
                 />
               </div>
               <div className="p-4 flex flex-col justify-between flex-1">
-                <h3 className="text-sm font-[Inter] font-semibold tracking-wide mb-2 leading-tight text-[#BDA47A]">
-                  {product.attributes.name[i18n.language] || product.attributes.name.en}
+                <h3 className="text-base sm:text-lg font-[Inter] font-semibold tracking-wide mb-1 leading-tight text-[#4B2E1D]">
+                  {pickLocale(product.attributes.name, i18n.language)}
                 </h3>
-                <p className="text-xs text-[#7A4E35]/60 mb-4 leading-snug">&nbsp;</p>
+                <p className="text-xs sm:text-sm text-[#7A4E35]/70 mb-3 leading-snug line-clamp-2">
+                  {pickLocale(product.attributes.description, i18n.language)}
+                </p>
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="text-sm font-[Inter] font-semibold text-[#BDA47A]">
-                    {product.attributes.price} Kč
+                  <span className="text-sm sm:text-base font-[Inter] font-semibold text-[#BDA47A]">
+                    {Number(product.attributes.price) || 0} Kč
                   </span>
                   <button
                     onClick={(e) => {
@@ -265,13 +275,7 @@ const Shop = () => {
                       try {
                         const item = {
                           id: product.id,
-                          title:
-                            typeof product?.attributes?.name === 'string'
-                              ? product.attributes.name
-                              : (product?.attributes?.name?.[i18n.language]
-                                  || product?.attributes?.name?.en
-                                  || product?.attributes?.name?.ru
-                                  || ''),
+                          title: pickLocale(product?.attributes?.name, i18n.language),
                           price: Number(product?.attributes?.price) || 0,
                           qty: 1,
                           image: getMainImage(product),
