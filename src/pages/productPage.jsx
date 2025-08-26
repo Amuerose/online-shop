@@ -185,7 +185,7 @@ function ProductPage() {
               <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                 <h3 className="text-sm lg:text-base font-semibold mb-1">{t("reviewsTitle")}</h3>
                 <div className="text-sm lg:text-base space-y-2">
-                  <form className="space-y-2">
+                  <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
                     <label className="block">
                       <textarea
                         className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
