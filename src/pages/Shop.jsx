@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
+// Safely resolve image URL: absolute URL stays as-is; otherwise, build a public URL from the Supabase bucket
+const resolveImageUrl = (path) => {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path; // already absolute
+  // Assume we store only the object path inside the `product-images` bucket
+  const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+  return data?.publicUrl || "";
+};
+
 import { supabase } from "../lib/supabaseClient";
 
 // Pick a localized value from {cs,en,ru} with sensible fallbacks
@@ -43,14 +53,6 @@ const Shop = () => {
   const [categories, setCategories] = useState([{ id: 'all', slug: 'all', name: t('categories.all') }]);
   const [categoriesById, setCategoriesById] = useState({});
 
-  // Safely resolve image URL: absolute URL stays as-is; otherwise, build a public URL from the Supabase bucket
-  const resolveImageUrl = (path) => {
-    if (!path) return "";
-    if (/^https?:\/\//i.test(path)) return path; // already absolute
-    // Assume we store only the object path inside the `product-images` bucket
-    const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-    return data?.publicUrl || "";
-  };
 
   // Главная картинка товара для карточки/корзины с безопасным запасным вариантом
   const getMainImage = (p) => {
