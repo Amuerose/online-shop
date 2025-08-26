@@ -17,18 +17,48 @@ import { supabase } from "../lib/supabaseClient";
 // Pick a localized value from {cs,en,ru} or accept plain strings
 const pickLocale = (val, lang) => {
   if (val == null) return '';
-  if (typeof val === 'string') return val; // already a plain string
-  if (typeof val === 'object') {
-    return (
-      val[lang] ??
-      val.en ??
-      val.cs ??
-      val.ru ??
-      // fallback to the first non-empty value in object, if any
-      Object.values(val).find(v => typeof v === 'string' && v.trim().length > 0) ??
-      ''
-    );
+
+  // If it's a plain string, try to detect and parse JSON with translations
+  let v = val;
+  if (typeof v === 'string') {
+    const trimmed = v.trim();
+    const looksLikeJson =
+      (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+      (trimmed.startsWith('[') && trimmed.endsWith(']'));
+
+    if (looksLikeJson) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && typeof parsed === 'object') v = parsed; // use parsed object below
+      } catch (_) {
+        // not a valid JSON -> treat as plain string
+        return v;
+      }
+    } else {
+      // regular plain string already
+      return v;
+    }
   }
+
+  // If we got an object with translations, pick by language with fallbacks
+  if (v && typeof v === 'object') {
+    const byLang = v[lang];
+    if (typeof byLang === 'string' && byLang.trim().length) return byLang;
+
+    // reasonable fallbacks
+    const fallbackOrder = ['en', 'cs', 'ru'];
+    for (const key of fallbackOrder) {
+      const candidate = v[key];
+      if (typeof candidate === 'string' && candidate.trim().length) return candidate;
+    }
+
+    // as a last resort, return the first non-empty string value from the object
+    const first = Object.values(v).find(
+      (x) => typeof x === 'string' && x.trim().length > 0
+    );
+    return first || '';
+  }
+
   return '';
 };
 
