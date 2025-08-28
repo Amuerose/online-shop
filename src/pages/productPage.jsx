@@ -157,6 +157,15 @@ function ProductPage() {
     setQuantity(1);
   };
 
+  const handleQuickAdd = (r) => {
+    if (!r) return;
+    const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
+    const name = rName || t("noName");
+    const price = Number(r.price || 0);
+    const image = r.image_url || "";
+    addToCart({ id: r.id, name, price, image });
+  };
+
   return (
     <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
       <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
@@ -276,20 +285,33 @@ function ProductPage() {
                         i18n.language === "cs" ? r.name_cs :
                         i18n.language === "ru" ? r.name_ru : r.name_en;
                       return (
-                        <button
+                        <div
                           key={r.id}
-                          onClick={() => navigate(`/product/${r.id}`)}
-                          className="min-w-[160px] max-w-[180px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition"
-                          type="button"
+                          className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition"
                         >
-                          <div className="w-full h-[120px] bg-white/5">
-                            <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                          <button
+                            onClick={() => navigate(`/product/${r.id}`)}
+                            className="w-full text-left"
+                            type="button"
+                          >
+                            <div className="w-full h-[130px] bg-white/5">
+                              <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="p-2">
+                              <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
+                              <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
+                            </div>
+                          </button>
+                          <div className="px-2 pb-2">
+                            <button
+                              type="button"
+                              onClick={() => handleQuickAdd(r)}
+                              className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium"
+                            >
+                              {t("buttons.addToCart")}
+                            </button>
                           </div>
-                          <div className="p-2">
-                            <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
-                            <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
-                          </div>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
