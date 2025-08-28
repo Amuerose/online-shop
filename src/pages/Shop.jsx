@@ -272,21 +272,49 @@ const Shop = () => {
       className="relative flex flex-col h-[100dvh] text-[#4B2E1D]"
       style={{
         background: [
-          'linear-gradient(120deg, #F7F0E8 0%, #EDE3D4 50%, #E4D8C6 100%)',
-          'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%)',
-          'radial-gradient(circle at 80% 80%, rgba(189,164,122,0.2) 0%, transparent 60%)'
+          // base silk parchment gradient
+          'linear-gradient(120deg, #F7F3ED 0%, #EFE6DA 48%, #E8DCCB 100%)',
+          // subtle glow top-left
+          'radial-gradient(1000px 600px at 14% 18%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 60%)',
+          // honey-gold bloom bottom-right
+          'radial-gradient(800px 520px at 86% 82%, rgba(205,178,141,0.22) 0%, rgba(205,178,141,0) 65%)',
+          // faint diagonal sheen
+          'conic-gradient(from 220deg at 60% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.08) 60%, rgba(255,255,255,0) 85%)'
         ].join(', '),
       }}
     >
+      {/* Quiet luxury overlays */}
+      {/* Fine paper grain */}
       <div
-        className="pointer-events-none absolute top-[120px] left-[100px] w-[160px] h-[400px] z-0 rotate-[12deg]"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
-          background: 'radial-gradient(ellipse at 40% 0%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%)',
-          filter: 'blur(80px)',
-          opacity: 0.6,
+          backgroundImage:
+            'radial-gradient(rgba(255,255,255,0.07) 0.5px, rgba(0,0,0,0) 0.6px)',
+          backgroundSize: '3px 3px',
+          opacity: 0.08,
+          mixBlendMode: 'soft-light'
         }}
       />
-      <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
+
+      {/* Soft vignette */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(1000px 700px at 50% 50%, rgba(0,0,0,0) 60%, rgba(75,46,29,0.06) 100%)',
+          mixBlendMode: 'multiply'
+        }}
+      />
+
+      {/* Bloom accents */}
+      <div
+        className="pointer-events-none absolute -top-24 -left-12 w-[420px] h-[420px] rounded-full z-0"
+        style={{ background: 'radial-gradient(closest-side, rgba(255,255,255,0.35), rgba(255,255,255,0))', filter: 'blur(80px)', opacity: 0.6 }}
+      />
+      <div
+        className="pointer-events-none absolute bottom-[-80px] right-[-60px] w-[460px] h-[460px] rounded-full z-0"
+        style={{ background: 'radial-gradient(closest-side, rgba(189,164,122,0.28), rgba(189,164,122,0))', filter: 'blur(110px)', opacity: 0.65 }}
+      />
       {/* Категории */}
       <div className="pt-24 pb-4">
         <div ref={catWrapRef} className="relative max-w-[1000px] mx-auto w-full">
@@ -329,37 +357,7 @@ const Shop = () => {
             <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#F7F0E8]/90 to-transparent rounded-r-2xl" />
           )}
 
-          {/* Кнопки-стрелки (видны только на десктопе) */}
-          <button
-            type="button"
-            aria-label="Scroll categories left"
-            onClick={() => scrollCatsBy(-260)}
-            className={`hidden md:flex items-center justify-center absolute -left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border border-white/30 bg-white/30 backdrop-blur hover:bg-white/40 transition text-[#BDA47A] shadow ${
-              canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <button
-            type="button"
-            aria-label="Scroll categories right"
-            onClick={() => scrollCatsBy(260)}
-            className={`hidden md:flex items-center justify-center absolute -right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border border-white/30 bg-white/30 backdrop-blur hover:bg-white/40 transition text-[#BDA47A] shadow ${
-              canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
 
-          {/* Ненавязчивая подсказка для тача (один раз за сессию) */}
-          <div
-            className="md:hidden mt-2 flex justify-center"
-            style={{ display: (canScrollLeft || canScrollRight) ? 'flex' : 'none' }}
-          >
-            <div className="text-[11px] px-3 py-1 rounded-full bg-white/20 border border-white/30 text-[#BDA47A]">
-              ⟷ Свайпните категории
-            </div>
-          </div>
         </div>
       </div>
 
