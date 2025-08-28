@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -93,6 +93,25 @@ const Shop = () => {
   const [categories, setCategories] = useState([{ id: 'all', slug: 'all', name: t('categories.all') }]);
   const [categoriesById, setCategoriesById] = useState({});
 
+  // === Horizontal scroll affordance for categories ===
+  const catWrapRef = useRef(null);
+  const catScrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateCategoryShadows = () => {
+    const el = catScrollRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    setCanScrollLeft(el.scrollLeft > 2);
+    setCanScrollRight(maxScroll - el.scrollLeft > 2);
+  };
+  
+  const scrollCatsBy = (dx) => {
+    const el = catScrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dx, behavior: 'smooth' });
+  };
 
   // Главная картинка товара для карточки/корзины с безопасным запасным вариантом
   const getMainImage = (p) => {
@@ -129,8 +148,18 @@ const Shop = () => {
       }
     };
     document.addEventListener('touchmove', handler, { passive: false });
+
+    // initialize and listen for categories scroll/resizes
+    updateCategoryShadows();
+    const onScroll = () => updateCategoryShadows();
+    const onResize = () => updateCategoryShadows();
+    catScrollRef.current?.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+
     return () => {
       document.removeEventListener('touchmove', handler);
+      catScrollRef.current?.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
@@ -260,26 +289,75 @@ const Shop = () => {
       <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
       {/* Категории */}
       <div className="pt-24 pb-4">
-        <div className="max-w-[1000px] mx-auto w-full">
+        <div ref={catWrapRef} className="relative max-w-[1000px] mx-auto w-full">
           <div
+            ref={catScrollRef}
             className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide pb-[30px] mb-[-30px]"
-            style={{ WebkitOverflowScrolling: 'touch', clipPath: 'inset(0 0 30px 0)' }}
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              // мягкий намёк на скролл: затухание по краям (работает и в Safari)
+              WebkitMaskImage:
+                'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
+              maskImage:
+                'linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)',
+              clipPath: 'inset(0 0 30px 0)'
+            }}
+            onScroll={updateCategoryShadows}
           >
             <div className="flex justify-start gap-4 px-4">
-            {categories.map((cat) => (
-              <button
-                key={cat.slug || cat.id}
-                onClick={() => setSelectedCategory(cat.slug || cat.id)}
-                className={`shrink-0 text-sm sm:text-base px-4 py-2 rounded-full border backdrop-blur transition
-                  ${
+              {categories.map((cat) => (
+                <button
+                  key={cat.slug || cat.id}
+                  onClick={() => setSelectedCategory(cat.slug || cat.id)}
+                  className={`shrink-0 text-sm sm:text-base px-4 py-2 rounded-full border backdrop-blur transition ${
                     selectedCategory === (cat.slug || cat.id)
                       ? 'bg-white/20 text-[#BDA47A] border-white/40'
                       : 'bg-white/10 text-[#BDA47A] border-white/20 hover:bg-white/20'
                   }`}
-              >
-                {cat.name || cat.slug}
-              </button>
-            ))}
+                >
+                  {cat.name || cat.slug}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* лево/право подсказки + кнопки */}
+          {canScrollLeft && (
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#F7F0E8]/90 to-transparent rounded-l-2xl" />
+          )}
+          {canScrollRight && (
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#F7F0E8]/90 to-transparent rounded-r-2xl" />
+          )}
+
+          {/* Кнопки-стрелки (видны только на десктопе) */}
+          <button
+            type="button"
+            aria-label="Scroll categories left"
+            onClick={() => scrollCatsBy(-260)}
+            className={`hidden md:flex items-center justify-center absolute -left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border border-white/30 bg-white/30 backdrop-blur hover:bg-white/40 transition text-[#BDA47A] shadow ${
+              canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Scroll categories right"
+            onClick={() => scrollCatsBy(260)}
+            className={`hidden md:flex items-center justify-center absolute -right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full border border-white/30 bg-white/30 backdrop-blur hover:bg-white/40 transition text-[#BDA47A] shadow ${
+              canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          {/* Ненавязчивая подсказка для тача (один раз за сессию) */}
+          <div
+            className="md:hidden mt-2 flex justify-center"
+            style={{ display: (canScrollLeft || canScrollRight) ? 'flex' : 'none' }}
+          >
+            <div className="text-[11px] px-3 py-1 rounded-full bg-white/20 border border-white/30 text-[#BDA47A]">
+              ⟷ Свайпните категории
             </div>
           </div>
         </div>
