@@ -361,7 +361,7 @@ const Shop = () => {
         <div ref={catWrapRef} className="relative max-w-[1000px] mx-auto w-full">
           <div
             ref={catScrollRef}
-            className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide pb-[30px] mb-[-30px]"
+            className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide no-scrollbar"
             style={{
               WebkitOverflowScrolling: 'touch'
             }}
@@ -383,9 +383,29 @@ const Shop = () => {
               ))}
             </div>
           </div>
-
-
-
+          {showSwipeHint && (
+            <div
+              className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2"
+              aria-hidden="true"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 64 64"
+                className="w-10 h-10 opacity-80 animate-finger-swipe"
+              >
+                <g fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 36v-8a4 4 0 0 1 8 0v8"/>
+                  <path d="M28 36v-12a4 4 0 0 1 8 0v12"/>
+                  <path d="M36 36v-10a4 4 0 0 1 8 0v10"/>
+                  <path d="M44 36v-6a4 4 0 0 1 8 0v10c0 8-6 14-14 14H28c-6 0-11-5-11-11v-7"/>
+                  <path d="M14 28c-2-2-6-2-8 0" opacity=".4"/>
+                </g>
+              </svg>
+              <span className="text-white/80 text-sm font-[Inter] select-none">
+                {t('hints.swipe', 'Свайпните')}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -464,6 +484,8 @@ const Shop = () => {
     animation: finger-swipe 2.1s ease-in-out 1 both;
     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
   }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 `}</style>
 </>);
 };
