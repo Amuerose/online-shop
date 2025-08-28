@@ -149,6 +149,34 @@ const Shop = () => {
     };
     document.addEventListener('touchmove', handler, { passive: false });
 
+    // Also lock page scroll for wheel/trackpad while allowing inner scrollers
+    const wheelHandler = (e) => {
+      const elCategories = document.querySelector('.categories-scroll');
+      const elProducts = document.querySelector('.products-scroll');
+      const target = e.target;
+
+      const insideCats = elCategories && elCategories.contains(target);
+      const insideProds = elProducts && elProducts.contains(target);
+
+      if (!insideCats && !insideProds) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('wheel', wheelHandler, { passive: false });
+
+    // Hard lock the page scroll (Safari/iOS rubber-banding guard)
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOB = html.style.overscrollBehavior;
+    const prevBodyOB = body.style.overscrollBehavior;
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'contain';
+    body.style.overscrollBehavior = 'contain';
+
     // initialize and listen for categories scroll/resizes
     updateCategoryShadows();
     const onScroll = () => updateCategoryShadows();
@@ -158,6 +186,16 @@ const Shop = () => {
 
     return () => {
       document.removeEventListener('touchmove', handler);
+      document.removeEventListener('wheel', wheelHandler);
+
+      // restore page overflow settings
+      const html = document.documentElement;
+      const body = document.body;
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOB;
+      body.style.overscrollBehavior = prevBodyOB;
+
       catScrollRef.current?.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
@@ -269,52 +307,24 @@ const Shop = () => {
 
   return (
     <div
-      className="relative flex flex-col h-[100dvh] text-[#4B2E1D]"
+      className="relative flex flex-col h-[100dvh] overflow-hidden overscroll-contain text-[#4B2E1D]"
       style={{
         background: [
-          // base silk parchment gradient
-          'linear-gradient(120deg, #F7F3ED 0%, #EFE6DA 48%, #E8DCCB 100%)',
-          // subtle glow top-left
-          'radial-gradient(1000px 600px at 14% 18%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 60%)',
-          // honey-gold bloom bottom-right
-          'radial-gradient(800px 520px at 86% 82%, rgba(205,178,141,0.22) 0%, rgba(205,178,141,0) 65%)',
-          // faint diagonal sheen
-          'conic-gradient(from 220deg at 60% 20%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.08) 60%, rgba(255,255,255,0) 85%)'
+          'linear-gradient(120deg, #F7F0E8 0%, #EDE3D4 50%, #E4D8C6 100%)',
+          'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%)',
+          'radial-gradient(circle at 80% 80%, rgba(189,164,122,0.2) 0%, transparent 60%)'
         ].join(', '),
       }}
     >
-      {/* Quiet luxury overlays */}
-      {/* Fine paper grain */}
       <div
-        className="pointer-events-none absolute inset-0 z-0"
+        className="pointer-events-none absolute top-[120px] left-[100px] w-[160px] h-[400px] z-0 rotate-[12deg]"
         style={{
-          backgroundImage:
-            'radial-gradient(rgba(255,255,255,0.07) 0.5px, rgba(0,0,0,0) 0.6px)',
-          backgroundSize: '3px 3px',
-          opacity: 0.08,
-          mixBlendMode: 'soft-light'
+          background: 'radial-gradient(ellipse at 40% 0%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%)',
+          filter: 'blur(80px)',
+          opacity: 0.6,
         }}
       />
-
-      {/* Soft vignette */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background:
-            'radial-gradient(1000px 700px at 50% 50%, rgba(0,0,0,0) 60%, rgba(75,46,29,0.06) 100%)',
-          mixBlendMode: 'multiply'
-        }}
-      />
-
-      {/* Bloom accents */}
-      <div
-        className="pointer-events-none absolute -top-24 -left-12 w-[420px] h-[420px] rounded-full z-0"
-        style={{ background: 'radial-gradient(closest-side, rgba(255,255,255,0.35), rgba(255,255,255,0))', filter: 'blur(80px)', opacity: 0.6 }}
-      />
-      <div
-        className="pointer-events-none absolute bottom-[-80px] right-[-60px] w-[460px] h-[460px] rounded-full z-0"
-        style={{ background: 'radial-gradient(closest-side, rgba(189,164,122,0.28), rgba(189,164,122,0))', filter: 'blur(110px)', opacity: 0.65 }}
-      />
+      <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
       {/* Категории */}
       <div className="pt-24 pb-4">
         <div ref={catWrapRef} className="relative max-w-[1000px] mx-auto w-full">
