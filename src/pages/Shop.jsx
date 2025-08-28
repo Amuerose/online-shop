@@ -260,11 +260,12 @@ const Shop = () => {
       <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
       {/* Категории */}
       <div className="pt-24 pb-4">
-        <div
-          className="overflow-x-auto w-full overscroll-contain touch-pan-x categories-scroll scrollbar-hide pb-[30px] mb-[-30px]"
-          style={{ WebkitOverflowScrolling: 'touch', clipPath: 'inset(0 0 30px 0)' }}
-        >
-          <div className="flex justify-start gap-4 px-4">
+        <div className="max-w-[1000px] mx-auto w-full">
+          <div
+            className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide pb-[30px] mb-[-30px]"
+            style={{ WebkitOverflowScrolling: 'touch', clipPath: 'inset(0 0 30px 0)' }}
+          >
+            <div className="flex justify-start gap-4 px-4">
             {categories.map((cat) => (
               <button
                 key={cat.slug || cat.id}
@@ -279,13 +280,14 @@ const Shop = () => {
                 {cat.name || cat.slug}
               </button>
             ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Карточки */}
       <div className="products-scroll overflow-y-auto h-[calc(100dvh-112px-120px)] pb-[calc(184px+var(--safe-area-inset-bottom,0px))]">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-6 px-2 sm:px-4 pb-10 max-w-[1600px] mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2 sm:px-4 pb-10 max-w-[1200px] mx-auto">
           {products.map((product) => (
             <div
               key={product.id}
