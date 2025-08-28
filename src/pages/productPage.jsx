@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabaseClient";
 import useIsDesktop from "../hooks/useIsDesktop";
 
@@ -14,31 +14,40 @@ import useIsDesktop from "../hooks/useIsDesktop";
 
 function ProductPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { addToCart } = useCart();
+  const isDesktop = useIsDesktop();
+
   const [product, setProduct] = useState(null);
+  const [variants, setVariants] = useState([]);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const isDesktop = useIsDesktop();
+
+  const fmtCZK = useMemo(
+    () => new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }),
+    []
+  );
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
 
     async function load() {
+      setLoading(true);
       try {
+        // 1) сам товар
         const { data: row, error } = await supabase
           .from("products")
           .select("id, name_cs, name_en, name_ru, description_cs, description_en, description_ru, price, image_url")
           .eq("id", id)
           .single();
-
         if (error) throw error;
 
         const mapped = row
           ? {
               id: row.id,
-              // Сохраняем форму, совместимую с существующей разметкой
               name: {
                 cs: row.name_cs ?? row.name_en ?? row.name_ru ?? "",
                 en: row.name_en ?? row.name_cs ?? row.name_ru ?? "",
@@ -52,136 +61,188 @@ function ProductPage() {
               price: row.price ?? 0,
               images: {
                 data: [
-                  {
-                    attributes: {
-                      url: row.image_url ?? "",
-                    },
-                  },
+                  { attributes: { url: row.image_url ?? "" } },
                 ],
               },
             }
           : null;
 
         if (!cancelled) setProduct(mapped);
+
+        // 2) варианты (если есть)
+        const { data: v } = await supabase
+          .from("product_variants")
+          .select("id, product_id, name_cs, name_en, name_ru, qty, price, sort_order, is_default")
+          .eq("product_id", id)
+          .order("sort_order", { ascending: true });
+
+        if (!cancelled) {
+          setVariants(v || []);
+          setSelectedVariant((v || []).find(x => x.is_default) || (v && v[0]) || null);
+        }
+
+        // 3) похожие — другие товары из тех же категорий
+        const { data: cats } = await supabase
+          .from("product_categories")
+          .select("category_id")
+          .eq("product_id", id);
+
+        const categoryIds = [...new Set((cats || []).map(c => c.category_id))];
+        if (categoryIds.length) {
+          const { data: inCat } = await supabase
+            .from("product_categories")
+            .select("product_id")
+            .in("category_id", categoryIds)
+            .neq("product_id", id)
+            .limit(40);
+
+          const relIds = [...new Set((inCat || []).map(r => r.product_id))].slice(0, 8);
+          if (relIds.length) {
+            const { data: rel } = await supabase
+              .from("products")
+              .select("id, name_cs, name_en, name_ru, price, image_url")
+              .in("id", relIds);
+
+            if (!cancelled) setRelated(rel || []);
+          } else if (!cancelled) {
+            setRelated([]);
+          }
+        } else if (!cancelled) {
+          setRelated([]);
+        }
       } catch (err) {
         console.error("Supabase load product error:", err);
-        if (!cancelled) setProduct(null);
+        if (!cancelled) {
+          setProduct(null);
+          setVariants([]);
+          setRelated([]);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
     load();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [id, i18n.language]);
 
-  if (loading) {
-    return <div className="text-center py-10 text-[#BDA47A]">Loading...</div>;
-  }
-  if (!product) {
-    return <div className="text-center py-10 text-[#BDA47A]">{t("productNotFound")}</div>;
-  }
+  const localName = (obj) => obj?.[i18n.language] || obj?.en || obj?.cs || obj?.ru || "";
+  const localVariantName = (v) =>
+    i18n.language === "cs" ? v.name_cs : i18n.language === "ru" ? v.name_ru : v.name_en;
+
+  const displayPrice = useMemo(() => {
+    const p = selectedVariant ? selectedVariant.price : product?.price || 0;
+    return fmtCZK.format(Number(p) || 0);
+  }, [selectedVariant, product, fmtCZK]);
+
+  if (loading) return <div className="text-center py-10 text-[#BDA47A]">Loading...</div>;
+  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{t("productNotFound")}</div>;
 
   const handleAdd = () => {
-    // Защитимся от неверных значений и отсутствия товара
     if (!product) return;
 
     const lang = i18n.language;
-    const name = product.name?.[lang] || t("noName");
+    const baseName = product.name?.[lang] || t("noName");
+    const variantPart = selectedVariant ? ` — ${localVariantName(selectedVariant)}` : "";
     const image = product.images?.data?.[0]?.attributes?.url || "";
-    const price = Number(product.price) || 0;
-
-    // Количество всегда минимум 1, явное приведение к числу
+    const unitPrice = Number(selectedVariant ? selectedVariant.price : product.price) || 0;
     const qty = Math.max(1, Number(quantity) || 1);
 
-    // Текущий CartContext.addToCart принимает один товар за вызов,
-    // поэтому добавляем по одному `qty` раз.
-    for (let i = 0; i < qty; i += 1) {
-      addToCart({ id: product.id, name, price, image });
-    }
+    // делаем разные id для разных вариантов, чтобы они жили в корзине отдельно
+    const cartId = selectedVariant ? `${product.id}:${selectedVariant.id}` : product.id;
 
-    // Опционально можно вернуть селектор в "1"
+    for (let i = 0; i < qty; i += 1) {
+      addToCart({ id: cartId, name: `${baseName}${variantPart}`, price: unitPrice, image });
+    }
     setQuantity(1);
   };
 
   return (
     <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
-      <div
-        className={`w-full max-w-[1400px] flex ${
-          isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'
-        }`}
-      >
-        {/* Левая часть — изображение */}
-        <div
-          className={`w-full flex-shrink-0 flex justify-center items-center relative ${
-            isDesktop
+      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
+        {/* Изображение */}
+        <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
               ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
-              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'
-          }`}
-        >
-          {/* TODO: 230px is a fixed offset from legacy layout. Replace with dynamic height from layout context if refactoring. */}
+              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
           <div className="w-full h-full z-10 relative">
             <img
               src={product.images.data[0]?.attributes.url}
-              alt={product.name?.[i18n.language]}
+              alt={localName(product.name)}
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
         </div>
 
-        {/* Правая часть — контент */}
-        <div
-          className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${
-            isDesktop ? 'lg:w-1/2 lg:h-full justify-center' : 'flex-1'
-          }`}
-        >
-          <div
-            className={`flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0`}
-          >
+        {/* Контент */}
+        <div className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${isDesktop ? 'lg:w-1/2 lg:h-full justify-center' : 'flex-1'}`}>
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
             <div className="flex flex-col gap-5 lg:gap-8">
+              {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
                   <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
-                    {product.name?.[i18n.language] || t("noName")}
+                    {localName(product.name)}
                   </h1>
                   <div className="flex mt-4">
-                    {/* Рейтинг (визуально только, поведение добавим позже при необходимости) */}
                     <div className="flex gap-1 text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
-                      <span>★</span>
-                      <span>★</span>
-                      <span>★</span>
-                      <span>★</span>
-                      <span>☆</span>
+                      <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
                     </div>
                   </div>
                 </div>
-                <button className="flex items-center gap-2 text-[#BDA47A] hover:text-[#BDA47A]/70 transition text-sm sm:text-base lg:text-lg">
-                  <span className="text-2xl">♡</span>
-                  <span className="hidden sm:inline">{t("addToFavorites")}</span>
-                </button>
+                <div className="text-right">
+                  <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
+                    {displayPrice}
+                  </div>
+                </div>
               </div>
+
+              {/* Описание */}
               <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                {product.description?.[i18n.language] || t("noDescription")}
+                {localName(product.description) || t("noDescription")}
               </p>
+
+              {/* Варианты (только если есть) */}
+              {variants.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm text-[#BDA47A] font-medium">{t("options.size") || "Размер набора"}</div>
+                  <div className="flex flex-wrap gap-2">
+                    {variants.map(v => {
+                      const selected = selectedVariant?.id === v.id;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => setSelectedVariant(v)}
+                          className={`px-3 py-1.5 rounded-full border transition backdrop-blur
+                            ${selected
+                              ? "bg-[#BDA47A]/20 border-[#BDA47A] text-[#BDA47A]"
+                              : "bg:white/10 border-white/20 text-[#5C3A2E] hover:bg-white/20"}`}
+                          aria-pressed={selected}
+                        >
+                          {localVariantName(v)}{v.qty ? ` (${v.qty})` : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Аллергены/формы — как было */}
               <div className="flex justify-between items-start gap-4">
                 <label className="block text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
                   <span className="block mb-1">{t("review.yourRating")}</span>
                   <div className="flex gap-1">
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>★</span>
-                    <span>☆</span>
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
                   </div>
                 </label>
                 <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                  <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">{t("allergensTitle")} (čísla EU): 6, 7</h3>
+                  <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
+                    {t("allergensTitle")} (čísla EU): 6, 7
+                  </h3>
                 </div>
               </div>
 
-              {/* Отзывы */}
+              {/* Отзывы – без изменений */}
               <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                 <h3 className="text-sm lg:text-base font-semibold mb-1">{t("reviewsTitle")}</h3>
                 <div className="text-sm lg:text-base space-y-2">
@@ -203,30 +264,52 @@ function ProductPage() {
                 </div>
               </div>
 
+              {/* Похожие товары */}
+              {related.length > 0 && (
+                <div className="pt-2">
+                  <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
+                    {t("youMayAlsoLike") || "Вам также может понравиться"}
+                  </h3>
+                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                    {related.map(r => {
+                      const rName =
+                        i18n.language === "cs" ? r.name_cs :
+                        i18n.language === "ru" ? r.name_ru : r.name_en;
+                      return (
+                        <button
+                          key={r.id}
+                          onClick={() => navigate(`/product/${r.id}`)}
+                          className="min-w-[160px] max-w-[180px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition"
+                          type="button"
+                        >
+                          <div className="w-full h-[120px] bg-white/5">
+                            <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="p-2">
+                            <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
+                            <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div> {/* закрытие карточки товара */}
+      </div>
 
+      {/* Кнопки (десктоп) */}
       {isDesktop && (
-        <div className="fixed left-0 right-0 top-[calc(50%+340px)] z-40 pointer-events-none">
+        <div className="fixed left-0 right-0 top:[calc(50%+340px)] z-40 pointer-events-none">
           <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end gap-3 pointer-events-auto">
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-              >
-                &minus;
-              </button>
+              <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
               <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-              <button
-                type="button"
-                onClick={() => setQuantity((prev) => prev + 1)}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-              >
-                +
-              </button>
+              <button type="button" onClick={() => setQuantity((p) => p + 1)}
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
             </div>
             <button
               type="button"
@@ -239,26 +322,16 @@ function ProductPage() {
         </div>
       )}
 
-      {/* Нижняя панель */}
+      {/* Кнопки (мобилка) */}
       <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-50 px-6 pointer-events-none">
         <div className="w-full max-w-[1400px] mx-auto flex justify-end lg:justify-center items-center gap-3 pointer-events-auto">
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-              >
-                &minus;
-              </button>
+              <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+                className="w-6 h-6 rounded-full bg:white/10 border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
               <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-              <button
-                type="button"
-                onClick={() => setQuantity((prev) => prev + 1)}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-              >
-                +
-              </button>
+              <button type="button" onClick={() => setQuantity((p) => p + 1)}
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
             </div>
             <button
               type="button"
