@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "../lib/supabaseClient";
 
 // Safely resolve image URL: absolute URL stays as-is; otherwise, build a public URL from the Supabase bucket
 const resolveImageUrl = (path) => {
@@ -12,7 +13,6 @@ const resolveImageUrl = (path) => {
   return data?.publicUrl || "";
 };
 
-import { supabase } from "../lib/supabaseClient";
 
 // Pick a localized value from {cs,en,ru} or accept plain strings
 const pickLocale = (val, lang) => {
@@ -307,7 +307,36 @@ const Shop = () => {
     };
   }, [i18n.language, selectedCategory, categoriesById]);
 
-  return (
+  // Swipe hint useEffect (moved from below, before return)
+  useEffect(() => {
+    const el = catScrollRef.current;
+    if (!el) {
+      // Hide hint quickly if no scroller yet
+      const t = setTimeout(() => setShowSwipeHint(false), 1500);
+      return () => clearTimeout(t);
+    }
+
+    // Respect reduced motion
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // small nudge scroll: right then back
+    if (!prefersReduced) {
+      const originalLeft = el.scrollLeft;
+      const step = Math.min(80, el.scrollWidth - el.clientWidth);
+      if (step > 0) {
+        el.scrollTo({ left: originalLeft, behavior: 'auto' });
+        const t1 = setTimeout(() => el.scrollTo({ left: originalLeft + step, behavior: 'smooth' }), 300);
+        const t2 = setTimeout(() => el.scrollTo({ left: originalLeft, behavior: 'smooth' }), 1200);
+        const t3 = setTimeout(() => setShowSwipeHint(false), 2200);
+        return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+      }
+    }
+
+    const hide = setTimeout(() => setShowSwipeHint(false), 1500);
+    return () => clearTimeout(hide);
+  }, []);
+
+  return (<>
     <div
       className="relative flex flex-col h-[100dvh] overflow-hidden overscroll-contain text-[#4B2E1D]"
       style={{
@@ -355,63 +384,6 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Swipe finger overlay hint */}
-          {showSwipeHint && (
-            <div className="pointer-events-none absolute top-1/2 left-6 -translate-y-1/2 z-10">
-              <div className="opacity-90">
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="animate-finger-swipe">
-                  <defs>
-                    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-                      <feColorMatrix in="blur" type="matrix"
-                        values="1 0 0 0 0
-                                0 1 0 0 0
-                                0 0 1 0 0
-                                0 0 0 0.6 0"/>
-                    </filter>
-                    <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="white" stopOpacity="0.95"/>
-                      <stop offset="100%" stopColor="white" stopOpacity="0.6"/>
-                    </linearGradient>
-                  </defs>
-                  {/* simple cartoon finger/hand */}
-                  <g filter="url(#soft)">
-                    <rect x="26" y="18" width="12" height="28" rx="6" fill="url(#fg)"/>
-                    <rect x="18" y="30" width="10" height="16" rx="5" fill="url(#fg)"/>
-                    <rect x="40" y="30" width="10" height="16" rx="5" fill="url(#fg)"/>
-                    <circle cx="32" cy="16" r="8" fill="url(#fg)" />
-                  </g>
-                </svg>
-              </div>
-            </div>
-          )}
-  useEffect(() => {
-    const el = catScrollRef.current;
-    if (!el) {
-      // Hide hint quickly if no scroller yet
-      const t = setTimeout(() => setShowSwipeHint(false), 1500);
-      return () => clearTimeout(t);
-    }
-
-    // Respect reduced motion
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // small nudge scroll: right then back
-    if (!prefersReduced) {
-      const originalLeft = el.scrollLeft;
-      const step = Math.min(80, el.scrollWidth - el.clientWidth);
-      if (step > 0) {
-        el.scrollTo({ left: originalLeft, behavior: 'auto' });
-        const t1 = setTimeout(() => el.scrollTo({ left: originalLeft + step, behavior: 'smooth' }), 300);
-        const t2 = setTimeout(() => el.scrollTo({ left: originalLeft, behavior: 'smooth' }), 1200);
-        const t3 = setTimeout(() => setShowSwipeHint(false), 2200);
-        return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-      }
-    }
-
-    const hide = setTimeout(() => setShowSwipeHint(false), 1500);
-    return () => clearTimeout(hide);
-  }, []);
 
 
         </div>
@@ -477,10 +449,7 @@ const Shop = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-<style>{`
+  <style>{`
   @keyframes finger-swipe {
     0% { transform: translateX(0) translateY(0); opacity: 0.0; }
     10% { opacity: 1; }
@@ -496,4 +465,7 @@ const Shop = () => {
     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
   }
 `}</style>
+</>);
+};
+
 export default Shop;
