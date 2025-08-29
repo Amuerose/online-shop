@@ -324,8 +324,8 @@ function ProductPage() {
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
-        <div className="fixed left-0 right-0 top:[calc(50%+340px)] z-40 pointer-events-none">
-          <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end gap-3 pointer-events-auto">
+        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-40 pointer-events-none">
+          <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
                 className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
@@ -346,7 +346,7 @@ function ProductPage() {
 
       {/* Кнопки (мобилка) */}
       <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-50 px-6 pointer-events-none">
-        <div className="w-full max-w-[1400px] mx-auto flex justify-end lg:justify-center items-center gap-3 pointer-events-auto">
+        <div className="w-full max-w-[1400px] mx-auto flex justify-end items-center gap-3 pointer-events-auto">
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
