@@ -50,6 +50,13 @@ function safeUrl(u){
   return s.startsWith("http") || s.startsWith("/") ? s : "";
 }
 
+function sx(v, def = ""){
+  if (v == null) return def;
+  if (typeof v === "string") return v;
+  if (typeof v === "number") return String(v);
+  try { return JSON.stringify(v); } catch { return def; }
+}
+
 function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -60,7 +67,10 @@ function ProductPage() {
   // Safe translation helper (prevents React errors if i18next returns an object)
   const tt = useCallback((key, def = "") => {
     const v = t(key, { defaultValue: def, returnObjects: false });
-    return typeof v === "string" ? v : def;
+    if (v == null) return def;
+    if (typeof v === "string") return v;
+    if (typeof v === "number") return String(v);
+    try { return JSON.stringify(v); } catch { return def; }
   }, [t]);
 
   const [product, setProduct] = useState(null);
@@ -214,8 +224,8 @@ function ProductPage() {
     return Math.round((s / reviews.length) * 10) / 10; // one decimal
   }, [reviews]);
 
-  if (loading) return <div className="text-center py-10 text-[#BDA47A]">{tt("loading", "Loading…")}</div>;
-  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{tt("productNotFound", "Product not found")}</div>;
+  if (loading) return <div className="text-center py-10 text-[#BDA47A]">{sx(tt("loading", "Loading…"))}</div>;
+  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{sx(tt("productNotFound", "Product not found"))}</div>;
 
   const handleAdd = () => {
     if (!product) return;
@@ -280,7 +290,7 @@ function ProductPage() {
           <div className="w-full h-full z-10 relative">
             <img
               src={safeUrl(product?.images?.data?.[0]?.attributes?.url || product?.image_url || "")}
-              alt={safeText(localName(product.name), "")}
+              alt={sx(safeText(localName(product.name), ""))}
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
@@ -312,8 +322,8 @@ function ProductPage() {
 
               {/* Tabs: Description / Reviews */}
               <div className="flex items-center gap-2">
-                <button type="button" onClick={() => setActiveTab("desc")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "desc" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{tt("description", "Description")}</button>
-                <button type="button" onClick={() => setActiveTab("reviews")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "reviews" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{tt("reviewsTitle", "Reviews")} ({reviews.length})</button>
+                <button type="button" onClick={() => setActiveTab("desc")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "desc" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{sx(tt("description", "Description"))}</button>
+                <button type="button" onClick={() => setActiveTab("reviews")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "reviews" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{sx(tt("reviewsTitle", "Reviews"))} ({reviews.length})</button>
               </div>
 
               {activeTab === "desc" ? (
@@ -326,7 +336,7 @@ function ProductPage() {
                     <div />
                     <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                       <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                        {tt("allergensTitle", "Allergens")} (čísla EU): 6, 7
+                        {sx(tt("allergensTitle", "Allergens"))} (čísla EU): 6, 7
                       </h3>
                     </div>
                   </div>
@@ -336,7 +346,7 @@ function ProductPage() {
                   {/* Write review */}
                   <div className="bg-white/10 border border-white/20 rounded-xl p-3">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm text-[#BDA47A]">{tt("yourRating", "Your rating")}</span>
+                      <span className="text-sm text-[#BDA47A]">{sx(tt("yourRating", "Your rating"))}</span>
                       <div className="flex gap-1">
                         {[1,2,3,4,5].map((n) => (
                           <button key={n} type="button" onClick={() => setMyRating(n)} aria-pressed={myRating===n} className="leading-none">
@@ -350,20 +360,20 @@ function ProductPage() {
                       rows={3}
                       value={myComment}
                       onChange={(e) => setMyComment(e.target.value)}
-                      placeholder={tt("review.yourComment", "Your comment")}
+                      placeholder={sx(tt("review.yourComment", "Your comment"))}
                     />
                     <div className="mt-2 flex justify-end">
                       <button type="button" disabled={submitting || !myRating} onClick={submitReview} className="px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition disabled:opacity-50">
-                        {submitting ? tt("loading", "Loading…") : tt("review.submit", "Submit")}
+                        {submitting ? sx(tt("loading", "Loading…")) : sx(tt("review.submit", "Submit"))}
                       </button>
                     </div>
                   </div>
 
                   {/* Reviews list */}
                   <div className="space-y-3">
-                    {revLoading && <div className="text-[#BDA47A] text-sm">{tt("loading", "Loading…")}</div>}
+                    {revLoading && <div className="text-[#BDA47A] text-sm">{sx(tt("loading", "Loading…"))}</div>}
                     {!revLoading && reviews.length === 0 && (
-                      <div className="text-[#BDA47A]/70 text-sm">{tt("noReviewsYet", "No reviews yet.")}</div>
+                      <div className="text-[#BDA47A]/70 text-sm">{sx(tt("noReviewsYet", "No reviews yet."))}</div>
                     )}
                     {reviews.map((r) => (
                       <div key={r.id} className="bg-white/5 border border-white/15 rounded-xl p-3">
@@ -386,7 +396,7 @@ function ProductPage() {
               {related.length > 0 && (
                 <div className="pt-2">
                   <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
-                    {tt("youMayAlsoLike", "You may also like")}
+                    {sx(tt("youMayAlsoLike", "You may also like"))}
                   </h3>
                   <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                     {related.map(r => {
@@ -417,7 +427,7 @@ function ProductPage() {
                               onClick={() => handleQuickAdd(r)}
                               className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium"
                             >
-                              {tt("buttons.addToCart", "Add to cart")}
+                              {sx(tt("buttons.addToCart", "Add to cart"))}
                             </button>
                           </div>
                         </div>
@@ -447,7 +457,7 @@ function ProductPage() {
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
-              {tt("buttons.addToCart", "Add to cart")}
+              {sx(tt("buttons.addToCart", "Add to cart"))}
             </button>
           </div>
         </div>
@@ -459,17 +469,17 @@ function ProductPage() {
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                className="w-6 h-6 rounded-full bg:white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
               <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
               <button type="button" onClick={() => setQuantity((p) => p + 1)}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg:white/20 transition backdrop-blur">+</button>
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
             </div>
             <button
               type="button"
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
-              {tt("buttons.addToCart", "Add to cart")}
+              {sx(tt("buttons.addToCart", "Add to cart"))}
             </button>
           </div>
         </div>
