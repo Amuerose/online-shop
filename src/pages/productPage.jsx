@@ -226,12 +226,12 @@ function ProductPage() {
 
 
   return (
-    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
+    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+112px)]">
       <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
         {/* Изображение */}
         <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
               ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
-              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
+              : 'h-[40dvh] mt-2 mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
           <div className="w-full h-full z-10 relative">
             <img
               src={safeUrl(product?.images?.data?.[0]?.attributes?.url || product?.image_url || "")}
@@ -264,6 +264,16 @@ function ProductPage() {
               <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-3">
                 <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
                   {safeText(localName(product.description), tt("noDescription", "No description yet"))}
+                </p>
+              </div>
+
+              {/** Reviews placeholder (temporary UI until live backend) */}
+              <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-3">
+                <h3 className="text-sm lg:text-base font-semibold mb-2 text-[#5C3A2E]">
+                  {sx(tt("reviews.title", "Reviews"))}
+                </h3>
+                <p className="text-xs lg:text-sm opacity-80">
+                  {sx(tt("reviews.soon", "Reviews and ratings are coming soon."))}
                 </p>
               </div>
 
