@@ -226,11 +226,11 @@ function ProductPage() {
 
 
   return (
-    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+112px)]">
-      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
+    <main className="relative min-h-[100dvh] overflow-hidden overscroll-contain flex items-start justify-center pt-[calc(env(safe-area-inset-top)+140px)] pb-[calc(env(safe-area-inset-bottom)+112px)]">
+      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start' : 'flex-col h-full'}`}>
         {/* Изображение */}
         <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
-              ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
+              ? 'lg:w-1/2 lg:h-auto lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
               : 'h-[40dvh] mt-2 mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
           <div className="w-full h-full z-10 relative">
             <img
