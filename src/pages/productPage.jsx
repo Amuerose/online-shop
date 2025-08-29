@@ -19,6 +19,12 @@ function ProductPage() {
   const { addToCart } = useCart();
   const isDesktop = useIsDesktop();
 
+  // Safe translation helper (prevents React errors if i18next returns an object)
+  const tt = useCallback((key, def = "") => {
+    const v = t(key, { defaultValue: def, returnObjects: false });
+    return typeof v === "string" ? v : def;
+  }, [t]);
+
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -167,14 +173,14 @@ function ProductPage() {
     return Math.round((s / reviews.length) * 10) / 10; // one decimal
   }, [reviews]);
 
-  if (loading) return <div className="text-center py-10 text-[#BDA47A]">Loading...</div>;
-  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{t("productNotFound")}</div>;
+  if (loading) return <div className="text-center py-10 text-[#BDA47A]">{tt("loading", "Loading…")}</div>;
+  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{tt("productNotFound", "Product not found")}</div>;
 
   const handleAdd = () => {
     if (!product) return;
 
     const lang = i18n.language;
-    const baseName = product.name?.[lang] || t("noName");
+    const baseName = product.name?.[lang] || tt("noName", "No name");
     const variantPart = selectedVariant ? ` — ${localVariantName(selectedVariant)}` : "";
     const image = product.images?.data?.[0]?.attributes?.url || "";
     const unitPrice = Number(selectedVariant ? selectedVariant.price : product.price) || 0;
@@ -192,7 +198,7 @@ function ProductPage() {
   const handleQuickAdd = (r) => {
     if (!r) return;
     const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
-    const name = rName || t("noName");
+    const name = rName || tt("noName", "No name");
     const price = Number(r.price || 0);
     const image = r.image_url || "";
     addToCart({ id: r.id, name, price, image });
@@ -232,7 +238,7 @@ function ProductPage() {
               : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
           <div className="w-full h-full z-10 relative">
             <img
-              src={product.images.data[0]?.attributes.url}
+              src={product?.images?.data?.[0]?.attributes?.url || ""}
               alt={localName(product.name)}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -265,21 +271,21 @@ function ProductPage() {
 
               {/* Tabs: Description / Reviews */}
               <div className="flex items-center gap-2">
-                <button type="button" onClick={() => setActiveTab("desc")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "desc" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{t("description") || "Описание"}</button>
-                <button type="button" onClick={() => setActiveTab("reviews")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "reviews" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{t("reviewsTitle")} ({reviews.length})</button>
+                <button type="button" onClick={() => setActiveTab("desc")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "desc" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{tt("description", "Description")}</button>
+                <button type="button" onClick={() => setActiveTab("reviews")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "reviews" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{tt("reviewsTitle", "Reviews")} ({reviews.length})</button>
               </div>
 
               {activeTab === "desc" ? (
                 <>
                   <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                    {localName(product.description) || t("noDescription")}
+                    {localName(product.description) || tt("noDescription", "No description yet")}
                   </p>
                   {/* Аллергены */}
                   <div className="flex justify-between items-start gap-4">
                     <div />
                     <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                       <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                        {t("allergensTitle")} (čísla EU): 6, 7
+                        {tt("allergensTitle", "Allergens")} (čísla EU): 6, 7
                       </h3>
                     </div>
                   </div>
@@ -289,7 +295,7 @@ function ProductPage() {
                   {/* Write review */}
                   <div className="bg-white/10 border border-white/20 rounded-xl p-3">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm text-[#BDA47A]">{t("yourRating") || "Ваша оценка"}</span>
+                      <span className="text-sm text-[#BDA47A]">{tt("yourRating", "Your rating")}</span>
                       <div className="flex gap-1">
                         {[1,2,3,4,5].map((n) => (
                           <button key={n} type="button" onClick={() => setMyRating(n)} aria-pressed={myRating===n} className="leading-none">
@@ -303,20 +309,20 @@ function ProductPage() {
                       rows={3}
                       value={myComment}
                       onChange={(e) => setMyComment(e.target.value)}
-                      placeholder={t("review.yourComment")}
+                      placeholder={tt("review.yourComment", "Your comment")}
                     />
                     <div className="mt-2 flex justify-end">
                       <button type="button" disabled={submitting || !myRating} onClick={submitReview} className="px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition disabled:opacity-50">
-                        {submitting ? (t("loading") || "Отправка…") : (t("review.submit") || "Отправить")}
+                        {submitting ? tt("loading", "Loading…") : tt("review.submit", "Submit")}
                       </button>
                     </div>
                   </div>
 
                   {/* Reviews list */}
                   <div className="space-y-3">
-                    {revLoading && <div className="text-[#BDA47A] text-sm">{t("loading") || "Загрузка…"}</div>}
+                    {revLoading && <div className="text-[#BDA47A] text-sm">{tt("loading", "Loading…")}</div>}
                     {!revLoading && reviews.length === 0 && (
-                      <div className="text-[#BDA47A]/70 text-sm">{t("noReviewsYet") || "Пока нет отзывов."}</div>
+                      <div className="text-[#BDA47A]/70 text-sm">{tt("noReviewsYet", "No reviews yet.")}</div>
                     )}
                     {reviews.map((r) => (
                       <div key={r.id} className="bg-white/5 border border-white/15 rounded-xl p-3">
@@ -339,7 +345,7 @@ function ProductPage() {
               {related.length > 0 && (
                 <div className="pt-2">
                   <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
-                    {t("youMayAlsoLike") || "Вам также может понравиться"}
+                    {tt("youMayAlsoLike", "You may also like")}
                   </h3>
                   <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                     {related.map(r => {
@@ -370,7 +376,7 @@ function ProductPage() {
                               onClick={() => handleQuickAdd(r)}
                               className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium"
                             >
-                              {t("buttons.addToCart")}
+                              {tt("buttons.addToCart", "Add to cart")}
                             </button>
                           </div>
                         </div>
@@ -400,7 +406,7 @@ function ProductPage() {
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
-              {t("buttons.addToCart")}
+              {tt("buttons.addToCart", "Add to cart")}
             </button>
           </div>
         </div>
@@ -422,7 +428,7 @@ function ProductPage() {
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
-              {t("buttons.addToCart")}
+              {tt("buttons.addToCart", "Add to cart")}
             </button>
           </div>
         </div>
