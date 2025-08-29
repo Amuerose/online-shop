@@ -1,3 +1,4 @@
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
@@ -11,6 +12,43 @@ import useIsDesktop from "../hooks/useIsDesktop";
 //   overflow: hidden;
 // }
 // This is required for <main class="h-screen"> to function without page scroll.
+
+// --- Runtime safety: Error Boundary & helpers ---
+class ErrorBoundary extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = { hasError: false, err: null };
+  }
+  static getDerivedStateFromError(error){
+    return { hasError: true, err: error };
+  }
+  componentDidCatch(error, info){
+    console.error("ProductPage ErrorBoundary caught:", error, info);
+  }
+  render(){
+    if(this.state.hasError){
+      return (
+        <div className="text-center py-10 text-[#BDA47A]">
+          {"" + (this.props.fallbackText || "Something went wrong on the product page.")}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function safeText(v, def = ""){
+  if (v == null) return def;
+  if (typeof v === "string") return v;
+  if (typeof v === "number") return String(v);
+  try { return JSON.stringify(v); } catch { return def; }
+}
+
+function safeUrl(u){
+  if (!u) return "";
+  const s = String(u);
+  return s.startsWith("http") || s.startsWith("/") ? s : "";
+}
 
 function ProductPage() {
   const { id } = useParams();
@@ -76,8 +114,11 @@ function ProductPage() {
                   { attributes: { url: row.image_url ?? "" } },
                 ],
               },
+              image_url: row.image_url ?? "",
             }
           : null;
+
+        console.log("DBG: product row=", row, "\nmapped=", mapped);
 
         if (!cancelled) setProduct(mapped);
 
@@ -182,7 +223,7 @@ function ProductPage() {
     const lang = i18n.language;
     const baseName = product.name?.[lang] || tt("noName", "No name");
     const variantPart = selectedVariant ? ` — ${localVariantName(selectedVariant)}` : "";
-    const image = product.images?.data?.[0]?.attributes?.url || "";
+    const image = safeUrl(product.images?.data?.[0]?.attributes?.url || product.image_url || "");
     const unitPrice = Number(selectedVariant ? selectedVariant.price : product.price) || 0;
     const qty = Math.max(1, Number(quantity) || 1);
 
@@ -198,9 +239,9 @@ function ProductPage() {
   const handleQuickAdd = (r) => {
     if (!r) return;
     const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
-    const name = rName || tt("noName", "No name");
+    const name = safeText(rName || tt("noName", "No name"), "");
     const price = Number(r.price || 0);
-    const image = r.image_url || "";
+    const image = safeUrl(r.image_url || "");
     addToCart({ id: r.id, name, price, image });
   };
 
@@ -238,8 +279,8 @@ function ProductPage() {
               : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
           <div className="w-full h-full z-10 relative">
             <img
-              src={product?.images?.data?.[0]?.attributes?.url || ""}
-              alt={localName(product.name)}
+              src={safeUrl(product?.images?.data?.[0]?.attributes?.url || product?.image_url || "")}
+              alt={safeText(localName(product.name), "")}
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
@@ -253,14 +294,14 @@ function ProductPage() {
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
                   <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
-                    {localName(product.name)}
+                    {safeText(localName(product.name), "")}
                   </h1>
-              <div className="flex mt-4 items-center gap-2 select-none">
-                {[1,2,3,4,5].map((n) => (
-                  <span key={n} className={n <= Math.round(avgRating) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
-                ))}
-                <span className="text-xs text-[#BDA47A]/70">{avgRating ? avgRating.toFixed(1) : "0.0"} · {reviews.length}</span>
-              </div>
+                  <div className="flex mt-4 items-center gap-2 select-none">
+                    {[1,2,3,4,5].map((n) => (
+                      <span key={n} className={n <= Math.round(avgRating) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
+                    ))}
+                    <span className="text-xs text-[#BDA47A]/70">{avgRating ? avgRating.toFixed(1) : "0.0"} · {reviews.length}</span>
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
@@ -278,7 +319,7 @@ function ProductPage() {
               {activeTab === "desc" ? (
                 <>
                   <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                    {localName(product.description) || tt("noDescription", "No description yet")}
+                    {safeText(localName(product.description), tt("noDescription", "No description yet"))}
                   </p>
                   {/* Аллергены */}
                   <div className="flex justify-between items-start gap-4">
@@ -363,10 +404,10 @@ function ProductPage() {
                             type="button"
                           >
                             <div className="w-full h-[130px] bg-white/5">
-                              <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                              <img src={safeUrl(r.image_url || "")} alt={safeText(rName, "")} className="w-full h-full object-cover" />
                             </div>
                             <div className="p-2">
-                              <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
+                              <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{safeText(rName, "")}</div>
                               <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
                             </div>
                           </button>
@@ -418,10 +459,10 @@ function ProductPage() {
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+                className="w-6 h-6 rounded-full bg:white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
               <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
               <button type="button" onClick={() => setQuantity((p) => p + 1)}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg:white/20 transition backdrop-blur">+</button>
             </div>
             <button
               type="button"
@@ -437,4 +478,11 @@ function ProductPage() {
   );
 }
 
-export default ProductPage;
+function ProductPageWithBoundary(){
+  return (
+    <ErrorBoundary fallbackText="Došlo k chybě při zobrazení produktu.">
+      <ProductPage />
+    </ErrorBoundary>
+  );
+}
+export default ProductPageWithBoundary;
