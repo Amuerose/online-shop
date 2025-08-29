@@ -383,9 +383,13 @@ function ProductPage() {
                               <span key={n} className={n <= (Number(r.rating)||0) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
                             ))}
                           </div>
-                          <span className="text-xs text-[#BDA47A]/70">{new Date(r.created_at).toLocaleDateString()}</span>
+                          <span className="text-xs text-[#BDA47A]/70">{safeText(new Date(r.created_at).toLocaleDateString(), "")}</span>
                         </div>
-                        {r.comment && <p className="mt-1 text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>}
+                        {r.comment && (
+                          <p className="mt-1 text-sm text-[#5C3A2E] whitespace-pre-wrap">
+                            {safeText(r.comment, "")}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
