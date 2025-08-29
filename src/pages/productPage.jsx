@@ -1,8 +1,7 @@
-import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabaseClient";
 import useIsDesktop from "../hooks/useIsDesktop";
 
@@ -13,65 +12,12 @@ import useIsDesktop from "../hooks/useIsDesktop";
 // }
 // This is required for <main class="h-screen"> to function without page scroll.
 
-// --- Runtime safety: Error Boundary & helpers ---
-class ErrorBoundary extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = { hasError: false, err: null };
-  }
-  static getDerivedStateFromError(error){
-    return { hasError: true, err: error };
-  }
-  componentDidCatch(error, info){
-    console.error("ProductPage ErrorBoundary caught:", error, info);
-  }
-  render(){
-    if(this.state.hasError){
-      return (
-        <div className="text-center py-10 text-[#BDA47A]">
-          {"" + (this.props.fallbackText || "Something went wrong on the product page.")}
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-function safeText(v, def = ""){
-  if (v == null) return def;
-  if (typeof v === "string") return v;
-  if (typeof v === "number") return String(v);
-  try { return JSON.stringify(v); } catch { return def; }
-}
-
-function safeUrl(u){
-  if (!u) return "";
-  const s = String(u);
-  return s.startsWith("http") || s.startsWith("/") ? s : "";
-}
-
-function sx(v, def = ""){
-  if (v == null) return def;
-  if (typeof v === "string") return v;
-  if (typeof v === "number") return String(v);
-  try { return JSON.stringify(v); } catch { return def; }
-}
-
 function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { addToCart } = useCart();
   const isDesktop = useIsDesktop();
-
-  // Safe translation helper (prevents React errors if i18next returns an object)
-  const tt = useCallback((key, def = "") => {
-    const v = t(key, { defaultValue: def, returnObjects: false });
-    if (v == null) return def;
-    if (typeof v === "string") return v;
-    if (typeof v === "number") return String(v);
-    try { return JSON.stringify(v); } catch { return def; }
-  }, [t]);
 
   const [product, setProduct] = useState(null);
   const [variants, setVariants] = useState([]);
@@ -118,11 +64,8 @@ function ProductPage() {
                   { attributes: { url: row.image_url ?? "" } },
                 ],
               },
-              image_url: row.image_url ?? "",
             }
           : null;
-
-        console.log("DBG: product row=", row, "\nmapped=", mapped);
 
         if (!cancelled) setProduct(mapped);
 
@@ -192,17 +135,16 @@ function ProductPage() {
     return fmtCZK.format(Number(p) || 0);
   }, [selectedVariant, product, fmtCZK]);
 
-
-  if (loading) return <div className="text-center py-10 text-[#BDA47A]">{sx(tt("loading", "Loading…"))}</div>;
-  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{sx(tt("productNotFound", "Product not found"))}</div>;
+  if (loading) return <div className="text-center py-10 text-[#BDA47A]">Loading...</div>;
+  if (!product) return <div className="text-center py-10 text-[#BDA47A]">{t("productNotFound")}</div>;
 
   const handleAdd = () => {
     if (!product) return;
 
     const lang = i18n.language;
-    const baseName = product.name?.[lang] || tt("noName", "No name");
+    const baseName = product.name?.[lang] || t("noName");
     const variantPart = selectedVariant ? ` — ${localVariantName(selectedVariant)}` : "";
-    const image = safeUrl(product.images?.data?.[0]?.attributes?.url || product.image_url || "");
+    const image = product.images?.data?.[0]?.attributes?.url || "";
     const unitPrice = Number(selectedVariant ? selectedVariant.price : product.price) || 0;
     const qty = Math.max(1, Number(quantity) || 1);
 
@@ -218,24 +160,23 @@ function ProductPage() {
   const handleQuickAdd = (r) => {
     if (!r) return;
     const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
-    const name = safeText(rName || tt("noName", "No name"), "");
+    const name = rName || t("noName");
     const price = Number(r.price || 0);
-    const image = safeUrl(r.image_url || "");
+    const image = r.image_url || "";
     addToCart({ id: r.id, name, price, image });
   };
 
-
   return (
-    <main className="relative min-h-[100dvh] overflow-hidden overscroll-contain flex items-start justify-center pt-[calc(env(safe-area-inset-top)+140px)] pb-[calc(env(safe-area-inset-bottom)+112px)]">
-      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start' : 'flex-col h-full'}`}>
+    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
+      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
         {/* Изображение */}
         <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
-              ? 'lg:w-1/2 lg:h-auto lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
-              : 'h-[40dvh] mt-2 mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
+              ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
+              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
           <div className="w-full h-full z-10 relative">
             <img
-              src={safeUrl(product?.images?.data?.[0]?.attributes?.url || product?.image_url || "")}
-              alt={sx(safeText(localName(product.name), ""))}
+              src={product.images.data[0]?.attributes.url}
+              alt={localName(product.name)}
               className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
@@ -249,9 +190,13 @@ function ProductPage() {
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
                   <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
-                    {safeText(localName(product.name), "")}
+                    {localName(product.name)}
                   </h1>
-                  {/* Star rating removed */}
+                  <div className="flex mt-4">
+                    <div className="flex gap-1 text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
+                      <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
+                    </div>
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
@@ -260,28 +205,79 @@ function ProductPage() {
                 </div>
               </div>
 
-              {/* Description only */}
-              <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-3">
-                <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                  {safeText(localName(product.description), tt("noDescription", "No description yet"))}
-                </p>
+              {/* Описание */}
+              <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                {localName(product.description) || t("noDescription")}
+              </p>
+
+              {/* Варианты (только если есть) */}
+              {variants.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm text-[#BDA47A] font-medium">{t("options.size") || "Размер набора"}</div>
+                  <div className="flex flex-wrap gap-2">
+                    {variants.map(v => {
+                      const selected = selectedVariant?.id === v.id;
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => setSelectedVariant(v)}
+                          className={`px-3 py-1.5 rounded-full border transition backdrop-blur
+                            ${selected
+                              ? "bg-[#BDA47A]/20 border-[#BDA47A] text-[#BDA47A]"
+                              : "bg:white/10 border-white/20 text-[#5C3A2E] hover:bg-white/20"}`}
+                          aria-pressed={selected}
+                        >
+                          {localVariantName(v)}{v.qty ? ` (${v.qty})` : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Аллергены/формы — как было */}
+              <div className="flex justify-between items-start gap-4">
+                <label className="block text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
+                  <span className="block mb-1">{t("review.yourRating")}</span>
+                  <div className="flex gap-1">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
+                  </div>
+                </label>
+                <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                  <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
+                    {t("allergensTitle")} (čísla EU): 6, 7
+                  </h3>
+                </div>
               </div>
 
-              {/** Reviews placeholder (temporary UI until live backend) */}
-              <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-3">
-                <h3 className="text-sm lg:text-base font-semibold mb-2 text-[#5C3A2E]">
-                  {sx(tt("reviews.title", "Reviews"))}
-                </h3>
-                <p className="text-xs lg:text-sm opacity-80">
-                  {sx(tt("reviews.soon", "Reviews and ratings are coming soon."))}
-                </p>
+              {/* Отзывы – без изменений */}
+              <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                <h3 className="text-sm lg:text-base font-semibold mb-1">{t("reviewsTitle")}</h3>
+                <div className="text-sm lg:text-base space-y-2">
+                  <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
+                    <label className="block">
+                      <textarea
+                        className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
+                        rows={4}
+                        placeholder={t("review.yourComment")}
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      className="mt-2 px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition"
+                    >
+                      {t("review.submit")}
+                    </button>
+                  </form>
+                </div>
               </div>
 
               {/* Похожие товары */}
               {related.length > 0 && (
                 <div className="pt-2">
                   <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
-                    {sx(tt("youMayAlsoLike", "You may also like"))}
+                    {t("youMayAlsoLike") || "Вам также может понравиться"}
                   </h3>
                   <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                     {related.map(r => {
@@ -299,10 +295,10 @@ function ProductPage() {
                             type="button"
                           >
                             <div className="w-full h-[130px] bg-white/5">
-                              <img src={safeUrl(r.image_url || "")} alt={safeText(rName, "")} className="w-full h-full object-cover" />
+                              <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
                             </div>
                             <div className="p-2">
-                              <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{safeText(rName, "")}</div>
+                              <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
                               <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
                             </div>
                           </button>
@@ -312,7 +308,7 @@ function ProductPage() {
                               onClick={() => handleQuickAdd(r)}
                               className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium"
                             >
-                              {sx(tt("buttons.addToCart", "Add to cart"))}
+                              {t("buttons.addToCart")}
                             </button>
                           </div>
                         </div>
@@ -328,7 +324,7 @@ function ProductPage() {
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
-        <div className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-40 pointer-events-none">
+        <div className="fixed left-0 right-0 top:[calc(50%+340px)] z-40 pointer-events-none">
           <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end gap-3 pointer-events-auto">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
@@ -342,7 +338,7 @@ function ProductPage() {
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
-              {sx(tt("buttons.addToCart", "Add to cart"))}
+              {t("buttons.addToCart")}
             </button>
           </div>
         </div>
@@ -354,7 +350,7 @@ function ProductPage() {
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+                className="w-6 h-6 rounded-full bg:white/10 border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
               <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
               <button type="button" onClick={() => setQuantity((p) => p + 1)}
                 className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
@@ -364,7 +360,7 @@ function ProductPage() {
               onClick={handleAdd}
               className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
             >
-              {sx(tt("buttons.addToCart", "Add to cart"))}
+              {t("buttons.addToCart")}
             </button>
           </div>
         </div>
@@ -373,11 +369,4 @@ function ProductPage() {
   );
 }
 
-function ProductPageWithBoundary(){
-  return (
-    <ErrorBoundary fallbackText="Došlo k chybě při zobrazení produktu.">
-      <ProductPage />
-    </ErrorBoundary>
-  );
-}
-export default ProductPageWithBoundary;
+export default ProductPage;
