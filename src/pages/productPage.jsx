@@ -79,12 +79,6 @@ function ProductPage() {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState("desc"); // desc | reviews
-  const [reviews, setReviews] = useState([]);
-  const [revLoading, setRevLoading] = useState(false);
-  const [myRating, setMyRating] = useState(0);
-  const [myComment, setMyComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   const fmtCZK = useMemo(
     () => new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }),
@@ -185,27 +179,7 @@ function ProductPage() {
       }
     }
 
-    // load reviews for this product
-    async function loadReviews() {
-      try {
-        setRevLoading(true);
-        const { data, error } = await supabase
-          .from("product_reviews")
-          .select("id, product_id, author_name, rating, comment, created_at")
-          .eq("product_id", id)
-          .order("created_at", { ascending: false });
-        if (error) throw error;
-        if (!cancelled) setReviews(data || []);
-      } catch (e) {
-        console.error("Supabase load reviews error:", e);
-        if (!cancelled) setReviews([]);
-      } finally {
-        if (!cancelled) setRevLoading(false);
-      }
-    }
-
     load();
-    loadReviews();
     return () => { cancelled = true; };
   }, [id, i18n.language]);
 
@@ -218,11 +192,6 @@ function ProductPage() {
     return fmtCZK.format(Number(p) || 0);
   }, [selectedVariant, product, fmtCZK]);
 
-  const avgRating = useMemo(() => {
-    if (!reviews?.length) return 0;
-    const s = reviews.reduce((a, r) => a + (Number(r.rating) || 0), 0);
-    return Math.round((s / reviews.length) * 10) / 10; // one decimal
-  }, [reviews]);
 
   if (loading) return <div className="text-center py-10 text-[#BDA47A]">{sx(tt("loading", "Loading…"))}</div>;
   if (!product) return <div className="text-center py-10 text-[#BDA47A]">{sx(tt("productNotFound", "Product not found"))}</div>;
@@ -255,30 +224,6 @@ function ProductPage() {
     addToCart({ id: r.id, name, price, image });
   };
 
-  const submitReview = useCallback(async () => {
-    if (!myRating || myRating < 1) return;
-    setSubmitting(true);
-    try {
-      const payload = {
-        product_id: id,
-        rating: Math.max(1, Math.min(5, myRating)),
-        comment: myComment?.trim() || null,
-        author_name: null,
-      };
-      const { data, error } = await supabase
-        .from("product_reviews")
-        .insert(payload)
-        .select();
-      if (error) throw error;
-      setReviews((prev) => [ ...(data || []), ...prev ]);
-      setMyRating(0);
-      setMyComment("");
-    } catch (e) {
-      console.error("Supabase submit review error:", e);
-    } finally {
-      setSubmitting(false);
-    }
-  }, [id, myRating, myComment]);
 
   return (
     <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
@@ -306,12 +251,7 @@ function ProductPage() {
                   <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
                     {safeText(localName(product.name), "")}
                   </h1>
-                  <div className="flex mt-4 items-center gap-2 select-none">
-                    {[1,2,3,4,5].map((n) => (
-                      <span key={n} className={n <= Math.round(avgRating) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
-                    ))}
-                    <span className="text-xs text-[#BDA47A]/70">{avgRating ? avgRating.toFixed(1) : "0.0"} · {reviews.length}</span>
-                  </div>
+                  {/* Star rating removed */}
                 </div>
                 <div className="text-right">
                   <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
@@ -320,81 +260,12 @@ function ProductPage() {
                 </div>
               </div>
 
-              {/* Tabs: Description / Reviews */}
-              <div className="flex items-center gap-2">
-                <button type="button" onClick={() => setActiveTab("desc")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "desc" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{sx(tt("description", "Description"))}</button>
-                <button type="button" onClick={() => setActiveTab("reviews")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "reviews" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{sx(tt("reviewsTitle", "Reviews"))} ({reviews.length})</button>
+              {/* Description only */}
+              <div className="bg-white/10 border border-white/20 rounded-xl px-4 py-3">
+                <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                  {safeText(localName(product.description), tt("noDescription", "No description yet"))}
+                </p>
               </div>
-
-              {activeTab === "desc" ? (
-                <>
-                  <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                    {safeText(localName(product.description), tt("noDescription", "No description yet"))}
-                  </p>
-                  {/* Аллергены */}
-                  <div className="flex justify-between items-start gap-4">
-                    <div />
-                    <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                      <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                        {sx(tt("allergensTitle", "Allergens"))} (čísla EU): 6, 7
-                      </h3>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="space-y-4">
-                  {/* Write review */}
-                  <div className="bg-white/10 border border-white/20 rounded-xl p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm text-[#BDA47A]">{sx(tt("yourRating", "Your rating"))}</span>
-                      <div className="flex gap-1">
-                        {[1,2,3,4,5].map((n) => (
-                          <button key={n} type="button" onClick={() => setMyRating(n)} aria-pressed={myRating===n} className="leading-none">
-                            <span className={n <= myRating ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <textarea
-                      className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
-                      rows={3}
-                      value={myComment}
-                      onChange={(e) => setMyComment(e.target.value)}
-                      placeholder={sx(tt("review.yourComment", "Your comment"))}
-                    />
-                    <div className="mt-2 flex justify-end">
-                      <button type="button" disabled={submitting || !myRating} onClick={submitReview} className="px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition disabled:opacity-50">
-                        {submitting ? sx(tt("loading", "Loading…")) : sx(tt("review.submit", "Submit"))}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Reviews list */}
-                  <div className="space-y-3">
-                    {revLoading && <div className="text-[#BDA47A] text-sm">{sx(tt("loading", "Loading…"))}</div>}
-                    {!revLoading && reviews.length === 0 && (
-                      <div className="text-[#BDA47A]/70 text-sm">{sx(tt("noReviewsYet", "No reviews yet."))}</div>
-                    )}
-                    {reviews.map((r) => (
-                      <div key={r.id} className="bg-white/5 border border-white/15 rounded-xl p-3">
-                        <div className="flex items-center gap-2 text-sm">
-                          <div className="flex gap-0.5">
-                            {[1,2,3,4,5].map((n) => (
-                              <span key={n} className={n <= (Number(r.rating)||0) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
-                            ))}
-                          </div>
-                          <span className="text-xs text-[#BDA47A]/70">{safeText(new Date(r.created_at).toLocaleDateString(), "")}</span>
-                        </div>
-                        {r.comment && (
-                          <p className="mt-1 text-sm text-[#5C3A2E] whitespace-pre-wrap">
-                            {safeText(r.comment, "")}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Похожие товары */}
               {related.length > 0 && (
@@ -447,7 +318,7 @@ function ProductPage() {
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
-        <div className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom)+24px)] z-40 pointer-events-none">
+        <div className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom)+16px)] z-40 pointer-events-none">
           <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end gap-3 pointer-events-auto">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
