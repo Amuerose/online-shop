@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
 import useIsDesktop from "../hooks/useIsDesktop";
 
@@ -25,6 +25,12 @@ function ProductPage() {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState("desc"); // desc | reviews
+  const [reviews, setReviews] = useState([]);
+  const [revLoading, setRevLoading] = useState(false);
+  const [myRating, setMyRating] = useState(0);
+  const [myComment, setMyComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const fmtCZK = useMemo(
     () => new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }),
@@ -122,7 +128,27 @@ function ProductPage() {
       }
     }
 
+    // load reviews for this product
+    async function loadReviews() {
+      try {
+        setRevLoading(true);
+        const { data, error } = await supabase
+          .from("product_reviews")
+          .select("id, product_id, author_name, rating, comment, created_at")
+          .eq("product_id", id)
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        if (!cancelled) setReviews(data || []);
+      } catch (e) {
+        console.error("Supabase load reviews error:", e);
+        if (!cancelled) setReviews([]);
+      } finally {
+        if (!cancelled) setRevLoading(false);
+      }
+    }
+
     load();
+    loadReviews();
     return () => { cancelled = true; };
   }, [id, i18n.language]);
 
@@ -134,6 +160,12 @@ function ProductPage() {
     const p = selectedVariant ? selectedVariant.price : product?.price || 0;
     return fmtCZK.format(Number(p) || 0);
   }, [selectedVariant, product, fmtCZK]);
+
+  const avgRating = useMemo(() => {
+    if (!reviews?.length) return 0;
+    const s = reviews.reduce((a, r) => a + (Number(r.rating) || 0), 0);
+    return Math.round((s / reviews.length) * 10) / 10; // one decimal
+  }, [reviews]);
 
   if (loading) return <div className="text-center py-10 text-[#BDA47A]">Loading...</div>;
   if (!product) return <div className="text-center py-10 text-[#BDA47A]">{t("productNotFound")}</div>;
@@ -166,6 +198,31 @@ function ProductPage() {
     addToCart({ id: r.id, name, price, image });
   };
 
+  const submitReview = useCallback(async () => {
+    if (!myRating || myRating < 1) return;
+    setSubmitting(true);
+    try {
+      const payload = {
+        product_id: id,
+        rating: Math.max(1, Math.min(5, myRating)),
+        comment: myComment?.trim() || null,
+        author_name: null,
+      };
+      const { data, error } = await supabase
+        .from("product_reviews")
+        .insert(payload)
+        .select();
+      if (error) throw error;
+      setReviews((prev) => [ ...(data || []), ...prev ]);
+      setMyRating(0);
+      setMyComment("");
+    } catch (e) {
+      console.error("Supabase submit review error:", e);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [id, myRating, myComment]);
+
   return (
     <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
       <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
@@ -192,11 +249,12 @@ function ProductPage() {
                   <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
                     {localName(product.name)}
                   </h1>
-                  <div className="flex mt-4">
-                    <div className="flex gap-1 text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
-                      <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
-                    </div>
-                  </div>
+              <div className="flex mt-4 items-center gap-2 select-none">
+                {[1,2,3,4,5].map((n) => (
+                  <span key={n} className={n <= Math.round(avgRating) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
+                ))}
+                <span className="text-xs text-[#BDA47A]/70">{avgRating ? avgRating.toFixed(1) : "0.0"} · {reviews.length}</span>
+              </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
@@ -205,73 +263,77 @@ function ProductPage() {
                 </div>
               </div>
 
-              {/* Описание */}
-              <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                {localName(product.description) || t("noDescription")}
-              </p>
+              {/* Tabs: Description / Reviews */}
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setActiveTab("desc")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "desc" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{t("description") || "Описание"}</button>
+                <button type="button" onClick={() => setActiveTab("reviews")} className={`px-3 py-1.5 rounded-full border text-sm transition ${activeTab === "reviews" ? "border-[#BDA47A] text-[#BDA47A] bg-[#BDA47A]/10" : "border-white/20 text-[#5C3A2E] bg-white/5 hover:bg-white/10"}`}>{t("reviewsTitle")} ({reviews.length})</button>
+              </div>
 
-              {/* Варианты (только если есть) */}
-              {variants.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-sm text-[#BDA47A] font-medium">{t("options.size") || "Размер набора"}</div>
-                  <div className="flex flex-wrap gap-2">
-                    {variants.map(v => {
-                      const selected = selectedVariant?.id === v.id;
-                      return (
-                        <button
-                          key={v.id}
-                          type="button"
-                          onClick={() => setSelectedVariant(v)}
-                          className={`px-3 py-1.5 rounded-full border transition backdrop-blur
-                            ${selected
-                              ? "bg-[#BDA47A]/20 border-[#BDA47A] text-[#BDA47A]"
-                              : "bg:white/10 border-white/20 text-[#5C3A2E] hover:bg-white/20"}`}
-                          aria-pressed={selected}
-                        >
-                          {localVariantName(v)}{v.qty ? ` (${v.qty})` : ""}
-                        </button>
-                      );
-                    })}
+              {activeTab === "desc" ? (
+                <>
+                  <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                    {localName(product.description) || t("noDescription")}
+                  </p>
+                  {/* Аллергены */}
+                  <div className="flex justify-between items-start gap-4">
+                    <div />
+                    <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                      <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
+                        {t("allergensTitle")} (čísla EU): 6, 7
+                      </h3>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  {/* Write review */}
+                  <div className="bg-white/10 border border-white/20 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm text-[#BDA47A]">{t("yourRating") || "Ваша оценка"}</span>
+                      <div className="flex gap-1">
+                        {[1,2,3,4,5].map((n) => (
+                          <button key={n} type="button" onClick={() => setMyRating(n)} aria-pressed={myRating===n} className="leading-none">
+                            <span className={n <= myRating ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <textarea
+                      className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
+                      rows={3}
+                      value={myComment}
+                      onChange={(e) => setMyComment(e.target.value)}
+                      placeholder={t("review.yourComment")}
+                    />
+                    <div className="mt-2 flex justify-end">
+                      <button type="button" disabled={submitting || !myRating} onClick={submitReview} className="px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition disabled:opacity-50">
+                        {submitting ? (t("loading") || "Отправка…") : (t("review.submit") || "Отправить")}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Reviews list */}
+                  <div className="space-y-3">
+                    {revLoading && <div className="text-[#BDA47A] text-sm">{t("loading") || "Загрузка…"}</div>}
+                    {!revLoading && reviews.length === 0 && (
+                      <div className="text-[#BDA47A]/70 text-sm">{t("noReviewsYet") || "Пока нет отзывов."}</div>
+                    )}
+                    {reviews.map((r) => (
+                      <div key={r.id} className="bg-white/5 border border-white/15 rounded-xl p-3">
+                        <div className="flex items-center gap-2 text-sm">
+                          <div className="flex gap-0.5">
+                            {[1,2,3,4,5].map((n) => (
+                              <span key={n} className={n <= (Number(r.rating)||0) ? "text-[#BDA47A]" : "text-[#BDA47A]/40"}>★</span>
+                            ))}
+                          </div>
+                          <span className="text-xs text-[#BDA47A]/70">{new Date(r.created_at).toLocaleDateString()}</span>
+                        </div>
+                        {r.comment && <p className="mt-1 text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
-
-              {/* Аллергены/формы — как было */}
-              <div className="flex justify-between items-start gap-4">
-                <label className="block text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
-                  <span className="block mb-1">{t("review.yourRating")}</span>
-                  <div className="flex gap-1">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
-                  </div>
-                </label>
-                <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                  <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                    {t("allergensTitle")} (čísla EU): 6, 7
-                  </h3>
-                </div>
-              </div>
-
-              {/* Отзывы – без изменений */}
-              <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                <h3 className="text-sm lg:text-base font-semibold mb-1">{t("reviewsTitle")}</h3>
-                <div className="text-sm lg:text-base space-y-2">
-                  <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
-                    <label className="block">
-                      <textarea
-                        className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
-                        rows={4}
-                        placeholder={t("review.yourComment")}
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      className="mt-2 px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition"
-                    >
-                      {t("review.submit")}
-                    </button>
-                  </form>
-                </div>
-              </div>
 
               {/* Похожие товары */}
               {related.length > 0 && (
@@ -324,7 +386,7 @@ function ProductPage() {
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
-        <div className="fixed left-0 right-0 top:[calc(50%+340px)] z-40 pointer-events-none">
+        <div className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom)+24px)] z-40 pointer-events-none">
           <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end gap-3 pointer-events-auto">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
@@ -350,7 +412,7 @@ function ProductPage() {
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                className="w-6 h-6 rounded-full bg:white/10 border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
               <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
               <button type="button" onClick={() => setQuantity((p) => p + 1)}
                 className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
