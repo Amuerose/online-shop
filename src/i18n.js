@@ -46,6 +46,22 @@ const resources = {
         yourComment: "Váš komentář",
         submit: "Odeslat"
       },
+      tab: {
+        description: "Popis",
+        reviews: "Recenze"
+      },
+      options: {
+        size: "Velikost sady"
+      },
+      productNotFound: "Produkt nebyl nalezen",
+      noName: "Produkt bez názvu",
+      noDescription: "Zatím bez popisu",
+      pleaseLoginToReview: "Pro přidání recenze se prosím přihlaste.",
+      reviewSubmitError: "Recenzi se nepodařilo odeslat.",
+      submitting: "Odesílám…",
+      send: "Odeslat",
+      youMayAlsoLike: "Mohlo by se vám líbit",
+      noReviews: "Zatím žádné recenze.",
       login: {
         title: "Přihlášení",
         emailPlaceholder: "Email",
@@ -209,6 +225,22 @@ const resources = {
         yourComment: "Ваш отзыв",
         submit: "Отправить"
       },
+      tab: {
+        description: "Описание",
+        reviews: "Отзывы"
+      },
+      options: {
+        size: "Размер набора"
+      },
+      productNotFound: "Товар не найден",
+      noName: "Товар без названия",
+      noDescription: "Описание пока отсутствует",
+      pleaseLoginToReview: "Пожалуйста, войдите, чтобы оставить отзыв.",
+      reviewSubmitError: "Не удалось отправить отзыв.",
+      submitting: "Отправка…",
+      send: "Отправить",
+      youMayAlsoLike: "Вам также может понравиться",
+      noReviews: "Пока нет отзывов.",
       login: {
         title: "Вход",
         emailPlaceholder: "Email",
@@ -372,6 +404,22 @@ const resources = {
         yourComment: "Your comment",
         submit: "Submit"
       },
+      tab: {
+        description: "Description",
+        reviews: "Reviews"
+      },
+      options: {
+        size: "Set size"
+      },
+      productNotFound: "Product not found",
+      noName: "Untitled product",
+      noDescription: "No description yet",
+      pleaseLoginToReview: "Please log in to leave a review.",
+      reviewSubmitError: "Failed to submit review.",
+      submitting: "Submitting…",
+      send: "Send",
+      youMayAlsoLike: "You may also like",
+      noReviews: "No reviews yet.",
       login: {
         title: "Login",
         emailPlaceholder: "Email",
