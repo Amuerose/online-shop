@@ -26,6 +26,18 @@ function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
 
+  // Reviews & tabs state
+  const [tab, setTab] = useState("desc"); // 'desc' | 'reviews'
+  const [reviews, setReviews] = useState([]);
+  const [myRating, setMyRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const reviewsCount = reviews.length;
+  const avgRating = reviewsCount
+    ? Math.round((reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviewsCount) * 10) / 10
+    : 0;
+
   const fmtCZK = useMemo(
     () => new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }),
     []
@@ -110,6 +122,20 @@ function ProductPage() {
         } else if (!cancelled) {
           setRelated([]);
         }
+
+        // 4) отзывы (загружаем отдельно и не ломаем общий рендер при ошибке)
+        try {
+          const { data: revs } = await supabase
+            .from("product_reviews")
+            .select("id, rating, comment, created_at, user_id")
+            .eq("product_id", id)
+            .order("created_at", { ascending: false })
+            .limit(50);
+          if (!cancelled) setReviews(revs || []);
+        } catch (e) {
+          console.warn("load reviews failed:", e);
+          if (!cancelled) setReviews([]);
+        }
       } catch (err) {
         console.error("Supabase load product error:", err);
         if (!cancelled) {
@@ -166,6 +192,44 @@ function ProductPage() {
     addToCart({ id: r.id, name, price, image });
   };
 
+  async function handleSubmitReview(e) {
+    e.preventDefault();
+    if (!myRating || !reviewText.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth?.user?.id;
+      if (!userId) {
+        alert(t("pleaseLoginToReview") || "Please log in to leave a review.");
+        return;
+      }
+
+      const payload = {
+        product_id: id,
+        rating: Math.max(1, Math.min(5, Number(myRating))),
+        comment: reviewText.trim().slice(0, 2000),
+        user_id: userId,
+      };
+
+      const { data, error } = await supabase
+        .from("product_reviews")
+        .insert(payload)
+        .select()
+        .single();
+      if (error) throw error;
+
+      setReviews((prev) => [data, ...prev]);
+      setMyRating(0);
+      setReviewText("");
+    } catch (err) {
+      console.error("submit review failed:", err);
+      alert(t("reviewSubmitError") || "Failed to submit review.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
       <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
@@ -200,11 +264,6 @@ function ProductPage() {
                 </div>
               </div>
 
-              {/* Описание */}
-              <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                {localName(product.description) || t("noDescription")}
-              </p>
-
               {/* Варианты (только если есть) */}
               {variants.length > 0 && (
                 <div className="flex flex-col gap-2">
@@ -231,23 +290,112 @@ function ProductPage() {
                 </div>
               )}
 
-              {/* Аллергены */}
-              <div className="flex justify-end items-start gap-4">
-                <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                  <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                    {t("allergensTitle")} (čísla EU): 6, 7
-                  </h3>
+              {/* Tabs header */}
+              <div className="mt-2">
+                <div className="inline-flex rounded-full bg-white/10 border border-white/20 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setTab("desc")}
+                    className={`px-4 py-1.5 rounded-full text-sm transition ${
+                      tab === "desc" ? "bg-white/30 text-[#5C3A2E]" : "text-[#5C3A2E]/70 hover:bg-white/20"
+                    }`}
+                  >
+                    {t("tab.description") || "Описание"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTab("reviews")}
+                    className={`px-4 py-1.5 rounded-full text-sm transition ${
+                      tab === "reviews" ? "bg-white/30 text-[#5C3A2E]" : "text-[#5C3A2E]/70 hover:bg-white/20"
+                    }`}
+                  >
+                    {t("tab.reviews") || "Отзывы"}{reviewsCount ? ` (${reviewsCount})` : ""}
+                  </button>
                 </div>
               </div>
 
-              {/* Отзывы */}
-              <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                <h3 className="text-sm lg:text-base font-semibold mb-1">
-                  {t("reviewsTitle")}
-                </h3>
-                <p className="text-sm lg:text-base opacity-80">
-                  {t("reviewsPlaceholder") || "Reviews and ratings are coming soon."}
-                </p>
+              {/* Tabs content */}
+              <div className="mt-4">
+                {tab === "desc" ? (
+                  <div className="space-y-4">
+                    {/* Описание */}
+                    <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                      {localName(product.description) || t("noDescription")}
+                    </p>
+
+                    {/* Аллергены */}
+                    <div className="flex justify-end items-start gap-4">
+                      <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                        <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
+                          {t("allergensTitle")} (čísla EU): 6, 7
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Средняя оценка */}
+                    <div className="flex items-center gap-2 text-[#BDA47A]">
+                      <span className="font-medium">{avgRating || 0}/5</span>
+                      <div className="flex gap-1">
+                        {[1,2,3,4,5].map(n => (
+                          <span key={n} className={avgRating >= n ? "" : "opacity-30"}>★</span>
+                        ))}
+                      </div>
+                      <span className="text-[#5C3A2E]/60 text-sm">({reviewsCount || 0})</span>
+                    </div>
+
+                    {/* Список отзывов */}
+                    {reviewsCount > 0 ? (
+                      <div className="space-y-3">
+                        {reviews.map(r => (
+                          <div key={r.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
+                            <div className="flex items-center gap-2 text-[#BDA47A] text-sm mb-1">
+                              {[1,2,3,4,5].map(n => (
+                                <span key={n} className={Number(r.rating) >= n ? "" : "opacity-30"}>★</span>
+                              ))}
+                              <span className="text-[#5C3A2E]/60 text-xs">
+                                {new Date(r.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-[#5C3A2E]/70">{t("noReviews") || "Пока нет отзывов."}</p>
+                    )}
+
+                    {/* Форма отзыва */}
+                    <form onSubmit={handleSubmitReview} className="space-y-2">
+                      <div className="flex items-center gap-1 text-[#BDA47A]">
+                        {[1,2,3,4,5].map(n => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => setMyRating(n)}
+                            aria-label={`rate ${n}`}
+                            className={`text-xl transition ${myRating >= n ? "" : "opacity-30 hover:opacity-60"}`}
+                          >★</button>
+                        ))}
+                      </div>
+                      <textarea
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        placeholder={t("yourComment") || "Ваш комментарий"}
+                        className="w-full min-h-[90px] rounded-2xl bg-white/10 border border-white/20 px-3 py-2 resize-vertical outline-none focus:ring-2 focus:ring-[#BDA47A]/40"
+                        maxLength={2000}
+                      />
+                      <button
+                        type="submit"
+                        disabled={submitting || !myRating || !reviewText.trim()}
+                        className="px-5 h-10 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 disabled:opacity-50"
+                      >
+                        {submitting ? (t("submitting") || "Отправка...") : (t("send") || "Отправить")}
+                      </button>
+                    </form>
+                  </div>
+                )}
               </div>
 
               {/* Похожие товары */}
