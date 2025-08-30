@@ -292,32 +292,63 @@ function ProductPage() {
 
               {/* Tabs header */}
               <div className="mt-2">
-                <div className="inline-flex rounded-full bg-white/10 border border-white/20 p-1">
-                  <button
-                    type="button"
-                    onClick={() => setTab("desc")}
-                    className={`px-4 py-1.5 rounded-full text-sm transition ${
-                      tab === "desc" ? "bg-white/30 text-[#5C3A2E]" : "text-[#5C3A2E]/70 hover:bg-white/20"
+                {/* Segmented control styled as a pill with animated indicator */}
+                <div
+                  className="relative mx-auto w-full max-w-[360px] rounded-full bg-white/10 border border-white/20 p-1"
+                  role="tablist"
+                  aria-label={t("tab.ariaLabel") || "Product tabs"}
+                >
+                  {/* Animated indicator */}
+                  <div
+                    className={`absolute top-1 bottom-1 w-1/2 rounded-full bg-white/30 backdrop-blur-md transition-transform duration-300 ease-out ${
+                      tab === "reviews" ? "translate-x-full" : "translate-x-0"
                     }`}
-                  >
-                    {t("tab.description") || "Описание"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTab("reviews")}
-                    className={`px-4 py-1.5 rounded-full text-sm transition ${
-                      tab === "reviews" ? "bg-white/30 text-[#5C3A2E]" : "text-[#5C3A2E]/70 hover:bg-white/20"
-                    }`}
-                  >
-                    {t("tab.reviews") || "Отзывы"}{reviewsCount ? ` (${reviewsCount})` : ""}
-                  </button>
+                    aria-hidden="true"
+                  />
+                  <div className="relative grid grid-cols-2 gap-0">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={tab === "desc"}
+                      aria-controls="tab-panel-desc"
+                      id="tab-desc"
+                      onClick={() => setTab("desc")}
+                      className={`z-10 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        tab === "desc"
+                          ? "text-[#5C3A2E]"
+                          : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
+                      }`}
+                    >
+                      {t("tab.description") || "Описание"}
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={tab === "reviews"}
+                      aria-controls="tab-panel-reviews"
+                      id="tab-reviews"
+                      onClick={() => setTab("reviews")}
+                      className={`z-10 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        tab === "reviews"
+                          ? "text-[#5C3A2E]"
+                          : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
+                      }`}
+                    >
+                      {t("tab.reviews") || "Отзывы"}{reviewsCount ? ` (${reviewsCount})` : ""}
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Tabs content */}
               <div className="mt-4">
                 {tab === "desc" ? (
-                  <div className="space-y-4">
+                  <div
+                    role="tabpanel"
+                    id="tab-panel-desc"
+                    aria-labelledby="tab-desc"
+                    className="space-y-4"
+                  >
                     {/* Описание */}
                     <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
                       {localName(product.description) || t("noDescription")}
@@ -333,7 +364,12 @@ function ProductPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div
+                    role="tabpanel"
+                    id="tab-panel-reviews"
+                    aria-labelledby="tab-reviews"
+                    className="space-y-4"
+                  >
                     {/* Средняя оценка */}
                     <div className="flex items-center gap-2 text-[#BDA47A]">
                       <span className="font-medium">{avgRating || 0}/5</span>
