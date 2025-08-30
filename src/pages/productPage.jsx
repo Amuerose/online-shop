@@ -246,26 +246,27 @@ function ProductPage() {
   }
 
   return (
-    <>
-    <main className="relative min-h-[100dvh] overflow-visible flex items-start justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
-      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start gap-8 lg:gap-12' : 'flex-col'} z-10`}>
-        {/* Изображение */}
-        <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
-              ? 'lg:w-1/2 lg:h-[72vh] lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-20'
-              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center z-20'}`}>
-          <div className="w-full h-full z-10 relative">
-            <img
-              src={product.images.data[0]?.attributes.url}
-              alt={localName(product.name)}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-stretch justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+120px)]">
+      <div className="w-full max-w-[1400px] h-full flex flex-col gap-4 z-10">
+        {/* Основной ряд: фото + контент */}
+        <div className={`flex-1 min-h-0 flex ${isDesktop ? 'flex-row items-start gap-8 lg:gap-12' : 'flex-col'}`}>
+          {/* Изображение */}
+          <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
+                ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-10'
+                : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center z-10'}`}>
+            <div className="w-full h-full z-10 relative">
+              <img
+                src={product.images.data[0]?.attributes.url}
+                alt={localName(product.name)}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Контент */}
-        <div className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${isDesktop ? 'lg:w-1/2 lg:h-full justify-start' : 'flex-1'}`}>
-          <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
-            <div className="flex flex-col gap-5 lg:gap-8">
+          {/* Контент */}
+          <div className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${isDesktop ? 'lg:w-1/2 lg:h-full justify-start' : 'flex-1'}`}>
+            <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
+              <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
@@ -449,6 +450,40 @@ function ProductPage() {
             </div>
           </div>
         </div>
+
+        {/* Рекомендованные — отдельная низкая секция внутри страницы */}
+        {related.length > 0 && (
+          <section className="px-6">
+            <div className="w-full rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
+              <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
+                {t("youMayAlsoLike") || "Вам также может понравиться"}
+              </h3>
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                {related.map(r => {
+                  const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
+                  return (
+                    <div key={r.id} className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
+                      <button onClick={() => navigate(`/product/${r.id}`)} className="w-full text-left" type="button">
+                        <div className="w-full h-[130px] bg-white/5">
+                          <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="p-2">
+                          <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
+                          <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
+                        </div>
+                      </button>
+                      <div className="px-2 pb-2">
+                        <button type="button" onClick={() => handleQuickAdd(r)} className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium">
+                          {t("buttons.addToCart")}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
       </div>
 
       {/* Кнопки (десктоп) */}
@@ -494,42 +529,7 @@ function ProductPage() {
           </div>
         </div>
       </div>
-      {/* Related removed from here; rendered below as its own section */}
     </main>
-
-    {related.length > 0 && (
-      <section className="px-6 mt-10 mb-24">
-        <div className="w-full max-w-[1400px] mx-auto rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
-          <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
-            {t("youMayAlsoLike") || "Вам также может понравиться"}
-          </h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-            {related.map(r => {
-              const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
-              return (
-                <div key={r.id} className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
-                  <button onClick={() => navigate(`/product/${r.id}`)} className="w-full text-left" type="button">
-                    <div className="w-full h-[130px] bg-white/5">
-                      <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="p-2">
-                      <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
-                      <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
-                    </div>
-                  </button>
-                  <div className="px-2 pb-2">
-                    <button type="button" onClick={() => handleQuickAdd(r)} className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium">
-                      {t("buttons.addToCart")}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    )}
-    </>
   );
 }
 
