@@ -290,30 +290,23 @@ function ProductPage() {
                 </div>
               )}
 
-              {/* Tabs header */}
-              <div className="mt-2">
-                {/* Segmented control styled as a pill with animated indicator */}
-                <div
-                  className="relative mx-auto w-full max-w-[360px] rounded-full bg-white/10 border border-white/20 p-1"
-                  role="tablist"
-                  aria-label={t("tab.ariaLabel") || "Product tabs"}
-                >
-                  {/* Animated indicator */}
+              {/* Tabs (glass card with attached header) */}
+              <section className="mt-2">
+                <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl overflow-hidden">
+                  {/* Header */}
                   <div
-                    className={`absolute top-1 bottom-1 w-1/2 rounded-full bg-white/30 backdrop-blur-md transition-transform duration-300 ease-out ${
-                      tab === "reviews" ? "translate-x-full" : "translate-x-0"
-                    }`}
-                    aria-hidden="true"
-                  />
-                  <div className="relative grid grid-cols-2 gap-0">
+                    role="tablist"
+                    aria-label={t("tab.ariaLabel") || "Product tabs"}
+                    className="relative grid grid-cols-2 text-sm font-medium"
+                  >
                     <button
+                      id="tab-desc"
                       type="button"
                       role="tab"
                       aria-selected={tab === "desc"}
                       aria-controls="tab-panel-desc"
-                      id="tab-desc"
                       onClick={() => setTab("desc")}
-                      className={`z-10 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      className={`px-5 py-3 transition relative ${
                         tab === "desc"
                           ? "text-[#5C3A2E]"
                           : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
@@ -322,162 +315,121 @@ function ProductPage() {
                       {t("tab.description") || "Описание"}
                     </button>
                     <button
+                      id="tab-reviews"
                       type="button"
                       role="tab"
                       aria-selected={tab === "reviews"}
                       aria-controls="tab-panel-reviews"
-                      id="tab-reviews"
                       onClick={() => setTab("reviews")}
-                      className={`z-10 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      className={`px-5 py-3 transition relative ${
                         tab === "reviews"
                           ? "text-[#5C3A2E]"
                           : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
                       }`}
                     >
-                      {t("tab.reviews") || "Отзывы"}{reviewsCount ? ` (${reviewsCount})` : ""}
+                      {t("tab.reviews") || "Отзывы"}{reviews.length ? ` (${reviews.length})` : ""}
                     </button>
+                    {/* Active underline */}
+                    <span
+                      aria-hidden
+                      className={`absolute bottom-0 h-[2px] bg-[#BDA47A] transition-transform duration-300 ease-out w-1/2 ${
+                        tab === "reviews" ? "translate-x-full" : "translate-x-0"
+                      }`}
+                    />
                   </div>
-                </div>
-              </div>
 
-              {/* Tabs content */}
-              <div className="mt-4">
-                {tab === "desc" ? (
-                  <div
-                    role="tabpanel"
-                    id="tab-panel-desc"
-                    aria-labelledby="tab-desc"
-                    className="space-y-4"
-                  >
-                    {/* Описание */}
-                    <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                      {localName(product.description) || t("noDescription")}
-                    </p>
-
-                    {/* Аллергены */}
-                    <div className="flex justify-end items-start gap-4">
-                      <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                        <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                          {t("allergensTitle")} (čísla EU): 6, 7
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    role="tabpanel"
-                    id="tab-panel-reviews"
-                    aria-labelledby="tab-reviews"
-                    className="space-y-4"
-                  >
-                    {/* Средняя оценка */}
-                    <div className="flex items-center gap-2 text-[#BDA47A]">
-                      <span className="font-medium">{avgRating || 0}/5</span>
-                      <div className="flex gap-1">
-                        {[1,2,3,4,5].map(n => (
-                          <span key={n} className={avgRating >= n ? "" : "opacity-30"}>★</span>
-                        ))}
-                      </div>
-                      <span className="text-[#5C3A2E]/60 text-sm">({reviewsCount || 0})</span>
-                    </div>
-
-                    {/* Список отзывов */}
-                    {reviewsCount > 0 ? (
-                      <div className="space-y-3">
-                        {reviews.map(r => (
-                          <div key={r.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
-                            <div className="flex items-center gap-2 text-[#BDA47A] text-sm mb-1">
-                              {[1,2,3,4,5].map(n => (
-                                <span key={n} className={Number(r.rating) >= n ? "" : "opacity-30"}>★</span>
-                              ))}
-                              <span className="text-[#5C3A2E]/60 text-xs">
-                                {new Date(r.created_at).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-[#5C3A2E]/70">{t("noReviews") || "Пока нет отзывов."}</p>
-                    )}
-
-                    {/* Форма отзыва */}
-                    <form onSubmit={handleSubmitReview} className="space-y-2">
-                      <div className="flex items-center gap-1 text-[#BDA47A]">
-                        {[1,2,3,4,5].map(n => (
-                          <button
-                            key={n}
-                            type="button"
-                            onClick={() => setMyRating(n)}
-                            aria-label={`rate ${n}`}
-                            className={`text-xl transition ${myRating >= n ? "" : "opacity-30 hover:opacity-60"}`}
-                          >★</button>
-                        ))}
-                      </div>
-                      <textarea
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                        placeholder={t("yourComment") || "Ваш комментарий"}
-                        className="w-full min-h-[90px] rounded-2xl bg-white/10 border border-white/20 px-3 py-2 resize-vertical outline-none focus:ring-2 focus:ring-[#BDA47A]/40"
-                        maxLength={2000}
-                      />
-                      <button
-                        type="submit"
-                        disabled={submitting || !myRating || !reviewText.trim()}
-                        className="px-5 h-10 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 disabled:opacity-50"
+                  {/* Panel */}
+                  <div className="p-4 sm:p-5 lg:p-6">
+                    {tab === "desc" ? (
+                      <div
+                        role="tabpanel"
+                        id="tab-panel-desc"
+                        aria-labelledby="tab-desc"
+                        className="space-y-4"
                       >
-                        {submitting ? (t("submitting") || "Отправка...") : (t("send") || "Отправить")}
-                      </button>
-                    </form>
-                  </div>
-                )}
-              </div>
-
-              {/* Похожие товары */}
-              {related.length > 0 && (
-                <div className="pt-2">
-                  <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
-                    {t("youMayAlsoLike") || "Вам также может понравиться"}
-                  </h3>
-                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-                    {related.map(r => {
-                      const rName =
-                        i18n.language === "cs" ? r.name_cs :
-                        i18n.language === "ru" ? r.name_ru : r.name_en;
-                      return (
-                        <div
-                          key={r.id}
-                          className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition"
-                        >
-                          <button
-                            onClick={() => navigate(`/product/${r.id}`)}
-                            className="w-full text-left"
-                            type="button"
-                          >
-                            <div className="w-full h-[130px] bg-white/5">
-                              <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="p-2">
-                              <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
-                              <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
-                            </div>
-                          </button>
-                          <div className="px-2 pb-2">
-                            <button
-                              type="button"
-                              onClick={() => handleQuickAdd(r)}
-                              className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium"
-                            >
-                              {t("buttons.addToCart")}
-                            </button>
+                        <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                          {localName(product.description) || t("noDescription")}
+                        </p>
+                        <div className="flex justify-end items-start gap-4">
+                          <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                            <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
+                              {t("allergensTitle")} (čísla EU): 6, 7
+                            </h3>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ) : (
+                      <div
+                        role="tabpanel"
+                        id="tab-panel-reviews"
+                        aria-labelledby="tab-reviews"
+                        className="space-y-4"
+                      >
+                        {/* Average rating */}
+                        <div className="flex items-center gap-2 text-[#BDA47A]">
+                          <span className="font-medium">{avgRating || 0}/5</span>
+                          <div className="flex gap-1">
+                            {[1,2,3,4,5].map(n => (
+                              <span key={n} className={avgRating >= n ? "" : "opacity-30"}>★</span>
+                            ))}
+                          </div>
+                          <span className="text-[#5C3A2E]/60 text-sm">({reviews.length || 0})</span>
+                        </div>
+
+                        {/* Reviews list */}
+                        {reviews.length > 0 ? (
+                          <div className="space-y-3">
+                            {reviews.map(r => (
+                              <div key={r.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
+                                <div className="flex items-center gap-2 text-[#BDA47A] text-sm mb-1">
+                                  {[1,2,3,4,5].map(n => (
+                                    <span key={n} className={Number(r.rating) >= n ? "" : "opacity-30"}>★</span>
+                                  ))}
+                                  <span className="text-[#5C3A2E]/60 text-xs">
+                                    {new Date(r.created_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-[#5C3A2E]/70">{t("noReviews") || "Пока нет отзывов."}</p>
+                        )}
+
+                        {/* Review form */}
+                        <form onSubmit={handleSubmitReview} className="space-y-2">
+                          <div className="flex items-center gap-1 text-[#BDA47A]">
+                            {[1,2,3,4,5].map(n => (
+                              <button
+                                key={n}
+                                type="button"
+                                onClick={() => setMyRating(n)}
+                                aria-label={`rate ${n}`}
+                                className={`text-xl transition ${myRating >= n ? "" : "opacity-30 hover:opacity-60"}`}
+                              >★</button>
+                            ))}
+                          </div>
+                          <textarea
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            placeholder={t("yourComment") || "Ваш комментарий"}
+                            className="w-full min-h-[90px] rounded-2xl bg-white/10 border border-white/20 px-3 py-2 resize-vertical outline-none focus:ring-2 focus:ring-[#BDA47A]/40"
+                            maxLength={2000}
+                          />
+                          <button
+                            type="submit"
+                            disabled={submitting || !myRating || !reviewText.trim()}
+                            className="px-5 h-10 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 disabled:opacity-50"
+                          >
+                            {submitting ? (t("submitting") || "Отправка...") : (t("send") || "Отправить")}
+                          </button>
+                        </form>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </section>
             </div>
           </div>
         </div>
@@ -526,6 +478,39 @@ function ProductPage() {
           </div>
         </div>
       </div>
+      {/* Related (full width under the layout) */}
+      {related.length > 0 && (
+        <section className="absolute left-0 right-0 bottom-[112px] md:bottom-[128px] px-6">
+          <div className="w-full max-w-[1400px] mx-auto rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
+            <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
+              {t("youMayAlsoLike") || "Вам также может понравиться"}
+            </h3>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+              {related.map(r => {
+                const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
+                return (
+                  <div key={r.id} className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
+                    <button onClick={() => navigate(`/product/${r.id}`)} className="w-full text-left" type="button">
+                      <div className="w-full h-[130px] bg-white/5">
+                        <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="p-2">
+                        <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
+                        <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
+                      </div>
+                    </button>
+                    <div className="px-2 pb-2">
+                      <button type="button" onClick={() => handleQuickAdd(r)} className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium">
+                        {t("buttons.addToCart")}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
