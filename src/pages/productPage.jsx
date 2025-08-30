@@ -26,15 +26,6 @@ function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
 
-  // --- Reviews (SAFE) ---
-  const ENABLE_REVIEWS = true; // set to false to disable reviews instantly
-  const [reviews, setReviews] = useState([]);
-  const [avgRating, setAvgRating] = useState(null);
-  const [reviewsCount, setReviewsCount] = useState(0);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewStars, setReviewStars] = useState(5);
-  const [posting, setPosting] = useState(false);
-
   const fmtCZK = useMemo(
     () => new Intl.NumberFormat("cs-CZ", { style: "currency", currency: "CZK", maximumFractionDigits: 0 }),
     []
@@ -119,39 +110,6 @@ function ProductPage() {
         } else if (!cancelled) {
           setRelated([]);
         }
-
-        // 4) Reviews (SAFE)
-        if (ENABLE_REVIEWS) {
-          try {
-            const { data: pMeta } = await supabase
-              .from("products")
-              .select("avg_rating, reviews_count")
-              .eq("id", id)
-              .single();
-
-            if (!cancelled && pMeta) {
-              setAvgRating(pMeta.avg_rating ?? null);
-              setReviewsCount(pMeta.reviews_count ?? 0);
-            }
-
-            const { data: rlist } = await supabase
-              .from("product_reviews")
-              .select("id, rating, comment, created_at, user_id")
-              .eq("product_id", id)
-              .eq("is_public", true)
-              .order("created_at", { ascending: false })
-              .limit(10);
-
-            if (!cancelled) setReviews(rlist || []);
-          } catch (e) {
-            if (!cancelled) {
-              setReviews([]);
-              setAvgRating(null);
-              setReviewsCount(0);
-            }
-            console.warn("Reviews load error:", e);
-          }
-        }
       } catch (err) {
         console.error("Supabase load product error:", err);
         if (!cancelled) {
@@ -206,59 +164,6 @@ function ProductPage() {
     const price = Number(r.price || 0);
     const image = r.image_url || "";
     addToCart({ id: r.id, name, price, image });
-  };
-
-  const handleSubmitReview = async (e) => {
-    e?.preventDefault?.();
-    if (!ENABLE_REVIEWS) return;
-    try {
-      setPosting(true);
-      const { data: { user }, error: uerr } = await supabase.auth.getUser();
-      if (uerr || !user) {
-        navigate("/login");
-        return;
-      }
-      const rating = Math.min(5, Math.max(1, Number(reviewStars) || 5));
-      const text = (reviewText || "").trim();
-      if (!text) { setPosting(false); return; }
-
-      const { error: insErr } = await supabase.from("product_reviews").insert({
-        product_id: id,
-        user_id: user.id,
-        rating,
-        comment: text,
-        is_public: true,
-      });
-      if (insErr) throw insErr;
-
-      // optimistic refresh
-      setReviewText("");
-      setReviewStars(5);
-
-      // reload reviews briefly
-      const { data: rlist } = await supabase
-        .from("product_reviews")
-        .select("id, rating, comment, created_at, user_id")
-        .eq("product_id", id)
-        .eq("is_public", true)
-        .order("created_at", { ascending: false })
-        .limit(10);
-      setReviews(rlist || []);
-
-      const { data: pMeta } = await supabase
-        .from("products")
-        .select("avg_rating, reviews_count")
-        .eq("id", id)
-        .single();
-      if (pMeta) {
-        setAvgRating(pMeta.avg_rating ?? null);
-        setReviewsCount(pMeta.reviews_count ?? 0);
-      }
-    } catch (err) {
-      console.warn("Submit review error:", err);
-    } finally {
-      setPosting(false);
-    }
   };
 
   return (
@@ -331,14 +236,8 @@ function ProductPage() {
                 </div>
               )}
 
-              {/* Аллергены/формы — как было */}
-              <div className="flex justify-between items-start gap-4">
-                <label className="block text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
-                  <span className="block mb-1">{t("review.yourRating")}</span>
-                  <div className="flex gap-1">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
-                  </div>
-                </label>
+              {/* Аллергены */}
+              <div className="flex justify-end items-start gap-4">
                 <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                   <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
                     {t("allergensTitle")} (čísla EU): 6, 7
@@ -346,68 +245,58 @@ function ProductPage() {
                 </div>
               </div>
 
-              {/* Отзывы – без изменений */}
+              {/* Отзывы */}
               <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                <h3 className="text-sm lg:text-base font-semibold mb-2 flex items-center gap-3">
-                  {t("reviewsTitle")}
-                  {ENABLE_REVIEWS && (
-                    <span className="text-[#BDA47A] text-xs lg:text-sm font-normal">
-                      {avgRating ? `${Number(avgRating).toFixed(1)}★` : "—"} · {reviewsCount || 0}
-                    </span>
-                  )}
+                <h3 className="text-sm lg:text-base font-semibold mb-1">
+                  {t("reviewsTitle")} — {reviewsCount}
                 </h3>
-
-                {ENABLE_REVIEWS && (
-                  <div className="space-y-3">
-                    {/* List */}
-                    <div className="max-h-40 overflow-auto pr-1 space-y-2">
-                      {reviews.length === 0 ? (
-                        <div className="text-xs opacity-70">{t("noReviews") || "Пока нет отзывов."}</div>
-                      ) : (
-                        reviews.map(r => (
-                          <div key={r.id} className="bg-white/5 border border-white/10 rounded-lg p-2">
-                            <div className="flex items-center justify-between">
-                              <div className="text-[#BDA47A] text-sm">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</div>
-                              <div className="text-[10px] opacity-60">{new Date(r.created_at).toLocaleDateString()}</div>
-                            </div>
-                            {r.comment && (
-                              <div className="text-xs mt-1 whitespace-pre-wrap break-words">{r.comment}</div>
-                            )}
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                    {/* Form */}
-                    <form className="space-y-2" onSubmit={handleSubmitReview}>
-                      <div className="flex items-center gap-2">
+                <div className="text-sm lg:text-base space-y-2">
+                  <form className="space-y-2" onSubmit={handleSubmitReview}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#BDA47A] text-sm">{t("review.yourRating")}</span>
+                      <div className="flex gap-1" role="radiogroup" aria-label={t("review.yourRating")}>
                         {[1,2,3,4,5].map(n => (
                           <button
                             key={n}
                             type="button"
-                            onClick={() => setReviewStars(n)}
-                            className={`text-base ${n <= reviewStars ? 'text-[#BDA47A]' : 'text-[#BDA47A]/40'}`}
-                            aria-label={`rate ${n}`}
-                          >★</button>
+                            onClick={() => setMyRating(n)}
+                            aria-checked={myRating >= n}
+                            className={`${myRating >= n ? "text-[#BDA47A]" : "text-[#BDA47A]/30"} text-lg leading-none`}
+                          >
+                            ★
+                          </button>
                         ))}
                       </div>
+                    </div>
+                    <label className="block">
                       <textarea
                         className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
-                        rows={3}
+                        rows={4}
+                        placeholder={t("review.yourComment")}
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}
-                        placeholder={t("review.yourComment")}
                       />
-                      <button
-                        type="submit"
-                        disabled={posting}
-                        className="mt-1 px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 transition disabled:opacity-50"
-                      >
-                        {posting ? (t("saving") || "Сохраняем…") : (t("review.submit") || "Отправить")}
-                      </button>
-                    </form>
-                  </div>
-                )}
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={submitting || !myRating || !reviewText.trim()}
+                      className="mt-2 px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 disabled:opacity-50 transition"
+                    >
+                      {t("review.submit")}
+                    </button>
+                  </form>
+
+                  {reviews.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {reviews.slice(0,3).map(r => (
+                        <div key={r.id} className="bg-white/5 rounded-xl p-2 border border-white/10">
+                          <Stars value={Number(r.rating || 0)} className="text-sm" />
+                          <div className="text-xs opacity-90 mt-1 whitespace-pre-wrap break-words">{r.comment}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Похожие товары */}
