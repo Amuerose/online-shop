@@ -125,13 +125,18 @@ function ProductPage() {
 
         // 4) отзывы (загружаем отдельно и не ломаем общий рендер при ошибке)
         try {
-          const { data: revs } = await supabase
+          const { data: revs, error: revErr } = await supabase
             .from("product_reviews")
             .select("id, rating, comment, created_at, user_id")
-            .eq("product_id", id)
+            .eq("product_id", Number(id) || id)
             .order("created_at", { ascending: false })
             .limit(50);
-          if (!cancelled) setReviews(revs || []);
+          if (revErr) {
+            console.warn("load reviews failed:", revErr);
+            if (!cancelled) setReviews([]);
+          } else if (!cancelled) {
+            setReviews(revs || []);
+          }
         } catch (e) {
           console.warn("load reviews failed:", e);
           if (!cancelled) setReviews([]);
@@ -242,7 +247,7 @@ function ProductPage() {
 
   return (
     <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-start justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+140px)]">
-      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start h-[600px] gap-8 lg:gap-12' : 'flex-col h-full'} z-10`}>
+      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start h-full gap-8 lg:gap-12' : 'flex-col h-full'} z-10`}>
         {/* Изображение */}
         <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
               ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-20'
