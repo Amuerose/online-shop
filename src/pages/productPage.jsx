@@ -206,17 +206,27 @@ function ProductPage() {
       }
 
       const payload = {
-        product_id: id,
+        product_id: Number(id) || id,
         rating: Math.max(1, Math.min(5, Number(myRating))),
         comment: reviewText.trim().slice(0, 2000),
         user_id: userId,
       };
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("product_reviews")
         .insert(payload)
         .select()
         .single();
+      // If insert fails due to type/constraint on user_id, try without it (some schemas default to auth.uid())
+      if (error) {
+        try {
+          const fallback = { product_id: Number(id) || id, rating: payload.rating, comment: payload.comment };
+          const res = await supabase.from("product_reviews").insert(fallback).select().single();
+          data = res.data; error = res.error;
+        } catch (e2) {
+          error = e2;
+        }
+      }
       if (error) throw error;
 
       setReviews((prev) => [data, ...prev]);
@@ -231,12 +241,12 @@ function ProductPage() {
   }
 
   return (
-    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-center justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+102px)]">
-      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-center h-[600px]' : 'flex-col h-full'}`}>
+    <main className="relative h-[100dvh] overflow-hidden overscroll-contain flex items-start justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+140px)]">
+      <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start h-[600px] gap-8 lg:gap-12' : 'flex-col h-full'} z-10`}>
         {/* Изображение */}
         <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
-              ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl'
-              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center'}`}>
+              ? 'lg:w-1/2 lg:h-full lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-20'
+              : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center z-20'}`}>
           <div className="w-full h-full z-10 relative">
             <img
               src={product.images.data[0]?.attributes.url}
@@ -247,7 +257,7 @@ function ProductPage() {
         </div>
 
         {/* Контент */}
-        <div className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${isDesktop ? 'lg:w-1/2 lg:h-full justify-center' : 'flex-1'}`}>
+        <div className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${isDesktop ? 'lg:w-1/2 lg:h-full justify-start' : 'flex-1'}`}>
           <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
             <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
@@ -414,7 +424,7 @@ function ProductPage() {
                             value={reviewText}
                             onChange={(e) => setReviewText(e.target.value)}
                             placeholder={t("yourComment") || "Ваш комментарий"}
-                            className="w-full min-h-[90px] rounded-2xl bg-white/10 border border-white/20 px-3 py-2 resize-vertical outline-none focus:ring-2 focus:ring-[#BDA47A]/40"
+                            className="w-full min-h-[90px] rounded-2xl bg-white/10 border border-[#BDA47A]/40 px-3 py-2 resize-vertical outline-none ring-1 ring-[#BDA47A]/30 focus:ring-2 focus:ring-[#BDA47A]/60"
                             maxLength={2000}
                           />
                           <button
@@ -480,7 +490,7 @@ function ProductPage() {
       </div>
       {/* Related (full width under the layout) */}
       {related.length > 0 && (
-        <section className="absolute left-0 right-0 bottom-[112px] md:bottom-[128px] px-6">
+        <section className="absolute left-0 right-0 bottom-[112px] md:bottom-[128px] px-6 z-0">
           <div className="w-full max-w-[1400px] mx-auto rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
             <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
               {t("youMayAlsoLike") || "Вам также может понравиться"}
