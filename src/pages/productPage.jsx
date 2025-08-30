@@ -192,11 +192,6 @@ function ProductPage() {
                   <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
                     {localName(product.name)}
                   </h1>
-                  <div className="flex mt-4">
-                    <div className="flex gap-1 text-[#BDA47A] text-lg sm:text-xl lg:text-2xl cursor-pointer">
-                      <span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span>
-                    </div>
-                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
@@ -248,55 +243,11 @@ function ProductPage() {
               {/* Отзывы */}
               <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                 <h3 className="text-sm lg:text-base font-semibold mb-1">
-                  {t("reviewsTitle")} — {reviewsCount}
+                  {t("reviewsTitle")}
                 </h3>
-                <div className="text-sm lg:text-base space-y-2">
-                  <form className="space-y-2" onSubmit={handleSubmitReview}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[#BDA47A] text-sm">{t("review.yourRating")}</span>
-                      <div className="flex gap-1" role="radiogroup" aria-label={t("review.yourRating")}>
-                        {[1,2,3,4,5].map(n => (
-                          <button
-                            key={n}
-                            type="button"
-                            onClick={() => setMyRating(n)}
-                            aria-checked={myRating >= n}
-                            className={`${myRating >= n ? "text-[#BDA47A]" : "text-[#BDA47A]/30"} text-lg leading-none`}
-                          >
-                            ★
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <label className="block">
-                      <textarea
-                        className="w-full rounded-xl border border-[#BDA47A]/40 bg-white/10 text-[#5C3A2E] placeholder-[#BDA47A]/40 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/50 transition"
-                        rows={4}
-                        placeholder={t("review.yourComment")}
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      disabled={submitting || !myRating || !reviewText.trim()}
-                      className="mt-2 px-4 py-2 rounded-full bg-[#BDA47A]/20 text-[#BDA47A] border border-[#BDA47A]/40 hover:bg-[#BDA47A]/30 disabled:opacity-50 transition"
-                    >
-                      {t("review.submit")}
-                    </button>
-                  </form>
-
-                  {reviews.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                      {reviews.slice(0,3).map(r => (
-                        <div key={r.id} className="bg-white/5 rounded-xl p-2 border border-white/10">
-                          <Stars value={Number(r.rating || 0)} className="text-sm" />
-                          <div className="text-xs opacity-90 mt-1 whitespace-pre-wrap break-words">{r.comment}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <p className="text-sm lg:text-base opacity-80">
+                  {t("reviewsPlaceholder") || "Reviews and ratings are coming soon."}
+                </p>
               </div>
 
               {/* Похожие товары */}
