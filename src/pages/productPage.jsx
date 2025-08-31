@@ -485,6 +485,7 @@ function ProductPage() {
           </section>
         )}
       </div>
+      </div>
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
