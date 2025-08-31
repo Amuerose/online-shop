@@ -217,21 +217,12 @@ function ProductPage() {
         user_id: userId,
       };
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from("product_reviews")
         .insert(payload)
-        .select()
+        .select("id, rating, comment, created_at, user_id")
         .single();
-      // If insert fails due to type/constraint on user_id, try without it (some schemas default to auth.uid())
-      if (error) {
-        try {
-          const fallback = { product_id: Number(id) || id, rating: payload.rating, comment: payload.comment };
-          const res = await supabase.from("product_reviews").insert(fallback).select().single();
-          data = res.data; error = res.error;
-        } catch (e2) {
-          error = e2;
-        }
-      }
+
       if (error) throw error;
 
       setReviews((prev) => [data, ...prev]);
