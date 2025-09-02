@@ -238,7 +238,7 @@ function ProductPage() {
 
   return (
     <>
-    <main className="min-h-screen flex flex-col items-center justify-between pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+76px)] bg-transparent">
+    <main className="min-h-screen flex flex-col items-center justify-start gap-8 lg:gap-10 pt-[calc(env(safe-area-inset-top)+140px)] pb-[calc(env(safe-area-inset-bottom)+76px)] bg-transparent">
       <div className="w-full max-w-[1400px] flex flex-col z-10">
         <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
@@ -252,7 +252,7 @@ function ProductPage() {
             <div
               className={`${
                 isDesktop
-                  ? "w-full max-w-[520px] rounded-3xl overflow-hidden shadow-2xl"
+                  ? "w-full max-w-[480px] rounded-3xl overflow-hidden shadow-2xl"
                   : "w-[90vw] max-w-[400px] min-h-[180px] max-h-[300px] rounded-3xl overflow-hidden shadow-2xl mb-4 mx-auto"
               } bg-white/5 flex items-center justify-center`}
             >
@@ -260,7 +260,7 @@ function ProductPage() {
                 src={product.images.data[0]?.attributes.url}
                 alt={localName(product.name)}
                 className="w-full h-full object-contain"
-                style={{ maxHeight: isDesktop ? "55vh" : "100%" }}
+                style={{ maxHeight: isDesktop ? "48vh" : "100%" }}
               />
             </div>
           </div>
@@ -460,7 +460,7 @@ function ProductPage() {
         </div>
         {/* Related секция под основным блоком, но внутри <main> */}
         {related.length > 0 && (
-          <section className="w-full max-w-[1200px] mx-auto px-6 mt-8 mb-16">
+          <section className="w-full max-w-[1200px] mx-auto px-6 mt-4 mb-16">
             <div className="w-full rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
               <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
                 {t("youMayAlsoLike") || "Вам также может понравиться"}
