@@ -238,26 +238,42 @@ function ProductPage() {
 
   return (
     <>
-    <main className="relative h-[100dvh] overflow-hidden flex items-start justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+76px)]">
-      <div className={`w-full max-w-[1400px] flex flex-col ${isDesktop ? 'gap-0' : ''} z-10`}>
-        <div className={`flex w-full ${isDesktop ? 'flex-row items-start gap-8 lg:gap-12' : 'flex-col'}`}>
+    <main className="min-h-screen flex flex-col items-center justify-start pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+76px)] bg-transparent">
+      <div className="w-full max-w-[1400px] flex flex-col z-10">
+        <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
-          <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
-                ? 'lg:w-1/2 lg:max-h-[55vh] lg:h-auto lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-20'
-                : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center z-20'}`}>
-            <div className="w-full h-full z-10 relative">
+          <div
+            className={`${
+              isDesktop
+                ? "w-1/2 max-w-[50%] flex-shrink-0 flex justify-center items-center"
+                : "w-full flex justify-center items-center"
+            }`}
+          >
+            <div
+              className={`${
+                isDesktop
+                  ? "w-full max-w-[520px] aspect-[1/1] rounded-3xl overflow-hidden shadow-2xl"
+                  : "w-[90vw] max-w-[400px] h-[38vw] min-h-[180px] max-h-[300px] aspect-[1/1] rounded-3xl overflow-hidden shadow-2xl mb-4 mx-auto"
+              } bg-white/5 flex items-center justify-center`}
+            >
               <img
                 src={product.images.data[0]?.attributes.url}
                 alt={localName(product.name)}
-                className="absolute inset-0 w-full h-full object-contain"
+                className="w-full h-full object-contain"
+                style={{ maxHeight: isDesktop ? "55vh" : "100%" }}
               />
             </div>
           </div>
-
           {/* Контент */}
-          <div className={`w-full flex flex-col flex-1 min-h-0 max-h-full overflow-y-auto ${isDesktop ? 'lg:w-1/2 lg:h-full justify-start' : ''}`}>
-            <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
-            <div className="flex flex-col gap-5 lg:gap-8">
+          <div
+            className={`${
+              isDesktop
+                ? "w-1/2 max-w-[50%] flex flex-col justify-start"
+                : "w-full flex flex-col"
+            }`}
+          >
+            <div className="flex-1 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
+              <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
@@ -442,9 +458,9 @@ function ProductPage() {
           </div>
         </div>
         </div>
-        {/* Related секция теперь внутри flex-контейнера */}
+        {/* Related секция под основным блоком, но внутри <main> */}
         {related.length > 0 && (
-          <section className="flex-shrink-0 overflow-y-auto w-full max-w-[1200px] mx-auto px-6 mt-6 mb-16">
+          <section className="w-full max-w-[1200px] mx-auto px-6 mt-8 mb-16">
             <div className="w-full rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
               <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
                 {t("youMayAlsoLike") || "Вам также может понравиться"}
