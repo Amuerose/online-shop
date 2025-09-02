@@ -238,11 +238,11 @@ function ProductPage() {
 
   return (
     <>
-    <main className="relative min-h-[100dvh] overflow-visible flex items-start justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+    <main className="relative h-[100dvh] overflow-hidden flex items-start justify-center pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+76px)]">
       <div className={`w-full max-w-[1400px] flex ${isDesktop ? 'flex-row items-start gap-8 lg:gap-12' : 'flex-col'} z-10`}>
         {/* Изображение */}
         <div className={`w-full flex-shrink-0 flex justify-center items-center relative ${isDesktop
-              ? 'lg:w-1/2 lg:h-[72vh] lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-20'
+              ? 'lg:w-1/2 lg:h-[clamp(44vh,62vh,68vh)] lg:pt-0 rounded-3xl overflow-hidden shadow-2xl z-20'
               : 'h-[40dvh] mb-4 ml-4 mr-4 max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden shadow-2xl relative self-center z-20'}`}>
           <div className="w-full h-full z-10 relative">
             <img
@@ -254,7 +254,7 @@ function ProductPage() {
         </div>
 
         {/* Контент */}
-        <div className={`w-full flex flex-col min-h-0 max-h-full overflow-hidden ${isDesktop ? 'lg:w-1/2 lg:h-full justify-start' : 'flex-1'}`}>
+        <div className={`w-full flex flex-col min-h-0 max-h-full overflow-y-auto ${isDesktop ? 'lg:w-1/2 lg:h-full justify-start' : 'flex-1'}`}>
           <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
             <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
@@ -489,12 +489,12 @@ function ProductPage() {
     </main>
 
     {related.length > 0 && (
-      <section className="px-6 mt-10 mb-24">
-        <div className="w-full max-w-[1400px] mx-auto rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
+      <section className="px-6 mt-6 mb-16">
+        <div className="w-full max-w-[1200px] mx-auto rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
           <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
             {t("youMayAlsoLike") || "Вам также может понравиться"}
           </h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="flex flex-wrap gap-4 justify-center">
             {related.map(r => {
               const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
               return (
