@@ -252,8 +252,8 @@ function ProductPage() {
             <div
               className={`${
                 isDesktop
-                  ? "w-full max-w-[520px] aspect-[1/1] rounded-3xl overflow-hidden shadow-2xl"
-                  : "w-[90vw] max-w-[400px] h-[38vw] min-h-[180px] max-h-[300px] aspect-[1/1] rounded-3xl overflow-hidden shadow-2xl mb-4 mx-auto"
+                  ? "w-full max-w-[520px] rounded-3xl overflow-hidden shadow-2xl"
+                  : "w-[90vw] max-w-[400px] min-h-[180px] max-h-[300px] rounded-3xl overflow-hidden shadow-2xl mb-4 mx-auto"
               } bg-white/5 flex items-center justify-center`}
             >
               <img
