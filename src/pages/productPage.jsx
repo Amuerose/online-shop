@@ -238,7 +238,7 @@ function ProductPage() {
 
   return (
     <>
-    <main className="min-h-screen flex flex-col items-center justify-start pt-[calc(env(safe-area-inset-top)+86px)] pb-[calc(env(safe-area-inset-bottom)+76px)] bg-transparent">
+    <main className="min-h-screen flex flex-col items-center justify-between pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+76px)] bg-transparent">
       <div className="w-full max-w-[1400px] flex flex-col z-10">
         <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
