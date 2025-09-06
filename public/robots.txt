@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Allow: /privacy
+Sitemap: https://amuerose.cz/sitemap.xml
