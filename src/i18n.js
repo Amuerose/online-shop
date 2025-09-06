@@ -38,6 +38,15 @@ const resources = {
         addToCart: "do košíku",
         addToCartFull: "Přidat do košíku"
       },
+      accountNav: {
+        profile: "Profil",
+        orders: "Objednávky",
+        addresses: "Adresy",
+        wishlist: "Seznam přání",
+        bonuses: "Bonusy",
+        notifications: "Oznámení",
+        security: "Zabezpečení"
+      },
       scrollHintText: "Posuňte pro přečtení",
       addToFavorites: "Přidat do oblíbených",
       allergensTitle: "Alergeny",
@@ -45,7 +54,8 @@ const resources = {
       review: {
         yourRating: "Vaše hodnocení",
         yourComment: "Váš komentář",
-        submit: "Odeslat"
+        submit: "Odeslat",
+        writeReview: "Napsat recenzi"
       },
       tab: {
         description: "Popis",
@@ -151,6 +161,12 @@ const resources = {
       submitContact: "Odeslat",
       contactEmailLabel: "E‑mail:",
       contactPhoneLabel: "Telefon:",
+      reviewsMeta: {
+        average: "Průměrné hodnocení",
+        basedOn: "Na základě {{count}} recenzí",
+        writeReview: "Napsat recenzi",
+        ratingOutOf: "{{rating}} z 5"
+      },
           profile: {
         title: "Osobní účet",
         updatedSuccess: "Profil byl úspěšně aktualizován",
@@ -218,6 +234,15 @@ const resources = {
         addToCart: "В корзину",
         addToCartFull: "Добавить в корзину"
       },
+      accountNav: {
+        profile: "Профиль",
+        orders: "Заказы",
+        addresses: "Адреса",
+        wishlist: "Список желаний",
+        bonuses: "Бонусы",
+        notifications: "Уведомления",
+        security: "Безопасность"
+      },
       scrollHintText: "Прокрутите, чтобы прочитать",
       addToFavorites: "Добавить в избранное",
       allergensTitle: "Аллергены",
@@ -225,7 +250,8 @@ const resources = {
       review: {
         yourRating: "Ваша оценка",
         yourComment: "Ваш отзыв",
-        submit: "Отправить"
+        submit: "Отправить",
+        writeReview: "Написать отзыв"
       },
       tab: {
         description: "Описание",
@@ -331,6 +357,12 @@ const resources = {
       submitContact: "Отправить",
       contactEmailLabel: "Эл. почта:",
       contactPhoneLabel: "Телефон:",
+      reviewsMeta: {
+        average: "Средняя оценка",
+        basedOn: "На основе {{count}} отзывов",
+        writeReview: "Написать отзыв",
+        ratingOutOf: "{{rating}} из 5"
+      },
           profile: {
         title: "Личный кабинет",
         updatedSuccess: "Профиль успешно обновлен",
@@ -398,6 +430,15 @@ const resources = {
         addToCart: "Add to cart",
         addToCartFull: "Add to cart"
       },
+      accountNav: {
+        profile: "Profile",
+        orders: "Orders",
+        addresses: "Addresses",
+        wishlist: "Wishlist",
+        bonuses: "Bonuses",
+        notifications: "Notifications",
+        security: "Security"
+      },
       scrollHintText: "Scroll to read",
       addToFavorites: "Add to favorites",
       allergensTitle: "Allergens",
@@ -405,7 +446,8 @@ const resources = {
       review: {
         yourRating: "Your rating",
         yourComment: "Your comment",
-        submit: "Submit"
+        submit: "Submit",
+        writeReview: "Write a review"
       },
       tab: {
         description: "Description",
@@ -511,6 +553,12 @@ const resources = {
       submitContact: "Submit",
       contactEmailLabel: "Email:",
       contactPhoneLabel: "Phone:",
+      reviewsMeta: {
+        average: "Average rating",
+        basedOn: "Based on {{count}} reviews",
+        writeReview: "Write a review",
+        ratingOutOf: "{{rating}} out of 5"
+      },
      profile: {
         title: "My Account",
         updatedSuccess: "Profile successfully updated",
