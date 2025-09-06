@@ -272,7 +272,7 @@ function ProductPage() {
                 : "w-full flex flex-col"
             }`}
           >
-            <div className="flex-1 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-0">
+            <div className="flex-1 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-8">
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
@@ -316,13 +316,14 @@ function ProductPage() {
 
               {/* Tabs (glass card with attached header) */}
               <section className="mt-2">
-                <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl overflow-hidden">
-                  {/* Header */}
-                  <div
-                    role="tablist"
-                    aria-label={t("tab.ariaLabel") || "Product tabs"}
-                    className="relative grid grid-cols-2 text-sm font-medium"
-                  >
+                <div className="rounded-3xl shadow-xl">
+                  <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden">
+                    {/* Header */}
+                    <div
+                      role="tablist"
+                      aria-label={t("tab.ariaLabel") || "Product tabs"}
+                      className="relative grid grid-cols-2 text-sm font-medium"
+                    >
                     <button
                       id="tab-desc"
                       type="button"
@@ -354,16 +355,16 @@ function ProductPage() {
                       {t("tab.reviews") || "Отзывы"}{reviews.length ? ` (${reviews.length})` : ""}
                     </button>
                     {/* Active underline */}
-                    <span
-                      aria-hidden
-                      className={`absolute bottom-0 h-[2px] bg-[#BDA47A] transition-transform duration-300 ease-out w-1/2 ${
-                        tab === "reviews" ? "translate-x-full" : "translate-x-0"
-                      }`}
-                    />
-                  </div>
+                      <span
+                        aria-hidden
+                        className={`absolute bottom-0 h-[2px] bg-[#BDA47A] transition-transform duration-300 ease-out w-1/2 ${
+                          tab === "reviews" ? "translate-x-full" : "translate-x-0"
+                        }`}
+                      />
+                    </div>
 
-                  {/* Panel */}
-                  <div className="p-4 sm:p-5 lg:p-6">
+                    {/* Panel */}
+                    <div className="p-4 sm:p-5 lg:p-6">
                     {tab === "desc" ? (
                       <div
                         role="tabpanel"
@@ -451,6 +452,7 @@ function ProductPage() {
                         </form>
                       </div>
                     )}
+                    </div>
                   </div>
                 </div>
               </section>
