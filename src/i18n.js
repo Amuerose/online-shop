@@ -194,7 +194,9 @@ const resources = {
         city: "Město",
         postalCode: "PSČ",
         country: "Země",
-        agreePolicy: "Kliknutím na „Přidat“ souhlasíte s politikou ochrany osobních údajů"
+        agreePolicy: "Kliknutím na „Přidat“ souhlasíte s politikou ochrany osobních údajů",
+        addressesTitle: "Doručovací adresy",
+        homeLabel: "Domov"
       },
     }
   },
@@ -390,7 +392,9 @@ const resources = {
         city: "Город",
         postalCode: "Почтовый индекс",
         country: "Страна",
-        agreePolicy: "Нажимая «Добавить», вы соглашаетесь с политикой конфиденциальности"
+        agreePolicy: "Нажимая «Добавить», вы соглашаетесь с политикой конфиденциальности",
+        addressesTitle: "Адреса доставки",
+        homeLabel: "Дом"
       },  
     }
   },
@@ -586,7 +590,9 @@ const resources = {
         city: "City",
         postalCode: "Postal code",
         country: "Country",
-        agreePolicy: "By clicking “Add”, you agree to the privacy policy"
+        agreePolicy: "By clicking “Add”, you agree to the privacy policy",
+        addressesTitle: "Delivery addresses",
+        homeLabel: "Home"
       },  
     }
   }
