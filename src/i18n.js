@@ -185,20 +185,37 @@ const resources = {
         addPhone: "Přidat telefon",
         fillAddress: "Vyplňte prosím všechny údaje adresy",
         ordersHistory: "Zde bude historie vašich objednávek.",
+        ordersIntro: "Zde bude historie vašich objednávek.",
         noOrders: "Zatím nemáte žádné objednávky.",
-        notifications: "Nastavení oznámení",
+        notifications: {
+          title: "Nastavení oznámení",
+          email: "Emailová oznámení",
+          sms: "SMS oznámení"
+        },
         emailNotifications: "Emailová oznámení",
         smsNotifications: "SMS oznámení",
-        security: "Bezpečnost",
-        sessions: "Aktivní relace (zatím prázdné)",
-        wishlist: "Zde bude seznam přání (zatím prázdné)",
-        bonuses: "Zde budou informace o bonusech (zatím prázdné)",
+        security: {
+          title: "Zabezpečení",
+          sessionsPlaceholder: "Aktivní relace (zatím prázdné)",
+          logout: "Odhlásit se"
+        },
+        wishlist: {
+          placeholder: "Zde bude seznam přání (zatím prázdné)"
+        },
+        bonuses: {
+          placeholder: "Zde budou informace o bonusech (zatím prázdné)"
+        },
         addressLabel: "Štítek adresy (domov, práce…)",
         street: "Ulice a číslo domu",
         city: "Město",
         postalCode: "PSČ",
         country: "Země",
         agreePolicy: "Kliknutím na „Přidat“ souhlasíte s politikou ochrany osobních údajů",
+        addresses: {
+          title: "Doručovací adresy",
+          home: "Domov",
+          work: "Práce"
+        },
         addressesTitle: "Doručovací adresy",
         homeLabel: "Domov",
         workLabel: "Práce",
@@ -397,20 +414,37 @@ const resources = {
         addPhone: "Добавить телефон",
         fillAddress: "Пожалуйста, заполните все поля адреса",
         ordersHistory: "Здесь будет история ваших заказов.",
+        ordersIntro: "Здесь будет история ваших заказов.",
         noOrders: "У вас пока нет ни одного заказа.",
-        notifications: "Настройки уведомлений",
+        notifications: {
+          title: "Настройки уведомлений",
+          email: "Email уведомления",
+          sms: "SMS уведомления"
+        },
         emailNotifications: "Email уведомления",
         smsNotifications: "SMS уведомления",
-        security: "Безопасность",
-        sessions: "Активные сессии (заглушка)",
-        wishlist: "Здесь будет список желаний (заглушка)",
-        bonuses: "Здесь будет информация о бонусах/баллах (заглушка)",
+        security: {
+          title: "Безопасность",
+          sessionsPlaceholder: "Активные сессии (заглушка)",
+          logout: "Выйти из аккаунта"
+        },
+        wishlist: {
+          placeholder: "Здесь будет список желаний (заглушка)"
+        },
+        bonuses: {
+          placeholder: "Здесь будет информация о бонусах/баллах (заглушка)"
+        },
         addressLabel: "Метка адреса (дом, работа…)",
         street: "Улица и номер дома",
         city: "Город",
         postalCode: "Почтовый индекс",
         country: "Страна",
         agreePolicy: "Нажимая «Добавить», вы соглашаетесь с политикой конфиденциальности",
+        addresses: {
+          title: "Адреса доставки",
+          home: "Дом",
+          work: "Работа"
+        },
         addressesTitle: "Адреса доставки",
         homeLabel: "Дом",
         workLabel: "Работа",
@@ -609,20 +643,37 @@ const resources = {
         addPhone: "Add phone",
         fillAddress: "Please fill in all address fields",
         ordersHistory: "Your order history will appear here.",
+        ordersIntro: "Your order history will appear here.",
         noOrders: "You don’t have any orders yet.",
-        notifications: "Notification settings",
+        notifications: {
+          title: "Notification settings",
+          email: "Email notifications",
+          sms: "SMS notifications"
+        },
         emailNotifications: "Email notifications",
         smsNotifications: "SMS notifications",
-        security: "Security",
-        sessions: "Active sessions (placeholder)",
-        wishlist: "Your wishlist will appear here (placeholder)",
-        bonuses: "Your bonus points information will appear here (placeholder)",
+        security: {
+          title: "Security",
+          sessionsPlaceholder: "Active sessions (placeholder)",
+          logout: "Log out"
+        },
+        wishlist: {
+          placeholder: "Your wishlist will appear here (placeholder)"
+        },
+        bonuses: {
+          placeholder: "Your bonus points information will appear here (placeholder)"
+        },
         addressLabel: "Address label (home, work…)",
         street: "Street and house number",
         city: "City",
         postalCode: "Postal code",
         country: "Country",
         agreePolicy: "By clicking “Add”, you agree to the privacy policy",
+        addresses: {
+          title: "Delivery addresses",
+          home: "Home",
+          work: "Work"
+        },
         addressesTitle: "Delivery addresses",
         homeLabel: "Home",
         workLabel: "Work",
