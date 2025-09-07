@@ -224,10 +224,10 @@ function ProductPage() {
   return (
     <>
     <main className="flex flex-col h-[calc(100svh-160px)] overflow-hidden">
-      <div className="w-full max-w-[1400px] flex flex-col z-10">
+      <section className="w-full max-w-[1400px] flex flex-col z-10 pt-[80px] pb-[100px] min-h-screen overflow-hidden md:overflow-visible">
         <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
-          <div className="w-full aspect-square shrink-0 flex items-center justify-center overflow-hidden px-4">
+          <div className="w-full max-w-[90vw] mx-auto aspect-square rounded-3xl overflow-hidden mt-2 md:mt-0 flex items-center justify-center px-4">
             <img
               src={product.images.data[0]?.attributes.url}
               alt={localName(product.name)}
@@ -342,14 +342,16 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4"
                       >
-                        <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
-                          {localName(product.description) || t("noDescription")}
-                        </p>
-                        <div className="flex justify-end items-start gap-4">
-                          <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                            <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                              {t("allergensTitle")} (čísla EU): 6, 7
-                            </h3>
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[30vh] overflow-y-auto">
+                          <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                            {localName(product.description) || t("noDescription")}
+                          </p>
+                          <div className="flex justify-end items-start gap-4">
+                            <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                              <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
+                                {t("allergensTitle")} (čísla EU): 6, 7
+                              </h3>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -360,38 +362,39 @@ function ProductPage() {
                         aria-labelledby="tab-reviews"
                         className="space-y-4"
                       >
-                        {/* Average rating */}
-                        <div className="flex items-center gap-2 text-[#BDA47A]">
-                          <span className="font-medium">{avgRating || 0}/5</span>
-                          <div className="flex gap-1">
-                            {[1,2,3,4,5].map(n => (
-                              <span key={n} className={avgRating >= n ? "" : "opacity-30"}>★</span>
-                            ))}
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[30vh] overflow-y-auto">
+                          {/* Average rating */}
+                          <div className="flex items-center gap-2 text-[#BDA47A]">
+                            <span className="font-medium">{avgRating || 0}/5</span>
+                            <div className="flex gap-1">
+                              {[1,2,3,4,5].map(n => (
+                                <span key={n} className={avgRating >= n ? "" : "opacity-30"}>★</span>
+                              ))}
+                            </div>
+                            <span className="text-[#5C3A2E]/60 text-sm">({reviews.length || 0})</span>
                           </div>
-                          <span className="text-[#5C3A2E]/60 text-sm">({reviews.length || 0})</span>
-                        </div>
 
-                        {/* Reviews list */}
-                        {reviews.length > 0 ? (
-                          <div className="space-y-3">
-                            {reviews.map(r => (
-                              <div key={r.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
-                                <div className="flex items-center gap-2 text-[#BDA47A] text-sm mb-1">
-                                  {[1,2,3,4,5].map(n => (
-                                    <span key={n} className={Number(r.rating) >= n ? "" : "opacity-30"}>★</span>
-                                  ))}
-                                  <span className="text-[#5C3A2E]/60 text-xs">
-                                    {new Date(r.created_at).toLocaleDateString()}
-                                  </span>
+                          {/* Reviews list */}
+                          {reviews.length > 0 ? (
+                            <div className="space-y-3">
+                              {reviews.map(r => (
+                                <div key={r.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
+                                  <div className="flex items-center gap-2 text-[#BDA47A] text-sm mb-1">
+                                    {[1,2,3,4,5].map(n => (
+                                      <span key={n} className={Number(r.rating) >= n ? "" : "opacity-30"}>★</span>
+                                    ))}
+                                    <span className="text-[#5C3A2E]/60 text-xs">
+                                      {new Date(r.created_at).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>
                                 </div>
-                                <p className="text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-[#5C3A2E]/70">{t("noReviews") || "Пока нет отзывов."}</p>
-                        )}
-
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-[#5C3A2E]/70">{t("noReviews") || "Пока нет отзывов."}</p>
+                          )}
+                        </div>
                         {/* Review form */}
                         <form onSubmit={handleSubmitReview} className="space-y-2">
                           <div className="flex items-center gap-1 text-[#BDA47A]">
@@ -463,7 +466,7 @@ function ProductPage() {
             </div>
           </section>
         )}
-      </div>
+      </section>
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
