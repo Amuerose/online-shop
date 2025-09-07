@@ -58,15 +58,18 @@ function ProductPage() {
         console.log("LOADED PRODUCT ROW:", row);
         if (error) throw error;
 
+        // Принудительный парсинг JSON для name/description
+        const parsedName = typeof row.name === "string" ? JSON.parse(row.name) : row.name;
+        const parsedDesc = typeof row.description === "string" ? JSON.parse(row.description) : row.description;
         const name_obj = {
-          cs: row.name_cs ?? (row.name && row.name.cs) ?? "",
-          en: row.name_en ?? (row.name && row.name.en) ?? "",
-          ru: row.name_ru ?? (row.name && row.name.ru) ?? "",
+          cs: row.name_cs ?? (parsedName && parsedName.cs) ?? "",
+          en: row.name_en ?? (parsedName && parsedName.en) ?? "",
+          ru: row.name_ru ?? (parsedName && parsedName.ru) ?? "",
         };
         const desc_obj = {
-          cs: row.description_cs ?? (row.description && row.description.cs) ?? "",
-          en: row.description_en ?? (row.description && row.description.en) ?? "",
-          ru: row.description_ru ?? (row.description && row.description.ru) ?? "",
+          cs: row.description_cs ?? (parsedDesc && parsedDesc.cs) ?? "",
+          en: row.description_en ?? (parsedDesc && parsedDesc.en) ?? "",
+          ru: row.description_ru ?? (parsedDesc && parsedDesc.ru) ?? "",
         };
         const mapped = row
           ? {
