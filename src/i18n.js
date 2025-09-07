@@ -47,6 +47,10 @@ const resources = {
         notifications: "Oznámení",
         security: "Zabezpečení"
       },
+      common: {
+        add: "Přidat",
+        cancel: "Zrušit"
+      },
       scrollHintText: "Posuňte pro přečtení",
       addToFavorites: "Přidat do oblíbených",
       allergensTitle: "Alergeny",
@@ -196,7 +200,17 @@ const resources = {
         country: "Země",
         agreePolicy: "Kliknutím na „Přidat“ souhlasíte s politikou ochrany osobních údajů",
         addressesTitle: "Doručovací adresy",
-        homeLabel: "Domov"
+        homeLabel: "Domov",
+        workLabel: "Práce",
+        tabs: {
+          profile: "Profil",
+          orders: "Objednávky",
+          addresses: "Adresy",
+          wishlist: "Seznam přání",
+          bonuses: "Bonusy",
+          notifications: "Oznámení",
+          security: "Zabezpečení"
+        }
       },
     }
   },
@@ -244,6 +258,10 @@ const resources = {
         bonuses: "Бонусы",
         notifications: "Уведомления",
         security: "Безопасность"
+      },
+      common: {
+        add: "Добавить",
+        cancel: "Отмена"
       },
       scrollHintText: "Прокрутите, чтобы прочитать",
       addToFavorites: "Добавить в избранное",
@@ -394,7 +412,17 @@ const resources = {
         country: "Страна",
         agreePolicy: "Нажимая «Добавить», вы соглашаетесь с политикой конфиденциальности",
         addressesTitle: "Адреса доставки",
-        homeLabel: "Дом"
+        homeLabel: "Дом",
+        workLabel: "Работа",
+        tabs: {
+          profile: "Профиль",
+          orders: "Заказы",
+          addresses: "Адреса",
+          wishlist: "Список желаний",
+          bonuses: "Бонусы",
+          notifications: "Уведомления",
+          security: "Безопасность"
+        }
       },  
     }
   },
@@ -442,6 +470,10 @@ const resources = {
         bonuses: "Bonuses",
         notifications: "Notifications",
         security: "Security"
+      },
+      common: {
+        add: "Add",
+        cancel: "Cancel"
       },
       scrollHintText: "Scroll to read",
       addToFavorites: "Add to favorites",
@@ -592,7 +624,17 @@ const resources = {
         country: "Country",
         agreePolicy: "By clicking “Add”, you agree to the privacy policy",
         addressesTitle: "Delivery addresses",
-        homeLabel: "Home"
+        homeLabel: "Home",
+        workLabel: "Work",
+        tabs: {
+          profile: "Profile",
+          orders: "Orders",
+          addresses: "Addresses",
+          wishlist: "Wishlist",
+          bonuses: "Bonuses",
+          notifications: "Notifications",
+          security: "Security"
+        }
       },  
     }
   }

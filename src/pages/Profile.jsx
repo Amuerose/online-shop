@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { Pencil, Trash, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -15,9 +16,16 @@ const TABS = {
   SECURITY: 'security',
 };
 
+function useTabLabeler() {
+  const { t } = useTranslation();
+  return (tab) => t(`profile.tabs.${tab}`);
+}
+
 export default function Profile() {
   const { user, logout, updateProfileName, updateProfileEmail, updateProfilePhoto } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const tabLabel = useTabLabeler();
 
   const [activeTab, setActiveTab] = useState(TABS.PROFILE);
   const [burgerOpen, setBurgerOpen] = useState(false);
@@ -95,7 +103,7 @@ export default function Profile() {
     setAddressError('');
     const { label, street, city, postalCode, country } = newAddress;
     if (!label || !street || !city || !postalCode || !country) {
-      setAddressError('Пожалуйста, заполните все поля адреса');
+      setAddressError(t('profile.addresses.fillAll'));
       return;
     }
     setAddresses([...addresses, newAddress]);
@@ -120,9 +128,9 @@ export default function Profile() {
       if (avatarFile) {
         await updateProfilePhoto(avatarFile);
       }
-      setMessage('Профиль успешно обновлен');
+      setMessage(t('profile.updateSuccess'));
     } catch (e) {
-      setError('Ошибка при обновлении профиля');
+      setError(t('profile.updateError'));
     }
     setLoading(false);
   };
@@ -142,13 +150,13 @@ export default function Profile() {
             <UserAvatar user={user} size={96} className="mx-auto sm:mx-0" showName={false} showEmail={false} />
             <div className="flex flex-col text-white gap-2 w-full">
               <p className="text-xl font-semibold break-words text-center sm:text-left">
-                {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.displayName || 'User'}
+                {user?.user_metadata?.full_name || user?.user_metadata?.name || user?.displayName || t('common.user')}
               </p>
               <p className="text-sm opacity-80 text-center sm:text-left">{user?.email}</p>
 
               {/* Address row */}
               <div className="flex justify-between items-center text-sm">
-                <span className="opacity-80">Адрес</span>
+                <span className="opacity-80">{t('profile.address')}</span>
                 {user?.address ? (
                   <span>{user.address}</span>
                 ) : (
@@ -156,14 +164,14 @@ export default function Profile() {
                     onClick={() => setActiveTab(TABS.ADDRESSES)}
                     className="text-[#BDA47A] underline hover:no-underline"
                   >
-                    Добавить
+                    {t('common.add')}
                   </button>
                 )}
               </div>
 
               {/* Phone row */}
               <div className="flex justify-between items-center text-sm">
-                <span className="opacity-80">Телефон</span>
+                <span className="opacity-80">{t('profile.phone')}</span>
                 {user?.phoneNumber ? (
                   <span>{user.phoneNumber}</span>
                 ) : (
@@ -171,7 +179,7 @@ export default function Profile() {
                     onClick={() => setPhoneModalOpen(true)}
                     className="text-[#BDA47A] underline hover:no-underline"
                   >
-                    Добавить
+                    {t('common.add')}
                   </button>
                 )}
               </div>
@@ -182,26 +190,26 @@ export default function Profile() {
         return (
           <div className="flex flex-col h-full text-white gap-6">
             {/* Heading at top */}
-            <p className="text-lg opacity-80 text-center">Здесь будет история ваших заказов.</p>
+            <p className="text-lg opacity-80 text-center">{t('profile.ordersIntro')}</p>
 
             {/* Centered block for empty state */}
             <div className="flex flex-col items-center justify-center flex-1 gap-3">
-              <p className="text-sm opacity-60 text-center">У вас пока нет ни одного заказа.</p>
+              <p className="text-sm opacity-60 text-center">{t('profile.noOrders')}</p>
               <button
                 onClick={() => navigate('/shop')}
                 className="w-fit px-4 py-1.5 rounded-lg border border-white/20 bg-white/5 backdrop-blur-md text-[#BDA47A] text-sm font-semibold hover:bg-white/10 transition"
               >
-                Перейти в магазин
+                {t('profile.goToShop')}
               </button>
             </div>
           </div>
         );
       case TABS.ADDRESSES:
-        const defaultLabels = ['Дом', 'Работа'];
+        const defaultLabels = [t('profile.addresses.home'), t('profile.addresses.work')];
         return (
           <div className="flex flex-col h-full text-white gap-4">
             {/* Heading */}
-            <h3 className="text-lg font-semibold">Адреса доставки</h3>
+            <h3 className="text-lg font-semibold">{t('profile.addresses.title')}</h3>
 
             {/* Address rows */}
             <div className="flex-1 space-y-4 overflow-y-auto">
@@ -242,7 +250,7 @@ export default function Profile() {
                         }}
                         className="text-[#BDA47A] text-sm font-semibold"
                       >
-                        Добавить
+                        {t('common.add')}
                       </button>
                     </div>
                   )
@@ -256,7 +264,7 @@ export default function Profile() {
                 }}
                 className="w-fit self-start mt-4 px-3 py-1.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-[#BDA47A] text-sm font-bold hover:bg-white/10 transition"
               >
-                +
+                {t('common.add')}
               </button>
 
               {/* Additional custom addresses */}
@@ -289,7 +297,7 @@ export default function Profile() {
       case TABS.NOTIFICATIONS:
         return (
           <div className="space-y-4 text-white">
-            <h3 className="text-xl font-semibold mb-4">Настройки уведомлений</h3>
+            <h3 className="text-xl font-semibold mb-4">{t('profile.notifications.title')}</h3>
             <label className="flex items-center gap-3">
               <input
                 type="checkbox"
@@ -297,7 +305,7 @@ export default function Profile() {
                 onChange={() => setEmailNotifications(!emailNotifications)}
                 className="accent-[#BDA47A]"
               />
-              Email уведомления
+              {t('profile.notifications.email')}
             </label>
             <label className="flex items-center gap-3">
               <input
@@ -306,27 +314,27 @@ export default function Profile() {
                 onChange={() => setSmsNotifications(!smsNotifications)}
                 className="accent-[#BDA47A]"
               />
-              SMS уведомления
+              {t('profile.notifications.sms')}
             </label>
           </div>
         );
       case TABS.SECURITY:
         return (
           <div className="space-y-4 text-white">
-            <h3 className="text-xl font-semibold mb-4">Безопасность</h3>
-            <p>Активные сессии (заглушка)</p>
+            <h3 className="text-xl font-semibold mb-4">{t('profile.security.title')}</h3>
+            <p>{t('profile.security.sessionsPlaceholder')}</p>
             <button
               onClick={logout}
               className="w-full py-2 rounded bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
             >
-              Выйти из аккаунта
+              {t('profile.security.logout')}
             </button>
           </div>
         );
       case TABS.WISHLIST:
-        return <p className="text-white">Здесь будет список желаний (заглушка)</p>;
+        return <p className="text-white">{t('profile.wishlist.placeholder')}</p>;
       case TABS.BONUSES:
-        return <p className="text-white">Здесь будет информация о бонусах/баллах (заглушка)</p>;
+        return <p className="text-white">{t('profile.bonuses.placeholder')}</p>;
       default:
         return null;
     }
@@ -338,40 +346,40 @@ export default function Profile() {
       {addressModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white/5 border border-white/20 rounded-lg p-6 w-96 max-w-full">
-            <h3 className="text-lg font-semibold text-white mb-4">Добавить адрес</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">{t('profile.addresses.addAddress')}</h3>
 
             <div className="space-y-2">
               <input
                 type="text"
-                placeholder="Метка адреса (дом, работа…)"
+                placeholder={t('profile.addresses.labelPlaceholder')}
                 value={newAddress.label}
                 onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
                 className="w-full p-2 rounded bg-white/20 text-white"
               />
               <input
                 type="text"
-                placeholder="Улица и номер дома"
+                placeholder={t('profile.addresses.street')}
                 value={newAddress.street}
                 onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                 className="w-full p-2 rounded bg-white/20 text-white"
               />
               <input
                 type="text"
-                placeholder="Город"
+                placeholder={t('profile.addresses.city')}
                 value={newAddress.city}
                 onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                 className="w-full p-2 rounded bg-white/20 text-white"
               />
               <input
                 type="text"
-                placeholder="Почтовый индекс"
+                placeholder={t('profile.addresses.postcode')}
                 value={newAddress.postalCode}
                 onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
                 className="w-full p-2 rounded bg-white/20 text-white"
               />
               <input
                 type="text"
-                placeholder="Страна"
+                placeholder={t('profile.addresses.country')}
                 value={newAddress.country}
                 onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
                 className="w-full p-2 rounded bg-white/20 text-white"
@@ -380,8 +388,9 @@ export default function Profile() {
             </div>
 
             <p className="text-xs text-white mt-4 mb-2">
-              Нажимая&nbsp;
-              <span className="font-semibold">«Добавить»</span>, вы соглашаетесь с&nbsp;
+              {t('profile.policy.prefix')}&nbsp;
+              <span className="font-semibold">«{t('common.add')}»</span>,&nbsp;
+              {t('profile.policy.suffix')}&nbsp;
               <a
                 href="/privacy"
                 target="_blank"
@@ -407,13 +416,13 @@ export default function Profile() {
                 }}
                 className="px-3 py-1 text-xs rounded-lg border border-white/20 hover:bg-white/10"
               >
-                Отмена
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleAddAddress}
                 className="px-3 py-1 text-xs rounded-lg bg-[#BDA47A] text-black font-semibold"
               >
-                Добавить
+                {t('common.add')}
               </button>
             </div>
           </div>
@@ -423,17 +432,18 @@ export default function Profile() {
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-transparent p-0 w-[95vw] sm:w-[600px]">
             <div className="rounded-xl bg-white/5 border border-white/20 p-6 w-full">
-              <h3 className="text-lg font-semibold text-white mb-4">Добавить телефон</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">{t('profile.phoneAddTitle')}</h3>
               <input
                 type="tel"
-                placeholder="+420 …"
+                placeholder={t('profile.phonePlaceholder')}
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
                 className="w-full p-2 mb-3 rounded bg-white/20 text-white"
               />
               <p className="text-xs text-white mb-4">
-                Нажимая&nbsp;
-                <span className="font-semibold">«Добавить»</span>, вы соглашаетесь с&nbsp;
+                {t('profile.policy.prefix')}&nbsp;
+                <span className="font-semibold">«{t('common.add')}»</span>,&nbsp;
+                {t('profile.policy.suffix')}&nbsp;
                 <a
                   href="/privacy"
                   target="_blank"
@@ -454,14 +464,14 @@ export default function Profile() {
                   onClick={() => setPhoneModalOpen(false)}
                   className="px-3 py-1 text-xs rounded-lg border border-white/20 hover:bg-white/10"
                 >
-                  Отмена
+                  {t('common.cancel')}
                 </button>
                 <button
                   disabled={!newPhone}
                   onClick={handleSavePhone}
                   className="px-3 py-1 text-xs rounded-lg bg-[#BDA47A] text-black disabled:opacity-40"
                 >
-                  Добавить
+                  {t('common.add')}
                 </button>
               </div>
             </div>
@@ -471,7 +481,7 @@ export default function Profile() {
       <div className="flex flex-col items-center justify-center min-h-[100dvh] pt-[100px] px-4 pb-[80px] sm:pb-[160px] overflow-y-auto bg-[#2e1c12] bg-[url('/images/dark-chocolate-texture.jpg')] bg-cover bg-center bg-fixed">
         <div className="relative max-w-6xl mx-auto bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 shadow-xl">
 
-          <h1 className="text-3xl font-semibold text-[#BDA47A] mb-6 text-center">Личный кабинет</h1>
+          <h1 className="text-3xl font-semibold text-[#BDA47A] mb-6 text-center">{t('profile.title')}</h1>
           <div className="mt-4 flex">
             <nav className="shrink-0 flex flex-col gap-2 mr-4">
               {Object.entries(TABS).map(([key, value]) => (
@@ -482,7 +492,7 @@ export default function Profile() {
                     activeTab === value ? 'bg-white/10 text-[#BDA47A]' : 'hover:bg-white/5'
                   }`}
                 >
-                  {value.charAt(0).toUpperCase() + value.slice(1)}
+                  {tabLabel(value)}
                 </button>
               ))}
             </nav>
