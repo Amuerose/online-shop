@@ -52,24 +52,26 @@ function ProductPage() {
         // 1) сам товар
         const { data: row, error } = await supabase
           .from("products")
-          .select("id, name_cs, name_en, name_ru, description_cs, description_en, description_ru, price, image_url")
+          .select("id, name_cs, name_en, name_ru, description_cs, description_en, description_ru, name, description, price, image_url")
           .eq("id", id)
           .single();
         if (error) throw error;
 
+        const name_obj = {
+          cs: row.name_cs ?? row?.name?.cs ?? row?.name?.en ?? row?.name?.ru ?? "",
+          en: row.name_en ?? row?.name?.en ?? row?.name?.cs ?? row?.name?.ru ?? "",
+          ru: row.name_ru ?? row?.name?.ru ?? row?.name?.en ?? row?.name?.cs ?? "",
+        };
+        const desc_obj = {
+          cs: row.description_cs ?? row?.description?.cs ?? "",
+          en: row.description_en ?? row?.description?.en ?? "",
+          ru: row.description_ru ?? row?.description?.ru ?? "",
+        };
         const mapped = row
           ? {
               id: row.id,
-              name: {
-                cs: row.name_cs ?? row.name_en ?? row.name_ru ?? "",
-                en: row.name_en ?? row.name_cs ?? row.name_ru ?? "",
-                ru: row.name_ru ?? row.name_en ?? row.name_cs ?? "",
-              },
-              description: {
-                cs: row.description_cs ?? "",
-                en: row.description_en ?? "",
-                ru: row.description_ru ?? "",
-              },
+              name: name_obj,
+              description: desc_obj,
               price: row.price ?? 0,
               images: {
                 data: [
@@ -93,41 +95,14 @@ function ProductPage() {
           setSelectedVariant((v || []).find(x => x.is_default) || (v && v[0]) || null);
         }
 
-        // 3) похожие — временно отключаем выборку по категориям,
-        // чтобы не падать, если таблицы product_categories нет.
-        try {
-          const { data: cats, error: catsErr } = await supabase
-            .from("product_categories")
-            .select("category_id")
-            .eq("product_id", id);
-          if (catsErr || !cats || !cats.length) {
-            setRelated([]);
-          } else {
-            const categoryIds = [...new Set(cats.map(c => c.category_id))];
-            if (categoryIds.length) {
-              const { data: inCat } = await supabase
-                .from("product_categories")
-                .select("product_id")
-                .in("category_id", categoryIds)
-                .neq("product_id", id)
-                .limit(40);
-              const relIds = [...new Set((inCat || []).map(r => r.product_id))].slice(0, 8);
-              if (relIds.length) {
-                const { data: rel } = await supabase
-                  .from("products")
-                  .select("id, name_cs, name_en, name_ru, price, image_url")
-                  .in("id", relIds);
-                setRelated(rel || []);
-              } else {
-                setRelated([]);
-              }
-            } else {
-              setRelated([]);
-            }
-          }
-        } catch {
-          setRelated([]);
-        }
+        // 3) похожие — просто последние другие товары (без product_categories)
+        const { data: rel } = await supabase
+          .from("products")
+          .select("id, name_cs, name_en, name_ru, price, image_url")
+          .neq("id", id)
+          .order("created_at", { ascending: false })
+          .limit(8);
+        if (!cancelled) setRelated(rel || []);
 
         // 4) отзывы (загружаем отдельно и не ломаем общий рендер при ошибке)
         try {
@@ -251,21 +226,16 @@ function ProductPage() {
           <div
             className={`${
               isDesktop
-                ? "w-1/2 max-w-[50%] flex-shrink-0 flex justify-center items-start"
-                : "w-full flex justify-center items-start"
+                ? "w-1/2 max-w-[50%] flex-shrink-0 flex justify-center items-center"
+                : "w-full flex justify-center items-center"
             }`}
           >
-            <div
-              className={`inline-block ${
-                isDesktop
-                  ? "max-w-[560px] max-h-[60vh]"
-                  : "max-w-[92vw] max-h-[46vh]"
-              } rounded-3xl overflow-hidden shadow-2xl bg-transparent`}
-            >
+            <div className={`${isDesktop ? "w-full" : "w-[90vw] max-w-[480px]"} inline-flex items-center justify-center`}>
               <img
-                src={product.images.data[0]?.attributes?.url || ""}
+                src={product.images.data[0]?.attributes.url}
                 alt={localName(product.name)}
-                className="block w-auto h-auto max-w-full max-h-[60vh] rounded-3xl object-contain"
+                className="block max-w-full max-h-[60vh] rounded-3xl shadow-2xl"
+                style={{ objectFit: "contain" }}
               />
             </div>
           </div>
@@ -273,7 +243,7 @@ function ProductPage() {
           <div
             className={`${
               isDesktop
-                ? "w-1/2 max-w-[50%] flex flex-col justify-start"
+                ? "w-1/2 max-w-[50%] min-w-0 flex flex-col justify-start"
                 : "w-full flex flex-col"
             }`}
           >
@@ -369,7 +339,7 @@ function ProductPage() {
                     </div>
 
                     {/* Panel */}
-                    <div className="p-4 sm:p-5 lg:p-6">
+                    <div className="p-4 sm:p-5 lg:p-5">
                     {tab === "desc" ? (
                       <div
                         role="tabpanel"
@@ -479,7 +449,7 @@ function ProductPage() {
                     <div key={r.id} className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
                       <button onClick={() => navigate(`/product/${r.id}`)} className="w-full text-left" type="button">
                         <div className="w-full h-[130px] bg-white/5">
-                          <img src={r.image_url || ""} alt={rName} className="w-full h-full object-cover" />
+                          <img src={r.image_url || ""} alt={rName} className="w-full h-full object-contain rounded-2xl" />
                         </div>
                         <div className="p-2">
                           <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
