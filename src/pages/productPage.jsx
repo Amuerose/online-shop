@@ -223,25 +223,16 @@ function ProductPage() {
 
   return (
     <>
-    <main className="flex flex-col items-center justify-start gap-4 pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+88px)] min-h-[100svh]">
+    <main className="flex flex-col h-[calc(100svh-160px)] overflow-hidden">
       <div className="w-full max-w-[1400px] flex flex-col z-10">
         <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
-          <div
-            className={`${
-              isDesktop
-                ? "w-1/2 max-w-[50%] flex-shrink-0 flex justify-center items-center"
-                : "w-full flex justify-center items-center"
-            }`}
-          >
-            <div className={`${isDesktop ? "w-full" : "w-[90vw] max-w-[480px]"} inline-flex items-center justify-center`}>
-              <img
-                src={product.images.data[0]?.attributes.url}
-                alt={localName(product.name)}
-                className="w-full max-w-[360px] h-auto object-contain rounded-3xl shadow-2xl"
-                style={{ aspectRatio: '4/5' }}
-              />
-            </div>
+          <div className="w-full aspect-square shrink-0 flex items-center justify-center overflow-hidden px-4">
+            <img
+              src={product.images.data[0]?.attributes.url}
+              alt={localName(product.name)}
+              className="w-full h-full object-cover rounded-2xl"
+            />
           </div>
           {/* Контент */}
           <div
@@ -251,17 +242,17 @@ function ProductPage() {
                 : "w-full flex flex-col"
             }`}
           >
-            <div className="flex-1 overflow-y-auto lg:overflow-visible max-h-[calc(100svh-360px)] lg:max-h-full px-4 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-6">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E] pt-4 pb-4">
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
-                  <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold leading-tight text-center lg:text-left">
+                  <h1 className="text-base sm:text-lg font-semibold leading-tight text-center lg:text-left">
                     {localName(product.name)}
                   </h1>
                 </div>
                 <div className="text-right">
-                  <div className="text-[#BDA47A] text-xl sm:text-2xl lg:text-3xl font-semibold">
+                  <div className="text-[#BDA47A] text-base sm:text-lg font-semibold">
                     {displayPrice}
                   </div>
                 </div>
@@ -485,13 +476,13 @@ function ProductPage() {
               <button type="button" onClick={() => setQuantity((p) => p + 1)}
                 className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
             </div>
-            <button
-              type="button"
-              onClick={handleAdd}
-              className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
-            >
-              {t("buttons.addToCart")}
-            </button>
+              <button
+                type="button"
+                onClick={handleAdd}
+                className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
+              >
+                {t("buttons.addToCart")}
+              </button>
           </div>
         </div>
       )}
@@ -510,7 +501,7 @@ function ProductPage() {
             <button
               type="button"
               onClick={handleAdd}
-              className="h-10 px-6 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-base font-medium"
+              className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
             >
               {t("buttons.addToCart")}
             </button>
