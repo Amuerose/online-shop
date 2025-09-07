@@ -93,33 +93,39 @@ function ProductPage() {
           setSelectedVariant((v || []).find(x => x.is_default) || (v && v[0]) || null);
         }
 
-        // 3) похожие — другие товары из тех же категорий
-        const { data: cats } = await supabase
-          .from("product_categories")
-          .select("category_id")
-          .eq("product_id", id);
-
-        const categoryIds = [...new Set((cats || []).map(c => c.category_id))];
-        if (categoryIds.length) {
-          const { data: inCat } = await supabase
+        // 3) похожие — временно отключаем выборку по категориям,
+        // чтобы не падать, если таблицы product_categories нет.
+        try {
+          const { data: cats, error: catsErr } = await supabase
             .from("product_categories")
-            .select("product_id")
-            .in("category_id", categoryIds)
-            .neq("product_id", id)
-            .limit(40);
-
-          const relIds = [...new Set((inCat || []).map(r => r.product_id))].slice(0, 8);
-          if (relIds.length) {
-            const { data: rel } = await supabase
-              .from("products")
-              .select("id, name_cs, name_en, name_ru, price, image_url")
-              .in("id", relIds);
-
-            if (!cancelled) setRelated(rel || []);
-          } else if (!cancelled) {
+            .select("category_id")
+            .eq("product_id", id);
+          if (catsErr || !cats || !cats.length) {
             setRelated([]);
+          } else {
+            const categoryIds = [...new Set(cats.map(c => c.category_id))];
+            if (categoryIds.length) {
+              const { data: inCat } = await supabase
+                .from("product_categories")
+                .select("product_id")
+                .in("category_id", categoryIds)
+                .neq("product_id", id)
+                .limit(40);
+              const relIds = [...new Set((inCat || []).map(r => r.product_id))].slice(0, 8);
+              if (relIds.length) {
+                const { data: rel } = await supabase
+                  .from("products")
+                  .select("id, name_cs, name_en, name_ru, price, image_url")
+                  .in("id", relIds);
+                setRelated(rel || []);
+              } else {
+                setRelated([]);
+              }
+            } else {
+              setRelated([]);
+            }
           }
-        } else if (!cancelled) {
+        } catch {
           setRelated([]);
         }
 
@@ -245,22 +251,21 @@ function ProductPage() {
           <div
             className={`${
               isDesktop
-                ? "w-1/2 max-w-[50%] flex-shrink-0 flex justify-center items-center"
-                : "w-full flex justify-center items-center"
+                ? "w-1/2 max-w-[50%] flex-shrink-0 flex justify-center items-start"
+                : "w-full flex justify-center items-start"
             }`}
           >
             <div
-              className={`${
+              className={`inline-block ${
                 isDesktop
-                  ? "w-full max-w-[480px] rounded-3xl overflow-hidden shadow-2xl"
-                  : "w-[90vw] max-w-[400px] min-h-[180px] max-h-[300px] rounded-3xl overflow-hidden shadow-2xl mb-4 mx-auto"
-              } bg-white/5 flex items-center justify-center`}
+                  ? "max-w-[560px] max-h-[60vh]"
+                  : "max-w-[92vw] max-h-[46vh]"
+              } rounded-3xl overflow-hidden shadow-2xl bg-transparent`}
             >
               <img
-                src={product.images.data[0]?.attributes.url}
+                src={product.images.data[0]?.attributes?.url || ""}
                 alt={localName(product.name)}
-                className="w-full h-full object-contain"
-                style={{ maxHeight: isDesktop ? "48vh" : "100%" }}
+                className="block w-auto h-auto max-w-full max-h-[60vh] rounded-3xl object-contain"
               />
             </div>
           </div>
