@@ -251,7 +251,7 @@ function ProductPage() {
                 : "w-full flex flex-col"
             }`}
           >
-            <div className="flex-1 overflow-y-auto px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-8">
+            <div className="flex-1 overflow-y-auto lg:overflow-visible max-h-[calc(100vh-320px)] lg:max-h-full px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-8">
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
