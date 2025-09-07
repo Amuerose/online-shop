@@ -55,6 +55,7 @@ function ProductPage() {
           .select("*")
           .eq("id", id)
           .single();
+        console.log("LOADED PRODUCT ROW:", row);
         if (error) throw error;
 
         const name_obj = {
