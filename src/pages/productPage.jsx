@@ -223,7 +223,7 @@ function ProductPage() {
 
   return (
     <>
-    <main className="h-screen overflow-hidden flex flex-col items-center justify-start gap-4 lg:gap-10 pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+72px)] bg-transparent text-[90%] sm:text-[95%] md:text-[100%]">
+    <main className="flex flex-col items-center justify-start gap-4 pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+88px)] min-h-[100svh]">
       <div className="w-full max-w-[1400px] flex flex-col z-10">
         <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
@@ -238,8 +238,8 @@ function ProductPage() {
               <img
                 src={product.images.data[0]?.attributes.url}
                 alt={localName(product.name)}
-                className="block max-w-full max-h-[60vh] rounded-3xl shadow-2xl"
-                style={{ objectFit: "contain" }}
+                className="w-full max-w-[360px] h-auto object-contain rounded-3xl shadow-2xl"
+                style={{ aspectRatio: '4/5' }}
               />
             </div>
           </div>
@@ -251,7 +251,7 @@ function ProductPage() {
                 : "w-full flex flex-col"
             }`}
           >
-            <div className="flex-1 overflow-y-auto lg:overflow-visible max-h-[calc(100vh-320px)] lg:max-h-full px-6 sm:px-10 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-8">
+            <div className="flex-1 overflow-y-auto lg:overflow-visible max-h-[calc(100svh-360px)] lg:max-h-full px-4 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E] pt-0 pb-6">
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
