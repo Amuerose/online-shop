@@ -227,26 +227,26 @@ function ProductPage() {
       <section className="w-full max-w-[1400px] flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-10 w-full">
           {/* Изображение */}
-          <div className="w-full max-w-[90vw] aspect-square object-cover mx-auto rounded-lg sm:max-w-[40vw] overflow-hidden mt-2 md:mt-0 flex items-center justify-center px-4">
+          <div className="w-full sm:w-[50%] aspect-square max-w-[90vw] sm:max-w-[40vw] mx-auto flex items-center justify-center overflow-hidden rounded-3xl shadow-xl">
             <img
               src={product.images.data[0]?.attributes.url}
               alt={localName(product.name)}
-              className="w-full max-w-[90vw] aspect-square object-cover mx-auto rounded-lg sm:max-w-[40vw]"
+              className="w-full h-full object-cover rounded-3xl"
             />
           </div>
           {/* Контент */}
-          <div className="w-full sm:w-[50%] max-h-[calc(100dvh-64px)] overflow-y-auto px-4 sm:px-0">
-            <div className="pt-2 pb-[110px] flex-1 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E]">
+          <div className="w-full sm:w-[45%] max-h-[calc(100dvh-64px)] overflow-y-auto px-4 sm:px-0">
+            <div className="pt-2 pb-[110px] flex-1 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E] text-balance">
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col">
-                  <h1 className="text-base sm:text-lg font-semibold leading-tight text-center lg:text-left">
+                  <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold leading-tight text-center lg:text-left">
                     {localName(product.name)}
                   </h1>
                 </div>
                 <div className="text-right">
-                  <div className="text-[#BDA47A] text-base sm:text-lg font-semibold">
+                  <div className="text-[#BDA47A] text-lg sm:text-xl font-semibold">
                     {displayPrice}
                   </div>
                 </div>
@@ -336,8 +336,8 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[30vh] overflow-y-auto">
-                          <p className="text-xs sm:text-sm lg:text-base leading-relaxed opacity-90 text-center lg:text-left">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[40vh] overflow-y-auto">
+                          <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
                           <div className="flex justify-end items-start gap-4">
@@ -356,7 +356,7 @@ function ProductPage() {
                         aria-labelledby="tab-reviews"
                         className="space-y-4"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[30vh] overflow-y-auto">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[40vh] overflow-y-auto">
                           {/* Average rating */}
                           <div className="flex items-center gap-2 text-[#BDA47A]">
                             <span className="font-medium">{avgRating || 0}/5</span>
