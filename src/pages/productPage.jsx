@@ -52,20 +52,20 @@ function ProductPage() {
         // 1) сам товар
         const { data: row, error } = await supabase
           .from("products")
-          .select("id, name_cs, name_en, name_ru, description_cs, description_en, description_ru, name, description, price, image_url")
+          .select("*")
           .eq("id", id)
           .single();
         if (error) throw error;
 
         const name_obj = {
-          cs: row.name_cs ?? row?.name?.cs ?? row?.name?.en ?? row?.name?.ru ?? "",
-          en: row.name_en ?? row?.name?.en ?? row?.name?.cs ?? row?.name?.ru ?? "",
-          ru: row.name_ru ?? row?.name?.ru ?? row?.name?.en ?? row?.name?.cs ?? "",
+          cs: row.name_cs ?? (row.name && row.name.cs) ?? "",
+          en: row.name_en ?? (row.name && row.name.en) ?? "",
+          ru: row.name_ru ?? (row.name && row.name.ru) ?? "",
         };
         const desc_obj = {
-          cs: row.description_cs ?? row?.description?.cs ?? "",
-          en: row.description_en ?? row?.description?.en ?? "",
-          ru: row.description_ru ?? row?.description?.ru ?? "",
+          cs: row.description_cs ?? (row.description && row.description.cs) ?? "",
+          en: row.description_en ?? (row.description && row.description.en) ?? "",
+          ru: row.description_ru ?? (row.description && row.description.ru) ?? "",
         };
         const mapped = row
           ? {
