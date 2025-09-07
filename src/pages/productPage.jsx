@@ -223,7 +223,7 @@ function ProductPage() {
 
   return (
     <>
-    <main className="min-h-screen flex flex-col items-center justify-start gap-8 lg:gap-10 pt-[calc(env(safe-area-inset-top)+140px)] pb-[calc(env(safe-area-inset-bottom)+76px)] bg-transparent">
+    <main className="h-screen overflow-hidden flex flex-col items-center justify-start gap-4 lg:gap-10 pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+72px)] bg-transparent text-[90%] sm:text-[95%] md:text-[100%]">
       <div className="w-full max-w-[1400px] flex flex-col z-10">
         <div className={`w-full flex ${isDesktop ? "flex-row gap-10 items-start" : "flex-col"}`}>
           {/* Изображение */}
