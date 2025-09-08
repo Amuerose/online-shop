@@ -225,17 +225,15 @@ function ProductPage() {
     <>
     <main className="overflow-hidden sm:overflow-auto flex flex-col h-screen">
       <section className="w-full max-w-[1400px] flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-10 w-full">
+        <div className="w-full max-w-[1400px] mx-auto px-4 py-8 flex gap-10 items-start justify-center">
           {/* Изображение */}
-          <div className="w-full sm:w-[50%] aspect-square max-w-[90vw] sm:max-w-[40vw] mx-auto flex items-center justify-center overflow-hidden rounded-3xl shadow-xl">
-            <img
-              src={product.images.data[0]?.attributes.url}
-              alt={localName(product.name)}
-              className="w-full h-full object-cover rounded-3xl"
-            />
-          </div>
+          <img
+            src={product.images.data[0]?.attributes.url}
+            alt={localName(product.name)}
+            className="w-[45%] aspect-square object-cover rounded-xl"
+          />
           {/* Контент */}
-          <div className="w-full sm:w-[45%] max-h-[calc(100dvh-64px)] overflow-y-auto px-4 sm:px-0">
+          <div className="w-[45%] flex flex-col gap-4">
             <div className="pt-2 pb-[110px] flex-1 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E] text-balance">
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
