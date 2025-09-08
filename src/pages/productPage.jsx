@@ -225,16 +225,32 @@ function ProductPage() {
     <>
     <main className="overflow-hidden sm:overflow-auto flex flex-col h-screen">
       <section className="w-full max-w-[1400px] flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
-        <div className="w-full max-w-[1400px] mx-auto px-4 py-8 flex gap-10 items-start justify-center">
+        <div
+          className={
+            isDesktop
+              ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
+              : "w-full mx-auto px-4 pt-2 pb-4 h-[calc(100dvh-160px)] flex flex-col overflow-hidden"
+          }
+        >
           {/* Изображение */}
-          <img
-            src={product.images.data[0]?.attributes.url}
-            alt={localName(product.name)}
-            className="w-[45%] aspect-square object-cover rounded-xl"
-          />
+          <div
+            className={
+              isDesktop
+                ? "shrink-0 w-[520px] h-[520px] rounded-3xl overflow-hidden shadow-xl"
+                : "shrink-0 w-full max-w-[480px] mx-auto aspect-square max-h-[42vh] rounded-2xl overflow-hidden"
+            }
+          >
+            <img
+              src={product.images.data[0]?.attributes.url}
+              alt={localName(product.name)}
+              className={isDesktop ? "w-full h-full object-cover rounded-xl" : "w-full h-full object-contain rounded-xl"}
+            />
+          </div>
           {/* Контент */}
-          <div className="w-[45%] flex flex-col gap-4">
-            <div className="pt-2 pb-[110px] flex-1 sm:px-6 lg:px-16 scrollbar-none text-[#5C3A2E] text-balance">
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "flex-1 w-full flex flex-col"}>
+            <div
+              className={`${isDesktop ? "pt-2 pb-[110px] sm:px-6 lg:px-10" : "pt-1 pb-24 px-2 overflow-y-auto"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
+            >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
               <div className="flex justify-between items-start gap-4">
