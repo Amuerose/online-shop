@@ -228,8 +228,8 @@ function ProductPage() {
         <div
           className={
             isDesktop
-              ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12 text-center"
-              : "w-full mx-auto px-2 pt-2 pb-4 h-[calc(100dvh-160px)] flex flex-col gap-2 overflow-hidden"
+              ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
+              : "w-full mx-auto px-3 pt-2 pb-4 h-[calc(100dvh-160px)] flex flex-col gap-3 overflow-hidden"
           }
         >
           {/* Изображение */}
@@ -237,17 +237,17 @@ function ProductPage() {
             className={
               isDesktop
                 ? "shrink-0 w-[520px] h-[520px] rounded-3xl overflow-hidden shadow-xl"
-                : "shrink-0 w-full flex-1 mx-auto aspect-square rounded-2xl overflow-hidden"
+                : "w-[min(92vw,700px)] mx-auto flex-[0.7] min-h-[320px] max-h-[55dvh] rounded-2xl overflow-hidden"
             }
           >
             <img
               src={product.images.data[0]?.attributes.url}
               alt={localName(product.name)}
-              className={isDesktop ? "w-full h-full object-cover rounded-xl" : "w-full h-full object-contain rounded-xl"}
+              className="w-full h-full object-cover rounded-xl"
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0.6]"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0.3]"}>
             <div
               className={`${isDesktop ? "pt-2 pb-[110px] sm:px-6 lg:px-10" : "pt-1 pb-24 px-2 overflow-y-auto"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
