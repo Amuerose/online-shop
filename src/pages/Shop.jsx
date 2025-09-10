@@ -358,54 +358,48 @@ const Shop = () => {
       <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
       {/* Категории */}
       <div className="pt-24 pb-4">
-        <div ref={catWrapRef} className="relative max-w-[1000px] mx-auto w-full">
+        <div
+          ref={catWrapRef}
+          className="relative max-w-[1000px] mx-auto w-full"
+        >
           <div
-            ref={catScrollRef}
-            className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide no-scrollbar"
+            className="bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] rounded-[24px] px-2 py-1"
             style={{
-              WebkitOverflowScrolling: 'touch'
+              // fixed width for the category container, so last button is cut
+              width: '680px',
+              maxWidth: '100%',
             }}
-            onScroll={updateCategoryShadows}
           >
-            <div className="flex justify-start gap-4 px-4">
-              {categories.map((cat) => (
-                <button
-                  key={cat.slug || cat.id}
-                  onClick={() => setSelectedCategory(cat.slug || cat.id)}
-                  className={`shrink-0 text-sm sm:text-base px-4 py-2 rounded-full border backdrop-blur transition ${
-                    selectedCategory === (cat.slug || cat.id)
-                      ? 'bg-white/20 text-[#BDA47A] border-white/40'
-                      : 'bg-white/10 text-[#BDA47A] border-white/20 hover:bg-white/20'
-                  }`}
-                >
-                  {cat.name || cat.slug}
-                </button>
-              ))}
+            <div
+              ref={catScrollRef}
+              className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide no-scrollbar"
+              style={{
+                WebkitOverflowScrolling: 'touch'
+              }}
+              onScroll={updateCategoryShadows}
+            >
+              <div
+                className="flex justify-start gap-4 px-4"
+                style={{
+                  paddingRight: '60px', // half-button width to cut last button
+                }}
+              >
+                {categories.map((cat) => (
+                  <button
+                    key={cat.slug || cat.id}
+                    onClick={() => setSelectedCategory(cat.slug || cat.id)}
+                    className={`shrink-0 text-sm sm:text-base px-4 py-2 rounded-full border backdrop-blur transition ${
+                      selectedCategory === (cat.slug || cat.id)
+                        ? 'bg-white/20 text-[#BDA47A] border-white/40'
+                        : 'bg-white/10 text-[#BDA47A] border-white/20 hover:bg-white/20'
+                    }`}
+                  >
+                    {cat.name || cat.slug}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          {showSwipeHint && (
-            <div
-              className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2"
-              aria-hidden="true"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 64 64"
-                className="w-10 h-10 opacity-80 animate-finger-swipe"
-              >
-                <g fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 36v-8a4 4 0 0 1 8 0v8"/>
-                  <path d="M28 36v-12a4 4 0 0 1 8 0v12"/>
-                  <path d="M36 36v-10a4 4 0 0 1 8 0v10"/>
-                  <path d="M44 36v-6a4 4 0 0 1 8 0v10c0 8-6 14-14 14H28c-6 0-11-5-11-11v-7"/>
-                  <path d="M14 28c-2-2-6-2-8 0" opacity=".4"/>
-                </g>
-              </svg>
-              <span className="text-white/80 text-sm font-[Inter] select-none">
-                {t('hints.swipe', 'Свайпните')}
-              </span>
-            </div>
-          )}
         </div>
       </div>
 
