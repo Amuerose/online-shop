@@ -253,7 +253,7 @@ function ProductPage() {
             >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
-              <div className="flex justify-between items-start gap-4">
+              <div className={isDesktop ? "flex justify-between items-start gap-4" : "flex justify-between items-start gap-4 mt-3"}>
                 <div className="flex flex-col">
                   <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold leading-tight text-center lg:text-left">
                     {localName(product.name)}
