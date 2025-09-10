@@ -4,14 +4,14 @@ function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookieConsent");
+    const consent = localStorage.getItem("cookie-consent");
     if (!consent) {
       setVisible(true);
     }
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem("cookieConsent", "accepted");
+    localStorage.setItem("cookie-consent", "accepted");
     setVisible(false);
   };
 
