@@ -229,7 +229,7 @@ function ProductPage() {
           className={
             isDesktop
               ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
-              : "w-full mx-auto h-[calc(100dvh-160px)] flex flex-col overflow-hidden"
+              : "w-full mx-auto h-[calc(100dvh-160px)] flex flex-col overflow-hidden px-4"
           }
         >
           {/* Изображение */}
