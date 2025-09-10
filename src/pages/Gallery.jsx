@@ -34,8 +34,10 @@ function Gallery() {
       }}
     >
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+        {console.log("Gallery items for rendering:", items)}
         {items.map((item, index) => {
-          const imageUrl = supabase.storage.from("product-images").getPublicUrl(item.title).data.publicUrl;
+          const imageUrl = item.image_url;
+          console.log("Rendering image_url:", imageUrl);
           return (
             <div key={item.id || index} className="overflow-hidden rounded">
               <img
