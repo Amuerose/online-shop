@@ -360,13 +360,16 @@ const Shop = () => {
       <div className="pt-24 pb-4">
         <div
           ref={catWrapRef}
-          className="relative max-w-[1000px] mx-auto w-full"
+          className="relative mx-auto w-full"
+          style={{
+            maxWidth: '100%',
+            width: '1200px',
+          }}
         >
           <div
             className="bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] rounded-[24px] px-2 py-1"
             style={{
-              // fixed width for the category container, so last button is cut
-              width: '680px',
+              width: '1200px',
               maxWidth: '100%',
             }}
           >
@@ -381,7 +384,7 @@ const Shop = () => {
               <div
                 className="flex justify-start gap-4 px-4"
                 style={{
-                  paddingRight: '60px', // half-button width to cut last button
+                  paddingRight: '60px',
                 }}
               >
                 {categories.map((cat) => (
