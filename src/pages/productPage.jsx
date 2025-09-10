@@ -4,6 +4,7 @@ import { useCart } from "../contexts/CartContext";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../lib/supabaseClient";
 import useIsDesktop from "../hooks/useIsDesktop";
+import { Helmet } from "react-helmet-async";
 
 // NOTE: Ensure global.css includes:
 // html, body {
@@ -223,6 +224,33 @@ function ProductPage() {
 
   return (
     <>
+    <Helmet>
+      <title>{localName(product.name)} – Amuerose</title>
+      <meta name="description" content={localName(product.description)?.slice(0,160) || ""} />
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "name": localName(product.name),
+          "image": [product.images?.data?.[0]?.attributes?.url || ""],
+          "description": localName(product.description),
+          "sku": product.id,
+          "brand": { "@type": "Brand", "name": "Amuerose" },
+          "offers": {
+            "@type": "Offer",
+            "url": `https://amuerose.cz/product/${product.id}`,
+            "priceCurrency": "CZK",
+            "price": Number(selectedVariant ? selectedVariant.price : product.price) || 0,
+            "availability": "https://schema.org/InStock"
+          },
+          "aggregateRating": reviews.length ? {
+            "@type": "AggregateRating",
+            "ratingValue": avgRating,
+            "reviewCount": reviews.length
+          } : undefined
+        })}
+      </script>
+    </Helmet>
     <main className="overflow-hidden sm:overflow-auto flex flex-col h-screen">
       <section className="w-full max-w-[1400px] flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
         <div
