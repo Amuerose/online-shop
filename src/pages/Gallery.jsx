@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import Masonry from 'react-masonry-css';
 
 function Gallery() {
   const [items, setItems] = useState([]);
@@ -33,7 +34,11 @@ function Gallery() {
         backgroundSize: 'cover'
       }}
     >
-      <div className="columns-2 md:columns-3 lg:columns-4 gap-4 p-4">
+      <Masonry
+        breakpointCols={{ default: 5, 1100: 4, 700: 2, 500: 1 }}
+        className="flex gap-4 p-4"
+        columnClassName="bg-clip-padding"
+      >
         {console.log("Gallery items for rendering:", items)}
         {items.map((item, index) => {
           const imageUrl = item.image_url;
@@ -49,7 +54,7 @@ function Gallery() {
             </div>
           );
         })}
-      </div>
+      </Masonry>
     </div>
   );
 }
