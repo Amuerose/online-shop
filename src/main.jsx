@@ -7,13 +7,16 @@ import { CartProvider } from './contexts/CartContext.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './styles/datepicker.css';
+import { HelmetProvider } from 'react-helmet-async';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Router>
     <AuthProvider>
       <CartProvider>
         <Suspense fallback={<div>Загрузка...</div>}>
-          <App />
+          <HelmetProvider>
+            <App />
+          </HelmetProvider>
         </Suspense>
       </CartProvider>
     </AuthProvider>
