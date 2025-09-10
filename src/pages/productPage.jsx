@@ -237,7 +237,7 @@ function ProductPage() {
             className={
               isDesktop
                 ? "relative shrink-0 w-[520px] h-[520px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full max-w-[720px] mx-auto flex-[0_0_45%] rounded-2xl overflow-hidden shadow-xl"
+                : "relative w-full max-w-[720px] mx-auto flex-[0_0_50%] rounded-2xl overflow-hidden shadow-xl"
             }
           >
             <img
