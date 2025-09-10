@@ -229,7 +229,7 @@ function ProductPage() {
           className={
             isDesktop
               ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
-              : "w-full mx-auto px-3 pt-2 pb-4 h-[calc(100dvh-160px)] flex flex-col gap-3 overflow-hidden"
+              : "w-full mx-auto h-[calc(100dvh-160px)] flex flex-col overflow-hidden"
           }
         >
           {/* Изображение */}
@@ -237,7 +237,7 @@ function ProductPage() {
             className={
               isDesktop
                 ? "relative shrink-0 w-[520px] h-[520px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full max-w-[720px] mx-auto flex-[0_0_45%] h-[45%] rounded-2xl overflow-hidden shadow-xl"
+                : "relative w-full max-w-[720px] mx-auto flex-[0_0_45%] rounded-2xl overflow-hidden shadow-xl"
             }
           >
             <img
@@ -247,7 +247,7 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0.3]"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0_0_55%] overflow-y-auto"}>
             <div
               className={`${isDesktop ? "pt-2 pb-[110px] sm:px-6 lg:px-10" : "pt-1 pb-24 px-2 overflow-y-auto"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
