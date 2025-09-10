@@ -10,6 +10,7 @@ function LocaleRedirect() {
 }
 import { CartProvider } from './contexts/CartContext';
 import i18n from './i18n';
+import useConsentScripts from './hooks/useConsentScripts';
 
 import Home from './pages/Home';
 import About from './pages/About';
@@ -34,6 +35,8 @@ function App() {
   useEffect(() => {
     i18n.changeLanguage('cs');
   }, []);
+
+  useConsentScripts();
 
   return (
     <CartProvider>
