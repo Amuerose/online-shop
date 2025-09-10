@@ -252,7 +252,7 @@ function ProductPage() {
       </script>
     </Helmet>
     <main className="overflow-hidden sm:overflow-auto flex flex-col h-screen">
-      <section className="w-full max-w-[1400px] flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
+      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
         <div
           className={
             isDesktop
