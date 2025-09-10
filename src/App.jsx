@@ -30,6 +30,7 @@ const Gallery = lazy(() => import('./pages/Gallery'));
 // UI Components
 import Header from './components/Header';
 import FloatingInfoPanel from './components/FloatingInfoPanel';
+import CookieBanner from './components/cookie/CookieBanner';
 
 function App() {
   useEffect(() => {
@@ -86,6 +87,7 @@ function App() {
           </div>} />
         </Routes>
         <FloatingInfoPanel />
+        <CookieBanner />
       </>
     </CartProvider>
   );

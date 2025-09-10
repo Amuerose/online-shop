@@ -9,7 +9,8 @@ function CookieBanner() {
     try {
       const raw = localStorage.getItem("cookie-consent");
       const parsed = raw ? JSON.parse(raw) : null;
-      if (!parsed || typeof parsed !== "object") {
+      console.log("cookie-consent loaded:", parsed);
+      if (!parsed) {
         setVisible(true);
       }
     } catch {
