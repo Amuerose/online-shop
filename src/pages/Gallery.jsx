@@ -34,16 +34,19 @@ function Gallery() {
       }}
     >
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-        {items.map((item, index) => (
-          <div key={item.id || index} className="overflow-hidden rounded">
-            <img
-              src={item.image_url}
-              alt={item.title || 'Gallery item'}
-              className="w-full h-auto block object-cover"
-              loading="lazy"
-            />
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const imageUrl = supabase.storage.from("product-images").getPublicUrl(item.title).data.publicUrl;
+          return (
+            <div key={item.id || index} className="overflow-hidden rounded">
+              <img
+                src={imageUrl}
+                alt={item.title || 'Gallery item'}
+                className="w-full h-auto block object-cover"
+                loading="lazy"
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
