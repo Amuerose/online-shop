@@ -57,6 +57,13 @@ function CookieBanner() {
 
       <ConsentModal
         isOpen={settingsOpen}
+        labels={{
+          title: "Nastavení souborů cookie",
+          necessary: { label: "Nezbytné", description: "Nutné pro fungování webu. Nelze vypnout." },
+          analytics: { label: "Analytika", description: "Pomáhají nám pochopit, jak používáte web." },
+          marketing: { label: "Marketing", description: "Používají se pro personalizaci reklamy." },
+          save: "Uložit"
+        }}
         onSave={(consent) => {
           localStorage.setItem("cookie-consent", JSON.stringify(consent));
           dispatchChange();
