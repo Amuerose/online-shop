@@ -33,17 +33,17 @@ function Gallery() {
         backgroundSize: 'cover'
       }}
     >
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      <div className="columns-2 md:columns-3 lg:columns-4 gap-4 p-4">
         {console.log("Gallery items for rendering:", items)}
         {items.map((item, index) => {
           const imageUrl = item.image_url;
           console.log("Rendering image_url:", imageUrl);
           return (
-            <div key={item.id || index} className="overflow-hidden rounded">
+            <div key={item.id || index} className="mb-4 break-inside-avoid">
               <img
                 src={imageUrl}
                 alt={item.title || 'Gallery item'}
-                className="w-full h-auto block object-cover"
+                className="w-full h-auto object-cover rounded"
                 loading="lazy"
               />
             </div>
