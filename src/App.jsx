@@ -1,5 +1,13 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
+function LocaleRedirect() {
+  const location = useLocation();
+  const { locale } = useParams();
+  const supported = new Set(["ru", "cs", "en"]);
+  if (!supported.has(locale || "")) return <Navigate to="/" replace />;
+  const nextPath = location.pathname.replace(/^\/(ru|cs|en)(?=\/|$)/, "");
+  return <Navigate to={nextPath || "/"} replace />;
+}
 import { CartProvider } from './contexts/CartContext';
 import i18n from './i18n';
 
@@ -32,6 +40,7 @@ function App() {
       <>
         <Header />
         <Routes>
+          <Route path=":locale/*" element={<LocaleRedirect />} />
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
