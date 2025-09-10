@@ -15,6 +15,7 @@ function Gallery() {
         return;
       }
       if (data) {
+        console.log("Gallery data:", data);
         setItems(data);
       }
     }
