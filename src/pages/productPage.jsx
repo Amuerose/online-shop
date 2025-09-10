@@ -247,9 +247,9 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0_0_55%] overflow-y-auto"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0_0_55%]"}>
             <div
-              className={`${isDesktop ? "pt-2 pb-[110px] sm:px-6 lg:px-10" : "pt-1 pb-24 px-2 overflow-y-auto"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
+              className={`${isDesktop ? "pt-2 pb-[110px] sm:px-6 lg:px-10" : "pt-1 pb-24 px-2 flex-1"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
@@ -350,7 +350,7 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[40vh] overflow-y-auto">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
@@ -370,7 +370,7 @@ function ProductPage() {
                         aria-labelledby="tab-reviews"
                         className="space-y-4"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[40vh] overflow-y-auto">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto">
                           {/* Average rating */}
                           <div className="flex items-center gap-2 text-[#BDA47A]">
                             <span className="font-medium">{avgRating || 0}/5</span>
