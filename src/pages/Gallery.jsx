@@ -23,7 +23,7 @@ function Gallery() {
       const knownImageExtensions = ['jpg', 'jpeg', 'png', 'heic', 'gif', 'bmp', 'webp', 'tiff', 'svg'];
       const knownVideoExtensions = ['mp4', 'mov', 'webm'];
       const itemsWithUrls = (data ?? [])
-        .filter(file => !!file.name)
+        .filter(file => !!file.name && !file.name.startsWith('.'))
         .map(file => {
           const ext = file.name.split('.').pop().toLowerCase();
           let type = null;
