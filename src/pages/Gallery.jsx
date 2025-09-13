@@ -17,13 +17,19 @@ function Gallery() {
         setItems([]);
         return;
       }
-      // Filter for image files only
-      const imageExtensions = ['jpg', 'jpeg', 'png', 'heic'];
+      console.log("Files from storage:", data);
+      // Filter for image files only by mimetype containing 'image/'
       const bucketUrl = "https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/object/public/product-images";
       const imageFiles = (data ?? []).filter(file => {
         if (!file.name) return false;
+        // Supabase storage list does not return mimetype, so we infer by extension
         const ext = file.name.split('.').pop().toLowerCase();
-        return imageExtensions.includes(ext);
+        const knownImageExtensions = ['jpg', 'jpeg', 'png', 'heic', 'gif', 'bmp', 'webp', 'tiff', 'svg'];
+        if (!knownImageExtensions.includes(ext)) {
+          console.log(`Ignoring unknown extension file: ${file.name}`);
+          return false;
+        }
+        return true;
       });
       const itemsWithUrls = imageFiles.map(file => ({
         title: file.name,
