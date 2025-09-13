@@ -7,22 +7,30 @@ function Gallery() {
 
   useEffect(() => {
     async function loadGallery() {
-      const { data, error } = await supabase.storage.from('product-images').list();
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .list('', { limit: 100 });
+
       if (error) {
         console.error('Error loading gallery:', error);
         return;
       }
-      if (data) {
+
+      if (data && data.length > 0) {
         console.log("Gallery data loaded:", data);
         const itemsWithUrls = data.map((file) => {
-          const { publicURL } = supabase.storage.from('product-images').getPublicUrl(file.name);
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(file.name);
           return {
             title: file.name,
-            image_url: publicURL,
+            image_url: publicUrl,
           };
         });
         setItems(itemsWithUrls);
         console.log("Gallery items set:", itemsWithUrls);
+      } else {
+        console.log("No files found in product-images bucket");
       }
     }
     loadGallery();
