@@ -6,34 +6,14 @@ function Gallery() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    async function loadGallery() {
-      const { data, error } = await supabase.storage
-        .from('product-images')
-        .list('', { limit: 100 });
-
-      if (error) {
-        console.error('Error loading gallery:', error);
-        return;
-      }
-
-      if (data && data.length > 0) {
-        console.log("Gallery data loaded:", data);
-        const itemsWithUrls = data.map((file) => {
-          const { data: { publicUrl } } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(file.name);
-          return {
-            title: file.name,
-            image_url: publicUrl,
-          };
-        });
-        setItems(itemsWithUrls);
-        console.log("Gallery items set:", itemsWithUrls);
-      } else {
-        console.log("No files found in product-images bucket");
-      }
-    }
-    loadGallery();
+    const files = ["Fik.JPG", "Malina.png", "Datle.png", "Boruvka.png"];
+    const bucketUrl = "https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/object/public/product-images";
+    const itemsWithUrls = files.map((file) => ({
+      title: file,
+      image_url: `${bucketUrl}/${file}`,
+    }));
+    setItems(itemsWithUrls);
+    console.log("Gallery items set:", itemsWithUrls);
   }, []);
 
   return (
@@ -52,10 +32,8 @@ function Gallery() {
         className="flex gap-4 p-4"
         columnClassName="bg-clip-padding"
       >
-        {console.log("Gallery items for rendering:", items)}
         {items.map((item, index) => {
           const imageUrl = item.image_url;
-          console.log("Rendering image_url:", imageUrl);
           return (
             <div key={item.title || index} className="mb-4 break-inside-avoid">
               <img
