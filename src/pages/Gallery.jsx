@@ -9,26 +9,20 @@ function Gallery() {
     async function loadGallery() {
       const { data, error } = await supabase.storage.from('product-images').list();
       if (error) {
-        console.error(error);
+        console.error('Error loading gallery:', error);
         return;
       }
       if (data) {
-        console.log("Gallery data:", data);
-        const itemsWithUrls = await Promise.all(
-          data.map(async (file, index) => {
-            const { publicURL, error: urlError } = supabase.storage.from('product-images').getPublicUrl(file.name);
-            if (urlError) {
-              console.error(urlError);
-              return null;
-            }
-            return {
-              id: file.id || index,
-              title: file.name,
-              image_url: publicURL,
-            };
-          })
-        );
-        setItems(itemsWithUrls.filter(item => item !== null));
+        console.log("Gallery data loaded:", data);
+        const itemsWithUrls = data.map((file) => {
+          const { publicURL } = supabase.storage.from('product-images').getPublicUrl(file.name);
+          return {
+            title: file.name,
+            image_url: publicURL,
+          };
+        });
+        setItems(itemsWithUrls);
+        console.log("Gallery items set:", itemsWithUrls);
       }
     }
     loadGallery();
@@ -55,7 +49,7 @@ function Gallery() {
           const imageUrl = item.image_url;
           console.log("Rendering image_url:", imageUrl);
           return (
-            <div key={item.id || index} className="mb-4 break-inside-avoid">
+            <div key={item.title || index} className="mb-4 break-inside-avoid">
               <img
                 src={imageUrl}
                 alt={item.title || 'Gallery item'}
