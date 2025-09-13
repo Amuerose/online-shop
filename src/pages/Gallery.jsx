@@ -7,17 +7,28 @@ function Gallery() {
 
   useEffect(() => {
     async function loadGallery() {
-      const { data, error } = await supabase
-        .from('galleries')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.storage.from('product-images').list();
       if (error) {
         console.error(error);
         return;
       }
       if (data) {
         console.log("Gallery data:", data);
-        setItems(data);
+        const itemsWithUrls = await Promise.all(
+          data.map(async (file, index) => {
+            const { publicURL, error: urlError } = supabase.storage.from('product-images').getPublicUrl(file.name);
+            if (urlError) {
+              console.error(urlError);
+              return null;
+            }
+            return {
+              id: file.id || index,
+              title: file.name,
+              image_url: publicURL,
+            };
+          })
+        );
+        setItems(itemsWithUrls.filter(item => item !== null));
       }
     }
     loadGallery();
