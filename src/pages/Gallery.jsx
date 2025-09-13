@@ -7,11 +7,14 @@ function Gallery() {
 
   useEffect(() => {
     async function fetchFiles() {
-      const { data, error } = await supabase.storage.from('product-images').list('', {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: 'name', order: 'asc' },
-      });
+      const { data, error } = await supabase
+        .storage
+        .from('product-images')
+        .list(null, {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'name', order: 'asc' },
+        });
       if (error) {
         console.error('Error fetching files:', error);
         setItems([]);
