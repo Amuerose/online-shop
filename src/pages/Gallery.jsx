@@ -18,23 +18,31 @@ function Gallery() {
         return;
       }
       console.log("Files from storage:", data);
-      // Filter for image files only by mimetype containing 'image/'
+      // Detect file type by extension: images and videos
       const bucketUrl = "https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/object/public/product-images";
-      const imageFiles = (data ?? []).filter(file => {
-        if (!file.name) return false;
-        // Supabase storage list does not return mimetype, so we infer by extension
-        const ext = file.name.split('.').pop().toLowerCase();
-        const knownImageExtensions = ['jpg', 'jpeg', 'png', 'heic', 'gif', 'bmp', 'webp', 'tiff', 'svg'];
-        if (!knownImageExtensions.includes(ext)) {
-          console.log(`Ignoring unknown extension file: ${file.name}`);
-          return false;
-        }
-        return true;
-      });
-      const itemsWithUrls = imageFiles.map(file => ({
-        title: file.name,
-        image_url: `${bucketUrl}/${file.name}`,
-      }));
+      const knownImageExtensions = ['jpg', 'jpeg', 'png', 'heic', 'gif', 'bmp', 'webp', 'tiff', 'svg'];
+      const knownVideoExtensions = ['mp4', 'mov', 'webm'];
+      const itemsWithUrls = (data ?? [])
+        .filter(file => !!file.name)
+        .map(file => {
+          const ext = file.name.split('.').pop().toLowerCase();
+          let type = null;
+          if (knownImageExtensions.includes(ext)) {
+            type = 'image';
+          } else if (knownVideoExtensions.includes(ext)) {
+            type = 'video';
+          }
+          if (!type) {
+            console.log(`Ignoring unsupported extension file: ${file.name}`);
+            return null;
+          }
+          return {
+            title: file.name,
+            url: `${bucketUrl}/${file.name}`,
+            type,
+          };
+        })
+        .filter(Boolean);
       setItems(itemsWithUrls);
       console.log("Gallery items set:", itemsWithUrls);
     }
@@ -58,15 +66,26 @@ function Gallery() {
         columnClassName="bg-clip-padding"
       >
         {items.map((item, index) => {
-          const imageUrl = item.image_url;
           return (
             <div key={item.title || index} className="mb-4 break-inside-avoid">
-              <img
-                src={imageUrl}
-                alt={item.title || 'Gallery item'}
-                className="w-full h-auto object-cover rounded"
-                loading="lazy"
-              />
+              {item.type === 'image' ? (
+                <img
+                  src={item.url}
+                  alt={item.title || 'Gallery item'}
+                  className="w-full h-auto object-cover rounded"
+                  loading="lazy"
+                />
+              ) : item.type === 'video' ? (
+                <video
+                  src={item.url}
+                  className="w-full h-auto object-cover rounded"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  controls={false}
+                />
+              ) : null}
             </div>
           );
         })}
