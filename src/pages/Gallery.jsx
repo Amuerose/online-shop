@@ -6,14 +6,33 @@ function Gallery() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    const files = ["Fik.JPG", "Malina.png", "Datle.png", "Boruvka.png"];
-    const bucketUrl = "https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/object/public/product-images";
-    const itemsWithUrls = files.map((file) => ({
-      title: file,
-      image_url: `${bucketUrl}/${file}`,
-    }));
-    setItems(itemsWithUrls);
-    console.log("Gallery items set:", itemsWithUrls);
+    async function fetchFiles() {
+      const { data, error } = await supabase.storage.from('product-images').list('', {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: 'name', order: 'asc' },
+      });
+      if (error) {
+        console.error('Error fetching files:', error);
+        setItems([]);
+        return;
+      }
+      // Filter for image files only
+      const imageExtensions = ['jpg', 'jpeg', 'png', 'heic'];
+      const bucketUrl = "https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/object/public/product-images";
+      const imageFiles = (data ?? []).filter(file => {
+        if (!file.name) return false;
+        const ext = file.name.split('.').pop().toLowerCase();
+        return imageExtensions.includes(ext);
+      });
+      const itemsWithUrls = imageFiles.map(file => ({
+        title: file.name,
+        image_url: `${bucketUrl}/${file.name}`,
+      }));
+      setItems(itemsWithUrls);
+      console.log("Gallery items set:", itemsWithUrls);
+    }
+    fetchFiles();
   }, []);
 
   return (
