@@ -5,6 +5,8 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default ({ mode }) => {
   const analyze = (mode === 'analyze') || process.env.ANALYZE === 'true';
   return defineConfig({
+    // Ensure Vite treats this as a single-page application (SPA)
+    appType: 'spa',
     plugins: [
       react(),
       analyze && visualizer({ filename: 'dist/bundle.html', open: true, gzipSize: true, brotliSize: true })
@@ -19,6 +21,8 @@ export default ({ mode }) => {
       ]
     },
     build: {
+      // Ensure 404.html from public is copied into dist for Cloudflare Pages custom 404 support
+      copyPublicDir: true,
       rollupOptions: {
         output: {
           manualChunks: {
