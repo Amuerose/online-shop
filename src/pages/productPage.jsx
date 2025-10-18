@@ -251,20 +251,20 @@ function ProductPage() {
         })}
       </script>
     </Helmet>
-    <main className="flex flex-col h-screen overflow-hidden">
-      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden">
+    <main className="flex flex-col min-h-screen overflow-x-hidden overflow-y-auto">
+      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-visible">
         <div
           className={
             isDesktop
               ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
-              : "w-full mx-auto h-[calc(100dvh-160px)] flex flex-col overflow-hidden px-4"
+              : "w-full mx-auto flex flex-col px-4 overflow-visible min-h-[calc(100dvh-180px)]"
           }
         >
           {/* Изображение */}
           <div
             className={
               isDesktop
-                ? "relative shrink-0 w-[520px] h-[520px] rounded-3xl overflow-hidden shadow-xl"
+                ? "relative shrink-0 w-[560px] h-[560px] rounded-3xl overflow-hidden shadow-xl"
                 : "relative w-full max-w-[720px] mx-auto flex-[0_0_50%] rounded-2xl overflow-hidden shadow-xl"
             }
           >
@@ -275,9 +275,9 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0_0_55%] overflow-hidden"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col flex-[0_0_55%]"}>
             <div
-              className={`${isDesktop ? "pt-2 pb-[110px] sm:px-6 lg:px-10" : "pt-1 pb-24 px-2 flex-1 overflow-hidden"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
+              className={`${isDesktop ? "pt-4 pb-[120px] sm:px-8 lg:px-12" : "pt-1 pb-24 px-2 flex-1"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
@@ -378,7 +378,7 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line h-full overflow-y-auto">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[45vh] overflow-y-auto">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
@@ -476,11 +476,11 @@ function ProductPage() {
               <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
                 {t("youMayAlsoLike") || "Вам также может понравиться"}
               </h3>
-              <div className="flex flex-wrap gap-4 justify-center">
+              <div className="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory px-1 justify-center md:justify-start flex-wrap md:overflow-visible">
                 {related.map(r => {
                   const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
                   return (
-                    <div key={r.id} className="min-w-[200px] max-w-[220px] bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
+                    <div key={r.id} className="min-w-[200px] max-w-[220px] snap-center bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
                       <button onClick={() => navigate(`/product/${r.id}`)} className="w-full text-left" type="button">
                         <div className="w-full h-[130px] bg-white/5">
                           <img src={r.image_url || ""} alt={rName} className="w-full h-full object-contain rounded-2xl" />
@@ -504,39 +504,19 @@ function ProductPage() {
         )}
       </section>
 
-      {/* Кнопки (десктоп) */}
-      {isDesktop && (
-        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] pointer-events-none">
-          <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
-              <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-              <button type="button" onClick={() => setQuantity((p) => p + 1)}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
-            </div>
-              <button
-                type="button"
-                onClick={handleAdd}
-                className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
-              >
-                {t("buttons.addToCart")}
-              </button>
-          </div>
-        </div>
-      )}
+    </main>
 
-      {/* Кнопки (мобилка) */}
-      <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] px-6 pointer-events-none">
-        <div className="w-full max-w-[1400px] mx-auto flex justify-end items-center gap-3 pointer-events-auto">
-          <div className="flex lg:hidden items-center gap-3">
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                className="w-6 h-6 rounded-full bg:white/10 border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
-              <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-              <button type="button" onClick={() => setQuantity((p) => p + 1)}
-                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
-            </div>
+    {/* Кнопки (десктоп) */}
+    {isDesktop && (
+      <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] pointer-events-none">
+        <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+              className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+            <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
+            <button type="button" onClick={() => setQuantity((p) => p + 1)}
+              className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
+          </div>
             <button
               type="button"
               onClick={handleAdd}
@@ -544,10 +524,31 @@ function ProductPage() {
             >
               {t("buttons.addToCart")}
             </button>
-          </div>
         </div>
       </div>
-      {/* Related removed from here; rendered below as its own section */}
+    )}
+
+    {/* Кнопки (мобилка) */}
+    <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] px-6 pointer-events-none">
+      <div className="w-full max-w-[1400px] mx-auto flex justify-end items-center gap-3 pointer-events-auto">
+        <div className="flex lg:hidden items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+              className="w-6 h-6 rounded-full bg:white/10 border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+            <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
+            <button type="button" onClick={() => setQuantity((p) => p + 1)}
+              className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
+          </div>
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
+          >
+            {t("buttons.addToCart")}
+          </button>
+        </div>
+      </div>
+    </div>
     </main>
 
     </>
