@@ -503,7 +503,6 @@ function ProductPage() {
           </section>
         )}
       </section>
-
     </main>
 
     {/* Кнопки (десктоп) */}
@@ -549,9 +548,7 @@ function ProductPage() {
         </div>
       </div>
     </div>
-    </main>
-
-    </>
+  </>
   );
 }
 
