@@ -469,45 +469,12 @@ function ProductPage() {
           </div>
         </div>
         </div>
-        {/* Related секция под основным блоком, но внутри <main> */}
-        {related.length > 0 && (
-          <section className="w-full max-w-[1200px] mx-auto px-6 mt-4 mb-16 flex-shrink-0">
-            <div className="w-full rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
-              <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
-                {t("youMayAlsoLike") || "Вам также может понравиться"}
-              </h3>
-              <div className="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory px-1 justify-center md:justify-start flex-wrap md:overflow-visible">
-                {related.map(r => {
-                  const rName = i18n.language === "cs" ? r.name_cs : i18n.language === "ru" ? r.name_ru : r.name_en;
-                  return (
-                    <div key={r.id} className="min-w-[200px] max-w-[220px] snap-center bg-white/10 border border-white/20 rounded-2xl overflow-hidden text-left hover:bg-white/20 transition">
-                      <button onClick={() => navigate(`/product/${r.id}`)} className="w-full text-left" type="button">
-                        <div className="w-full h-[130px] bg-white/5">
-                          <img src={r.image_url || ""} alt={rName} className="w-full h-full object-contain rounded-2xl" />
-                        </div>
-                        <div className="p-2">
-                          <div className="text-sm font-medium line-clamp-2 text-[#5C3A2E]">{rName}</div>
-                          <div className="text-xs text-[#BDA47A] mt-1">{fmtCZK.format(Number(r.price || 0))}</div>
-                        </div>
-                      </button>
-                      <div className="px-2 pb-2">
-                        <button type="button" onClick={() => handleQuickAdd(r)} className="w-full h-9 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition text-sm font-medium">
-                          {t("buttons.addToCart")}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
       </section>
     </main>
 
     {/* Кнопки (десктоп) */}
     {isDesktop && (
-      <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] pointer-events-none">
+      <div className="fixed bottom-[80px] left-0 right-0 z-[100] pointer-events-none">
         <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
