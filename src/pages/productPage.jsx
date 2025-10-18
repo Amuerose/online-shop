@@ -474,7 +474,7 @@ function ProductPage() {
 
     {/* Кнопки (десктоп) */}
     {isDesktop && (
-      <div className="fixed bottom-[80px] left-0 right-0 z-[100] pointer-events-none">
+      <div className="absolute bottom-0 right-0 z-[100] pointer-events-none">
         <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
