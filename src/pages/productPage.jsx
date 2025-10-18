@@ -251,8 +251,8 @@ function ProductPage() {
         })}
       </script>
     </Helmet>
-    <main className="overflow-hidden sm:overflow-auto flex flex-col h-screen">
-      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden md:overflow-visible">
+    <main className="flex flex-col h-screen overflow-hidden">
+      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-hidden">
         <div
           className={
             isDesktop
@@ -471,7 +471,7 @@ function ProductPage() {
         </div>
         {/* Related секция под основным блоком, но внутри <main> */}
         {related.length > 0 && (
-          <section className="w-full max-w-[1200px] mx-auto px-6 mt-4 mb-16">
+          <section className="w-full max-w-[1200px] mx-auto px-6 mt-4 mb-16 flex-shrink-0">
             <div className="w-full rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md shadow-xl p-4">
               <h3 className="text-base lg:text-lg font-semibold mb-3 text-[#5C3A2E]">
                 {t("youMayAlsoLike") || "Вам также может понравиться"}
@@ -506,7 +506,7 @@ function ProductPage() {
 
       {/* Кнопки (десктоп) */}
       {isDesktop && (
-        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-40 pointer-events-none">
+        <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] pointer-events-none">
           <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
@@ -527,7 +527,7 @@ function ProductPage() {
       )}
 
       {/* Кнопки (мобилка) */}
-      <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-50 px-6 pointer-events-none">
+      <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] px-6 pointer-events-none">
         <div className="w-full max-w-[1400px] mx-auto flex justify-end items-center gap-3 pointer-events-auto">
           <div className="flex lg:hidden items-center gap-3">
             <div className="flex items-center gap-2">
