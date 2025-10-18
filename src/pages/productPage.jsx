@@ -465,6 +465,35 @@ function ProductPage() {
                   </div>
                 </div>
               </section>
+              {/* Кнопка "Добавить в корзину" (десктоп) */}
+              {isDesktop && (
+                <div className="flex justify-end mt-6">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+                      className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
+                    >
+                      &minus;
+                    </button>
+                    <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((p) => p + 1)}
+                      className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAdd}
+                      className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
+                    >
+                      {t("buttons.addToCart")}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -472,27 +501,7 @@ function ProductPage() {
       </section>
     </main>
 
-    {/* Кнопки (десктоп) */}
-    {isDesktop && (
-      <div className="absolute bottom-0 right-0 z-[100] pointer-events-none">
-        <div className="w-full max-w-[1400px] mx-auto px-6 flex justify-end items-center gap-3 pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-              className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
-            <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-            <button type="button" onClick={() => setQuantity((p) => p + 1)}
-              className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
-          </div>
-            <button
-              type="button"
-              onClick={handleAdd}
-              className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
-            >
-              {t("buttons.addToCart")}
-            </button>
-        </div>
-      </div>
-    )}
+
 
     {/* Кнопки (мобилка) */}
     <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] left-0 right-0 z-[100] px-6 pointer-events-none">
