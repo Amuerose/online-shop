@@ -252,7 +252,7 @@ function ProductPage() {
       </script>
     </Helmet>
     <main className="flex flex-col h-screen overflow-hidden">
-      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-visible">
+      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[100px] pb-[100px] overflow-visible">
         <div
           className={
             isDesktop
@@ -265,7 +265,7 @@ function ProductPage() {
             className={
               isDesktop
                 ? "relative shrink-0 w-[560px] h-[560px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full h-[45vh] max-w-full rounded-none overflow-hidden shadow-xl"
+                : "relative w-full h-[45vh] max-w-full rounded-2xl overflow-hidden shadow-xl"
             }
           >
             <img
@@ -370,15 +370,15 @@ function ProductPage() {
                     </div>
 
                     {/* Panel */}
-                    <div className="p-4 sm:p-5 lg:p-5">
+                    <div className="p-4 sm:p-5 lg:p-5 h-full flex flex-col min-h-0">
                     {tab === "desc" ? (
                       <div
                         role="tabpanel"
                         id="tab-panel-desc"
                         aria-labelledby="tab-desc"
-                        className="space-y-4 h-full flex flex-col"
+                        className="space-y-4 flex-1 flex flex-col min-h-0"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line h-full overflow-y-auto pb-16 flex-1">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto pb-16">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
