@@ -48,10 +48,16 @@ function GlobalSearch({ isMobile = false }) {
   }, [i18n.language]);
 
   const filteredProducts = products.filter((product) => {
-    const name = typeof product.name === "string"
-      ? product.name
-      : product.name?.[i18n.language];
-    return name?.toLowerCase().includes(query.toLowerCase());
+    const searchTerm = query.trim().toLowerCase();
+    if (!searchTerm) return false;
+
+    const names = Object.values(product.name || {}).filter(Boolean).map(n => n.toLowerCase());
+    const descriptions = Object.values(product.description || {}).filter(Boolean).map(d => d.toLowerCase());
+
+    return (
+      names.some(n => n.includes(searchTerm)) ||
+      descriptions.some(d => d.includes(searchTerm))
+    );
   });
 
   return (

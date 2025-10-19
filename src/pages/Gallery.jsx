@@ -120,7 +120,7 @@ function Gallery() {
     if (sentinelVisible) fetchPage();
   }, [sentinelVisible, fetchPage]);
 
-  const masonryCols = useMemo(() => ({ default: 5, 1400: 4, 900: 3, 700: 2, 500: 1 }), []);
+  const masonryCols = useMemo(() => ({ default: 5, 1400: 4, 900: 3, 700: 2, 500: 2 }), []);
 
   return (
     <div
