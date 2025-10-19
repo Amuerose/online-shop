@@ -281,7 +281,7 @@ function ProductPage() {
             >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
-              <div className={isDesktop ? "flex justify-between items-start gap-4" : "flex justify-between items-start gap-4 mt-3"}>
+              <div className={isDesktop ? "flex justify-between items-start gap-4 shrink-0" : "flex justify-between items-start gap-4 mt-3 shrink-0"}>
                 <div className="flex flex-col">
                   <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold leading-tight text-center lg:text-left">
                     {localName(product.name)}
@@ -296,7 +296,7 @@ function ProductPage() {
 
               {/* Варианты (только если есть) */}
               {variants.length > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 shrink-0">
                   <div className="text-sm text-[#BDA47A] font-medium">{t("options.size") || "Размер набора"}</div>
                   <div className="flex flex-wrap gap-2">
                     {variants.map(v => {
@@ -321,7 +321,7 @@ function ProductPage() {
               )}
 
               {/* Tabs (glass card with attached header) */}
-              <section className="mt-2">
+              <section className="mt-2 flex-1 min-h-0">
                 <div className="rounded-3xl shadow-xl">
                   <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden">
                     {/* Header */}
@@ -383,7 +383,7 @@ function ProductPage() {
                             {localName(product.description) || t("noDescription")}
                           </p>
                         </div>
-                        <div className="mt-2 text-right text-sm lg:text-base font-semibold text-[#5C3A2E]">
+                        <div className="mt-2 text-right text-sm lg:text-base font-semibold text-[#5C3A2E] shrink-0">
                           {t("allergensTitle")} (čísla EU): 6, 7
                         </div>
                       </div>
@@ -463,7 +463,7 @@ function ProductPage() {
               </section>
               {/* Кнопка "Добавить в корзину" (десктоп) */}
               {isDesktop && (
-                <div className="flex justify-end mt-3 pt-2 border-t border-white/10">
+                <div className="flex justify-end mt-auto pt-2 border-t border-white/10 shrink-0">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
