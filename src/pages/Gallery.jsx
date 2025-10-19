@@ -84,7 +84,7 @@ function Gallery() {
         if (!type) return null;
         return {
           title: file.name,
-          url: `${BUCKET_BASE}/${file.name}`,
+          url: `${BUCKET_BASE.replace('object', 'render/image')}/${file.name}?width=800&quality=75&format=webp`,
           type,
         };
       })
