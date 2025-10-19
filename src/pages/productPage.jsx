@@ -251,13 +251,13 @@ function ProductPage() {
         })}
       </script>
     </Helmet>
-    <main className="flex flex-col min-h-screen overflow-x-hidden overflow-y-auto">
+    <main className="flex flex-col h-screen overflow-hidden">
       <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[80px] pb-[100px] overflow-visible">
         <div
           className={
             isDesktop
               ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
-              : "w-full mx-auto flex flex-col items-center px-4 overflow-visible pt-6"
+              : "w-full mx-auto flex flex-col items-center px-4 h-full overflow-hidden"
           }
         >
           {/* Изображение */}
@@ -265,7 +265,7 @@ function ProductPage() {
             className={
               isDesktop
                 ? "relative shrink-0 w-[560px] h-[560px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full aspect-square max-w-[500px] mx-auto rounded-2xl overflow-hidden shadow-xl mb-6"
+                : "relative w-full h-[45vh] max-w-full rounded-none overflow-hidden shadow-xl"
             }
           >
             <img
@@ -275,7 +275,7 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center h-[55vh] overflow-hidden"}>
             <div
               className={`${isDesktop ? "pt-4 pb-[120px] sm:px-8 lg:px-12" : "pt-1 pb-24 px-2 flex-1"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
@@ -376,19 +376,17 @@ function ProductPage() {
                         role="tabpanel"
                         id="tab-panel-desc"
                         aria-labelledby="tab-desc"
-                        className="space-y-4"
+                        className="space-y-4 h-full flex flex-col"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line max-h-[45vh] overflow-y-auto">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line h-full overflow-y-auto pb-16 flex-1">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
-                          <div className="flex justify-end items-start gap-4">
-                            <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2">
-                              <h3 className="text-sm lg:text-base font-semibold mb-1 text-right">
-                                {t("allergensTitle")} (čísla EU): 6, 7
-                              </h3>
-                            </div>
-                          </div>
+                        </div>
+                        <div className="sticky bottom-0 bg-white/10 backdrop-blur-md border-t border-white/20 px-3 py-2">
+                          <h3 className="text-sm lg:text-base font-semibold text-right">
+                            {t("allergensTitle")} (čísla EU): 6, 7
+                          </h3>
                         </div>
                       </div>
                     ) : (
