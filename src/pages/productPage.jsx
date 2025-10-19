@@ -275,9 +275,9 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center h-[55vh] overflow-hidden"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center h-[55vh] min-h-0 overflow-hidden relative"}>
             <div
-              className={`${isDesktop ? "pt-4 pb-[120px] sm:px-8 lg:px-12" : "pt-1 pb-24 px-2 flex-1"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
+              className={`${isDesktop ? "pt-4 pb-[120px] sm:px-8 lg:px-12" : "pt-1 pb-0 px-2 flex-1 min-h-0"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
@@ -378,7 +378,7 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4 flex-1 flex flex-col min-h-0"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto overscroll-contain pb-[180px] lg:pb-16 scrollbar-none pr-1">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto overscroll-contain pb-56 lg:pb-16 scrollbar-none pr-1">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
@@ -507,7 +507,7 @@ function ProductPage() {
         <div className="flex lg:hidden items-center gap-3">
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-              className="w-6 h-6 rounded-full bg:white/10 border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
+              className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">&minus;</button>
             <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
             <button type="button" onClick={() => setQuantity((p) => p + 1)}
               className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur">+</button>
