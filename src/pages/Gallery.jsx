@@ -84,7 +84,7 @@ function Gallery() {
         if (!type) return null;
         return {
           title: file.name,
-          url: `${BUCKET_BASE.replace('object', 'render/image')}/public/${file.name}?width=800&quality=75&format=webp`,
+          url: `https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/render/image/public/product-images/${file.name}?width=800&quality=75&format=webp`,
           type,
         };
       })
