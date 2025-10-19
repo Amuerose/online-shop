@@ -23,7 +23,7 @@ function useIntersection(ref, { root = null, rootMargin = '0px', threshold = 0.1
   return isIntersecting;
 }
 
-function MediaItem({ item }) {
+function MediaItem({ item, onSelect }) {
   const { type, url, title } = item;
   const ref = useRef(null);
   const visible = useIntersection(ref, { threshold: 0.15, rootMargin: '200px' });
@@ -32,7 +32,8 @@ function MediaItem({ item }) {
   return (
     <div
       ref={ref}
-      className="mb-4 break-inside-avoid rounded overflow-hidden"
+      className="mb-4 break-inside-avoid rounded overflow-hidden cursor-pointer"
+      onClick={() => type === 'image' && onSelect(url)}
       style={{ contentVisibility: 'auto', containIntrinsicSize: '300px' }}
     >
       {!visible ? (
@@ -67,6 +68,7 @@ function Gallery() {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const sentinelRef = useRef(null);
   const sentinelVisible = useIntersection(sentinelRef, { rootMargin: '600px' });
@@ -134,7 +136,7 @@ function Gallery() {
     >
       <Masonry breakpointCols={masonryCols} className="flex gap-4 p-4" columnClassName="bg-clip-padding">
         {items.map((item, idx) => (
-          <MediaItem key={`${item.title}-${idx}`} item={item} />
+          <MediaItem key={`${item.title}-${idx}`} item={item} onSelect={setSelectedImage} />
         ))}
       </Masonry>
 
@@ -144,6 +146,26 @@ function Gallery() {
       {/* Subtle loader */}
       {loading && (
         <div className="p-4 text-center text-sm text-neutral-500">Загрузка…</div>
+      )}
+
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img
+            src={selectedImage}
+            alt="Full view"
+            className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="absolute top-6 right-6 text-white text-3xl"
+            onClick={() => setSelectedImage(null)}
+          >
+            &times;
+          </button>
+        </div>
       )}
     </div>
   );
