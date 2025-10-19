@@ -321,7 +321,7 @@ function ProductPage() {
               )}
 
               {/* Tabs (glass card with attached header) */}
-              <section className="mt-2 flex-1 min-h-0">
+              <section className="mt-2 flex-1 min-h-0 max-h-[300px]">
                 <div className="rounded-3xl shadow-xl">
                   <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden">
                     {/* Header */}
