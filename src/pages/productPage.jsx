@@ -275,9 +275,9 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center h-[55vh] min-h-0 overflow-hidden relative lg:h-auto lg:overflow-visible"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] h-[560px] flex flex-col overflow-hidden gap-4" : "w-full flex flex-col items-center text-center h-[55vh] min-h-0 overflow-hidden relative lg:h-auto lg:overflow-visible"}>
             <div
-              className={`${isDesktop ? "pt-4 pb-[120px] sm:px-8 lg:px-12" : "pt-1 pb-0 px-2 flex-1 min-h-0 lg:overflow-visible"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
+              className={`${isDesktop ? "pt-2 pb-2 sm:px-6 lg:px-6" : "pt-1 pb-0 px-2 flex-1 min-h-0 lg:overflow-visible"} flex-1 flex flex-col min-h-0 scrollbar-none text-[#5C3A2E] text-balance`}
             >
               <div className="flex flex-col gap-5 lg:gap-8">
               {/* Заголовок + цена */}
@@ -378,12 +378,12 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4 flex-1 flex flex-col min-h-0"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto lg:overflow-visible overscroll-contain pb-[180px] lg:pb-16 scrollbar-none pr-1">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto overscroll-contain pb-[180px] lg:pb-6 scrollbar-none pr-1">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
                         </div>
-                        <div className="sticky lg:static bottom-0 bg-white/10 backdrop-blur-md border-t border-white/20 px-3 py-2">
+                        <div className="sticky lg:static bottom-0 bg-white/10 backdrop-blur-md border-t border-white/20 px-3 py-2 mt-2">
                           <h3 className="text-sm lg:text-base font-semibold text-right">
                             {t("allergensTitle")} (čísla EU): 6, 7
                           </h3>
@@ -465,7 +465,7 @@ function ProductPage() {
               </section>
               {/* Кнопка "Добавить в корзину" (десктоп) */}
               {isDesktop && (
-                <div className="flex justify-end mt-6">
+                <div className="flex justify-end mt-auto pt-2">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
