@@ -275,7 +275,7 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] h-[560px] flex flex-col overflow-hidden gap-4" : "w-full flex flex-col items-center text-center h-[55vh] min-h-0 overflow-hidden relative lg:h-auto lg:overflow-visible"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] h-[560px] flex flex-col justify-between overflow-hidden gap-4" : "w-full flex flex-col items-center text-center h-[55vh] min-h-0 overflow-hidden relative lg:h-auto lg:overflow-visible"}>
             <div
               className={`${isDesktop ? "pt-2 pb-2 sm:px-6 lg:px-6" : "pt-1 pb-0 px-2 flex-1 min-h-0 lg:overflow-visible"} flex-1 flex flex-col min-h-0 scrollbar-none text-[#5C3A2E] text-balance`}
             >
@@ -376,17 +376,15 @@ function ProductPage() {
                         role="tabpanel"
                         id="tab-panel-desc"
                         aria-labelledby="tab-desc"
-                        className="space-y-4 flex-1 flex flex-col min-h-0"
+                        className="flex flex-col flex-1 min-h-0 space-y-3"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto overscroll-contain pb-[180px] lg:pb-6 scrollbar-none pr-1">
+                        <div className="flex-1 overflow-y-auto text-sm md:text-base text-center md:text-left whitespace-pre-line pr-2">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
                         </div>
-                        <div className="sticky lg:static bottom-0 bg-white/10 backdrop-blur-md border-t border-white/20 px-3 py-2 mt-2">
-                          <h3 className="text-sm lg:text-base font-semibold text-right">
-                            {t("allergensTitle")} (čísla EU): 6, 7
-                          </h3>
+                        <div className="mt-2 text-right text-sm lg:text-base font-semibold text-[#5C3A2E]">
+                          {t("allergensTitle")} (čísla EU): 6, 7
                         </div>
                       </div>
                     ) : (
@@ -465,7 +463,7 @@ function ProductPage() {
               </section>
               {/* Кнопка "Добавить в корзину" (десктоп) */}
               {isDesktop && (
-                <div className="flex justify-end mt-auto pt-2">
+                <div className="flex justify-end mt-3 pt-2 border-t border-white/10">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
