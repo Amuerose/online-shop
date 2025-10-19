@@ -251,8 +251,8 @@ function ProductPage() {
         })}
       </script>
     </Helmet>
-    <main className="flex flex-col h-screen overflow-hidden pt-[env(safe-area-inset-top)]">
-      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[100px] pb-[100px] overflow-visible">
+    <main className="flex flex-col h-screen overflow-hidden pt-[env(safe-area-inset-top)] lg:pt-0">
+      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[100px] lg:pt-[80px] pb-[100px] overflow-visible">
         <div
           className={
             isDesktop
@@ -275,7 +275,7 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center h-[55vh] min-h-0 overflow-hidden relative"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] flex flex-col gap-6" : "w-full flex flex-col items-center text-center h-[55vh] overflow-hidden"}>
             <div
               className={`${isDesktop ? "pt-4 pb-[120px] sm:px-8 lg:px-12" : "pt-1 pb-24 px-2 flex-1"} flex-1 scrollbar-none text-[#5C3A2E] text-balance`}
             >
@@ -378,7 +378,7 @@ function ProductPage() {
                         aria-labelledby="tab-desc"
                         className="space-y-4 flex-1 flex flex-col min-h-0"
                       >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto overscroll-contain pb-[180px] scrollbar-none pr-1">
+                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line flex-1 overflow-y-auto overscroll-contain pb-[180px] lg:pb-16 scrollbar-none pr-1">
                           <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
                             {localName(product.description) || t("noDescription")}
                           </p>
