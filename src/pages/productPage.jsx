@@ -321,46 +321,45 @@ function ProductPage() {
               )}
 
               {/* Tabs (glass card with attached header) */}
-              <section className="mt-2 flex-1 min-h-0 max-h-[220px]">
-                <div className="rounded-3xl shadow-xl">
-                  <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden">
+              <section className="mt-2 flex-1 min-h-0 max-h-[200px] pb-4">
+                <div className="rounded-3xl shadow-xl h-full flex flex-col justify-between">
+                  <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden flex flex-col h-full">
                     {/* Header */}
                     <div
                       role="tablist"
                       aria-label={t("tab.ariaLabel") || "Product tabs"}
-                      className="relative grid grid-cols-2 text-sm font-medium"
+                      className="relative grid grid-cols-2 text-sm font-medium flex-shrink-0"
                     >
-                    <button
-                      id="tab-desc"
-                      type="button"
-                      role="tab"
-                      aria-selected={tab === "desc"}
-                      aria-controls="tab-panel-desc"
-                      onClick={() => setTab("desc")}
-                      className={`px-5 py-3 transition relative ${
-                        tab === "desc"
-                          ? "text-[#5C3A2E]"
-                          : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
-                      }`}
-                    >
-                      {t("tab.description") || "Описание"}
-                    </button>
-                    <button
-                      id="tab-reviews"
-                      type="button"
-                      role="tab"
-                      aria-selected={tab === "reviews"}
-                      aria-controls="tab-panel-reviews"
-                      onClick={() => setTab("reviews")}
-                      className={`px-5 py-3 transition relative ${
-                        tab === "reviews"
-                          ? "text-[#5C3A2E]"
-                          : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
-                      }`}
-                    >
-                      {t("tab.reviews") || "Отзывы"}{reviews.length ? ` (${reviews.length})` : ""}
-                    </button>
-                    {/* Active underline */}
+                      <button
+                        id="tab-desc"
+                        type="button"
+                        role="tab"
+                        aria-selected={tab === "desc"}
+                        aria-controls="tab-panel-desc"
+                        onClick={() => setTab("desc")}
+                        className={`px-5 py-3 transition relative ${
+                          tab === "desc"
+                            ? "text-[#5C3A2E]"
+                            : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
+                        }`}
+                      >
+                        {t("tab.description") || "Описание"}
+                      </button>
+                      <button
+                        id="tab-reviews"
+                        type="button"
+                        role="tab"
+                        aria-selected={tab === "reviews"}
+                        aria-controls="tab-panel-reviews"
+                        onClick={() => setTab("reviews")}
+                        className={`px-5 py-3 transition relative ${
+                          tab === "reviews"
+                            ? "text-[#5C3A2E]"
+                            : "text-[#5C3A2E]/70 hover:text-[#5C3A2E]"
+                        }`}
+                      >
+                        {t("tab.reviews") || "Отзывы"}{reviews.length ? ` (${reviews.length})` : ""}
+                      </button>
                       <span
                         aria-hidden
                         className={`absolute bottom-0 h-[2px] bg-[#BDA47A] transition-transform duration-300 ease-out w-1/2 ${
@@ -369,123 +368,59 @@ function ProductPage() {
                       />
                     </div>
 
-                    {/* Panel */}
-                    <div className="p-4 sm:p-5 lg:p-5 h-full flex flex-col min-h-0">
-                    {tab === "desc" ? (
-                      <div
-                        role="tabpanel"
-                        id="tab-panel-desc"
-                        aria-labelledby="tab-desc"
-                        className="flex flex-col flex-1 min-h-0 space-y-3"
-                      >
-                        <div className="flex-1 overflow-y-auto text-sm md:text-base text-center md:text-left whitespace-pre-line pr-2">
-                          <p className="text-sm sm:text-base lg:text-lg leading-relaxed opacity-90 text-center lg:text-left">
-                            {localName(product.description) || t("noDescription")}
-                          </p>
-                        </div>
-                        <div className="mt-2 text-right text-sm lg:text-base font-semibold text-[#5C3A2E] shrink-0">
-                          {t("allergensTitle")} (čísla EU): 6, 7
-                        </div>
-                        {/* Кнопка "Добавить в корзину" (десктоп) перенесена сюда */}
-                        {isDesktop && (
-                          <div className="flex justify-end mt-4 pt-2 border-t border-white/10">
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-                              >
-                                &minus;
-                              </button>
-                              <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-                              <button
-                                type="button"
-                                onClick={() => setQuantity((p) => p + 1)}
-                                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-                              >
-                                +
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleAdd}
-                                className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
-                              >
-                                {t("buttons.addToCart")}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div
-                        role="tabpanel"
-                        id="tab-panel-reviews"
-                        aria-labelledby="tab-reviews"
-                        className="space-y-4"
-                      >
-                        <div className="mt-4 text-sm md:text-base text-center md:text-left whitespace-pre-line h-full overflow-y-auto">
-                          {/* Average rating */}
-                          <div className="flex items-center gap-2 text-[#BDA47A]">
-                            <span className="font-medium">{avgRating || 0}/5</span>
-                            <div className="flex gap-1">
-                              {[1,2,3,4,5].map(n => (
-                                <span key={n} className={avgRating >= n ? "" : "opacity-30"}>★</span>
-                              ))}
-                            </div>
-                            <span className="text-[#5C3A2E]/60 text-sm">({reviews.length || 0})</span>
-                          </div>
-
-                          {/* Reviews list */}
-                          {reviews.length > 0 ? (
-                            <div className="space-y-3">
-                              {reviews.map(r => (
-                                <div key={r.id} className="bg-white/10 border border-white/20 rounded-xl p-3">
-                                  <div className="flex items-center gap-2 text-[#BDA47A] text-sm mb-1">
-                                    {[1,2,3,4,5].map(n => (
-                                      <span key={n} className={Number(r.rating) >= n ? "" : "opacity-30"}>★</span>
-                                    ))}
-                                    <span className="text-[#5C3A2E]/60 text-xs">
-                                      {new Date(r.created_at).toLocaleDateString()}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-[#5C3A2E] whitespace-pre-wrap">{r.comment}</p>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-sm text-[#5C3A2E]/70">{t("noReviews") || "Пока нет отзывов."}</p>
-                          )}
-                        </div>
-                        {/* Review form */}
-                        <form onSubmit={handleSubmitReview} className="space-y-2">
-                          <div className="flex items-center gap-1 text-[#BDA47A]">
-                            {[1,2,3,4,5].map(n => (
-                              <button
-                                key={n}
-                                type="button"
-                                onClick={() => setMyRating(n)}
-                                aria-label={`rate ${n}`}
-                                className={`text-xl transition ${myRating >= n ? "" : "opacity-30 hover:opacity-60"}`}
-                              >★</button>
-                            ))}
-                          </div>
-                          <textarea
-                            value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)}
-                            placeholder={t("yourComment") || "Ваш комментарий"}
-                            className="w-full min-h-[90px] rounded-2xl bg-white/10 border border-[#BDA47A]/40 px-3 py-2 resize-vertical outline-none ring-1 ring-[#BDA47A]/30 focus:ring-2 focus:ring-[#BDA47A]/60"
-                            maxLength={2000}
-                          />
-                          <button
-                            type="submit"
-                            disabled={submitting || !myRating || !reviewText.trim()}
-                            className="px-5 h-10 rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 disabled:opacity-50"
+                    {/* Панель */}
+                    <div className="flex flex-col justify-between flex-1 overflow-hidden">
+                      {tab === "desc" ? (
+                        <>
+                          <div
+                            role="tabpanel"
+                            id="tab-panel-desc"
+                            aria-labelledby="tab-desc"
+                            className="flex-1 overflow-y-auto px-4 pt-3 text-sm md:text-base text-center md:text-left whitespace-pre-line text-[#5C3A2E]"
                           >
-                            {submitting ? (t("submitting") || "Отправка...") : (t("send") || "Отправить")}
-                          </button>
-                        </form>
-                      </div>
-                    )}
+                            <p className="leading-relaxed opacity-90">
+                              {localName(product.description) || t("noDescription")}
+                            </p>
+                          </div>
+                          <div className="border-t border-white/10 mt-2 p-3 flex flex-col gap-3">
+                            <div className="text-right text-sm lg:text-base font-semibold text-[#5C3A2E]">
+                              {t("allergensTitle")} (čísla EU): 6, 7
+                            </div>
+                            {isDesktop && (
+                              <div className="flex justify-end">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+                                    className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
+                                  >
+                                    &minus;
+                                  </button>
+                                  <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setQuantity((p) => p + 1)}
+                                    className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
+                                  >
+                                    +
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleAdd}
+                                    className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
+                                  >
+                                    {t("buttons.addToCart")}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="p-4 text-sm text-[#5C3A2E]/70">
+                          {t("noReviews") || "Пока нет отзывов."}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
