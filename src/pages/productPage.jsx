@@ -376,7 +376,7 @@ function ProductPage() {
                             role="tabpanel"
                             id="tab-panel-desc"
                             aria-labelledby="tab-desc"
-                            className="flex-1 overflow-y-auto px-4 pt-3 text-sm md:text-base text-center md:text-left whitespace-pre-line text-[#5C3A2E]"
+                            className="flex-1 overflow-y-auto px-4 pt-3 text-xs md:text-sm text-center md:text-left whitespace-pre-line text-[#5C3A2E]"
                           >
                             <p className="leading-relaxed opacity-90">
                               {localName(product.description) || t("noDescription")}
