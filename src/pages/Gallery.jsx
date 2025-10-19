@@ -28,24 +28,29 @@ function MediaItem({ item, onSelect }) {
   const ref = useRef(null);
   const visible = useIntersection(ref, { threshold: 0.15, rootMargin: '200px' });
 
+  const [src, setSrc] = useState(item.url);
+
   // render lightweight skeleton until visible
   return (
     <div
       ref={ref}
       className="mb-4 break-inside-avoid rounded overflow-hidden cursor-pointer"
-      onClick={() => type === 'image' && onSelect(url)}
+      onClick={() => type === 'image' && onSelect(src)}
       style={{ contentVisibility: 'auto', containIntrinsicSize: '300px' }}
     >
       {!visible ? (
         <div className="animate-pulse bg-neutral-200/70 dark:bg-neutral-800/50 w-full h-[260px] rounded" />
       ) : type === 'image' ? (
         <img
-          src={`${url}`}
+          src={src}
           alt={title || 'Gallery item'}
           loading="lazy"
           decoding="async"
           fetchPriority="low"
           className="w-full h-auto object-cover block"
+          onError={() => {
+            if (item.fallbackUrl && src !== item.fallbackUrl) setSrc(item.fallbackUrl);
+          }}
         />
       ) : type === 'video' ? (
         <video
@@ -82,11 +87,14 @@ function Gallery() {
         if (IMAGE_EXT.includes(ext)) type = 'image';
         else if (VIDEO_EXT.includes(ext)) type = 'video';
         if (!type) return null;
-        return {
-          title: file.name,
-          url: `https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/render/image/public/product-images/${file.name}?width=800&quality=75&format=webp`,
-          type,
-        };
+        const encoded = encodeURIComponent(file.name);
+        const objectUrl = `${BUCKET_BASE}/${encoded}`;
+        if (type === 'image') {
+          const renderUrl = `https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/render/image/public/product-images/${encoded}?width=800&quality=75&format=webp`;
+          return { title: file.name, url: renderUrl, fallbackUrl: objectUrl, type };
+        }
+        // video
+        return { title: file.name, url: objectUrl, type };
       })
       .filter(Boolean);
   }, []);
