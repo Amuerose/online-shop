@@ -321,7 +321,7 @@ function ProductPage() {
               )}
 
               {/* Tabs (glass card with attached header) */}
-              <section className="mt-2 flex-1 min-h-0 max-h-[300px]">
+              <section className="mt-2 flex-1 min-h-0 max-h-[220px]">
                 <div className="rounded-3xl shadow-xl">
                   <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden">
                     {/* Header */}
@@ -386,6 +386,35 @@ function ProductPage() {
                         <div className="mt-2 text-right text-sm lg:text-base font-semibold text-[#5C3A2E] shrink-0">
                           {t("allergensTitle")} (čísla EU): 6, 7
                         </div>
+                        {/* Кнопка "Добавить в корзину" (десктоп) перенесена сюда */}
+                        {isDesktop && (
+                          <div className="flex justify-end mt-4 pt-2 border-t border-white/10">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setQuantity((p) => Math.max(1, p - 1))}
+                                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
+                              >
+                                &minus;
+                              </button>
+                              <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
+                              <button
+                                type="button"
+                                onClick={() => setQuantity((p) => p + 1)}
+                                className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
+                              >
+                                +
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleAdd}
+                                className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
+                              >
+                                {t("buttons.addToCart")}
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div
@@ -461,35 +490,6 @@ function ProductPage() {
                   </div>
                 </div>
               </section>
-              {/* Кнопка "Добавить в корзину" (десктоп) */}
-              {isDesktop && (
-                <div className="flex justify-end mt-auto pt-2 border-t border-white/10 shrink-0">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((p) => Math.max(1, p - 1))}
-                      className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-                    >
-                      &minus;
-                    </button>
-                    <span className="min-w-[26px] text-center text-[#BDA47A] text-sm">{quantity}</span>
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((p) => p + 1)}
-                      className="w-6 h-6 rounded-full bg-white/10 border border-white/20 text-sm text-[#BDA47A] hover:bg-white/20 transition backdrop-blur"
-                    >
-                      +
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleAdd}
-                      className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium"
-                    >
-                      {t("buttons.addToCart")}
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
