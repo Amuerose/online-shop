@@ -252,12 +252,12 @@ function ProductPage() {
       </script>
     </Helmet>
     <main className="flex flex-col h-screen overflow-hidden pt-[env(safe-area-inset-top)] lg:pt-0">
-      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-[100px] lg:pt-[80px] pb-[100px] overflow-visible">
+      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-6 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible">
         <div
           className={
             isDesktop
               ? "w-full max-w-[1200px] mx-auto px-6 py-8 flex items-start justify-center gap-12"
-              : "w-full mx-auto flex flex-col items-center px-4 overflow-hidden pt-[80px] pb-[90px] min-h-[calc(100vh-170px)]"
+              : "w-full mx-auto flex flex-col items-center px-4 overflow-hidden pt-0 pb-0 min-h-[calc(100vh-160px)]"
           }
         >
           {/* Изображение */}
@@ -265,7 +265,7 @@ function ProductPage() {
             className={
               isDesktop
                 ? "relative shrink-0 w-[560px] h-[560px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full h-[45%] max-w-full rounded-2xl overflow-hidden shadow-xl"
+                : "relative w-full h-[46vh] max-w-full rounded-2xl overflow-hidden shadow-xl"
             }
           >
             <img
@@ -275,7 +275,7 @@ function ProductPage() {
             />
           </div>
           {/* Контент */}
-          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] h-[560px] flex flex-col justify-between overflow-hidden gap-4" : "w-full flex flex-col items-center text-center h-[55%] min-h-0 overflow-hidden relative lg:h-auto lg:overflow-visible"}>
+          <div className={isDesktop ? "flex-1 min-w-[360px] max-w-[560px] h-[560px] flex flex-col justify-between overflow-hidden gap-4" : "w-full flex flex-col items-center text-center flex-1 min-h-0 overflow-hidden relative lg:h-auto lg:overflow-visible"}>
             <div
               className={`${isDesktop ? "pt-2 pb-2 sm:px-6 lg:px-6" : "pt-1 pb-0 px-2 flex-1 min-h-0 lg:overflow-visible"} flex-1 flex flex-col min-h-0 scrollbar-none text-[#5C3A2E] text-balance`}
             >
@@ -321,7 +321,7 @@ function ProductPage() {
               )}
 
               {/* Tabs (glass card with attached header) */}
-              <section className="mt-2 flex-1 min-h-0 max-h-[460px] pb-4">
+              <section className="mt-2 flex-1 min-h-0 lg:max-h-[460px] pb-4">
                 <div className="rounded-3xl shadow-xl h-full flex flex-col justify-between">
                   <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden flex flex-col h-full">
                     {/* Header */}
@@ -376,7 +376,7 @@ function ProductPage() {
                             role="tabpanel"
                             id="tab-panel-desc"
                             aria-labelledby="tab-desc"
-                            className="flex-1 overflow-y-auto overscroll-contain scrollbar-none px-4 pt-3 pb-6 text-xs md:text-sm text-center md:text-left whitespace-pre-line text-[#5C3A2E]"
+                            className="flex-1 overflow-y-auto overscroll-contain scrollbar-none px-4 pt-2 pb-16 lg:pb-6 text-xs md:text-sm text-center md:text-left whitespace-pre-line text-[#5C3A2E]"
                           >
                             <p className="leading-relaxed opacity-90">
                               {localName(product.description) || t("noDescription")}
