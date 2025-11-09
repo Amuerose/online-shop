@@ -252,7 +252,9 @@ function ProductPage() {
       </script>
     </Helmet>
     <main className="flex flex-col h-screen overflow-hidden pt-[env(safe-area-inset-top)] lg:pt-0">
-      <section className="w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-6 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible">
+      <section className={isDesktop
+        ? "w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-6 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible"
+        : "w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-14 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible"}>
         <div
           className={
             isDesktop
@@ -265,7 +267,7 @@ function ProductPage() {
             className={
               isDesktop
                 ? "relative shrink-0 w-[560px] h-[560px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full h-[44vh] max-w-full rounded-2xl overflow-hidden shadow-xl"
+                : "relative w-full h-[44dvh] max-w-full rounded-2xl overflow-hidden shadow-xl"
             }
           >
             <img
@@ -321,8 +323,8 @@ function ProductPage() {
               )}
 
               {/* Tabs (glass card with attached header) */}
-              <section className="mt-2 flex-1 min-h-0 lg:max-h-[460px] pb-4">
-                <div className="rounded-3xl shadow-xl h-full flex flex-col justify-between">
+              <section className={"mt-2 flex-1 min-h-0 lg:max-h-[460px] pb-4"}>
+                <div className="rounded-3xl shadow-xl h-[29dvh] flex flex-col justify-between">
                   <div className="rounded-3xl border border-white/20 bg-white/5 backdrop-blur-md overflow-hidden flex flex-col h-full">
                     {/* Header */}
                     <div

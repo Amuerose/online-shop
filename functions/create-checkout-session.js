@@ -2,7 +2,17 @@ export async function onRequestPost(context) {
   try {
     const { request, env } = context;
     const body = await request.json();
-    const { cartItems } = body;
+    const { cartItems } = body || {};
+
+    if (!cartItems || !Array.isArray(cartItems)) {
+      return new Response(JSON.stringify({ error: "Invalid or missing cartItems" }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
 
     const line_items = cartItems.map((item) => ({
       price_data: {
