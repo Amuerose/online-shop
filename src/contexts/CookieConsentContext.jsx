@@ -17,8 +17,8 @@ export const CookieConsentProvider = ({ children }) => {
   }, [consent]);
 
   return (
-    <CookieConsentContext.Provider value={{ consent, setConsent }}>
-      {children}
+    <CookieConsentContext.Provider value={{ consent, setConsent }}>    
+        {children}
     </CookieConsentContext.Provider>
   );
 };

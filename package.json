@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "deploy": "git add .;git commit -m \"Обновление проекта: исправления поиска, навигации и мелкие корректировки\";git push",
     "preview": "vite preview",
     "analyze": "vite build && npx rollup-plugin-visualizer --open"
   },
