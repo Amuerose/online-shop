@@ -93,7 +93,7 @@ function Partnership() {
         <section className="w-full flex flex-col items-center">
           <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] -mt-4 mb-4">{t("contactSectionTitle")}</h2>
           <p className="text-[#BDA47A] mb-2">
-            {t("contactEmailLabel")}: <a href="mailto:partnership@klubnika.cz" className="text-white underline">info.amuerose@gmail.com</a>
+            {t("contactEmailLabel")}: <a href="mailto:partner@amuerose.cz" className="text-white underline">partner@amuerose.cz</a>
           </p>
           <p className="text-[#BDA47A] mb-4">
             {t("contactPhoneLabel")}: <a href="tel:+420603329873" className="text-white underline">+ (420) 603 319 872</a>

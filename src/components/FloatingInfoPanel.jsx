@@ -88,8 +88,8 @@ function FloatingInfoPanel() {
                 <a href="tel:+420603319872" className="leading-tight">
                   +420 603 319 872
                 </a>
-                <a href="mailto:amuerose@gmail.com" className="leading-tight">
-                  amuerose@gmail.com
+                <a href="mailto:info@amuerose.cz" className="leading-tight">
+                  info@amuerose.cz
                 </a>
               </div>
             </div>

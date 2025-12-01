@@ -102,10 +102,10 @@ function Contact() {
         </p>
         <section className="w-full flex flex-col items-center">
           <p className="text-[#BDA47A] mb-2">
-            {t("contactEmailLabel")}: <a href="mailto:info@amuerose.com" className="text-white underline">info@amuerose.com</a>
+            {t("contactEmailLabel")}: <a href="mailto:info@amuerose.cz" className="text-white underline">info@amuerose.cz</a>
           </p>
           <p className="text-[#BDA47A] mb-4">
-            {t("contactPhoneLabel")}: <a href="tel:+420777123456" className="text-white underline">+420 777 123 456</a>
+            {t("contactPhoneLabel")}: <a href="tel:+420603319872" className="text-white underline">+420 603 319 872</a>
           </p>
           {!showForm ? (
             <button
