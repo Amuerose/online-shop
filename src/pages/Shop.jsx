@@ -2,16 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from "../lib/supabaseClient";
-
-// Safely resolve image URL: absolute URL stays as-is; otherwise, build a public URL from the Supabase bucket
-const resolveImageUrl = (path) => {
-  if (!path) return "";
-  if (/^https?:\/\//i.test(path)) return path; // already absolute
-  // Assume we store only the object path inside the `product-images` bucket
-  const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-  return data?.publicUrl || "";
-};
+import { catalogProducts } from '../data/catalog';
+import { blogBackgroundStyle } from '../styles/blogBackground';
 
 
 // Pick a localized value from {cs,en,ru} or accept plain strings
@@ -62,80 +54,28 @@ const pickLocale = (val, lang) => {
   return '';
 };
 
-// Normalize DB row to UI product
-const normalizeProduct = (r, lang = 'cs') => {
-  const nameObj = r.name ?? '';
-  const descObj = r.description ?? '';
-
-  const mainUrl = r.image_url ? r.image_url : '';
-  return {
-    id: r.id,
-    category_id: r.category_id || null,
-    attributes: {
-      name: nameObj,
-      description: descObj,
-      price: Number(r.price ?? 0),
-      images: {
-        data: [
-          { attributes: { url: mainUrl ? resolveImageUrl(mainUrl) : '' } }
-        ]
-      }
-    }
-  };
-};
 
 const Shop = () => {
   const { addToCart } = useCart();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([{ id: 'all', slug: 'all', name: t('categories.all') }]);
-  const [categoriesById, setCategoriesById] = useState({});
 
   // === Horizontal scroll affordance for categories ===
-  const catWrapRef = useRef(null);
   const catScrollRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
   // Show a one-time swipe hint (animated finger) on mount
-  const [showSwipeHint, setShowSwipeHint] = useState(true);
 
   const updateCategoryShadows = () => {
     const el = catScrollRef.current;
     if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    setCanScrollLeft(el.scrollLeft > 2);
-    setCanScrollRight(maxScroll - el.scrollLeft > 2);
   };
   
-  const scrollCatsBy = (dx) => {
-    const el = catScrollRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dx, behavior: 'smooth' });
-  };
 
-  // Главная картинка товара для карточки/корзины с безопасным запасным вариантом
+  // Главная картинка товара для карточки/корзины
   const getMainImage = (p) => {
-    // 1) Новый формат: attributes.images.data[0].attributes.url
-    const fromAttr = p?.attributes?.images?.data?.[0]?.attributes?.url;
-    if (typeof fromAttr === 'string' && fromAttr.length) return fromAttr;
-
-    // 2) Вариант: attributes.images как массив строк или объектов {url}
-    const ai = p?.attributes?.images;
-    if (Array.isArray(ai) && ai.length) {
-      const u = ai[0]?.url || ai[0];
-      if (typeof u === 'string' && u.length) return u;
-    }
-
-    // 3) Прямо на продукте: image_url (путь в бакете) — конвертим в публичный URL
-    if (typeof p?.image_url === 'string' && p.image_url.length) {
-      const url = resolveImageUrl(p.image_url);
-      if (url) return url;
-    }
-
-    // 4) Запасной вариант: плейсхолдер
-    return '/images/placeholder-image.jpg';
+    const g0 = p?.gallery?.[0];
+    if (typeof g0 === 'string' && g0.length) return g0;
+    return '/images/placeholder.svg';
   };
 
   useEffect(() => {
@@ -203,149 +143,26 @@ const Shop = () => {
     };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadCategories() {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('id, slug, name');
-
-        if (error) throw error;
-
-        const dynamic = (data || []).map((c) => ({
-          id: c.id,
-          slug: c.slug || String(c.id),
-          name: c.name || c.slug || String(c.id),
-        }));
-
-        const withAll = [
-          { id: 'all', slug: 'all', name: t('categories.all') },
-          ...dynamic,
-        ];
-
-        if (!cancelled) {
-          setCategories(withAll);
-          const map = {};
-          withAll.forEach((c) => (map[c.id] = c));
-          if (!cancelled) setCategoriesById(map);
-        }
-      } catch (e) {
-        // Fallback to static list if categories table doesn't exist
-        const fallback = [
-          { id: 'all', slug: 'all', name: t('categories.all') },
-          { id: 'strawberries', slug: 'strawberries', name: t('categories.strawberries') },
-          { id: 'blueberries', slug: 'blueberries', name: t('categories.blueberries') },
-          { id: 'raspberries', slug: 'raspberries', name: t('categories.raspberries') },
-          { id: 'bananas', slug: 'bananas', name: t('categories.bananas') },
-          { id: 'dates', slug: 'dates', name: t('categories.dates') },
-          { id: 'cherries', slug: 'cherries', name: t('categories.cherries') },
-          { id: 'sets', slug: 'sets', name: t('categories.sets') },
-          { id: 'gifts', slug: 'gifts', name: t('categories.gifts') },
-        ];
-        if (!cancelled) {
-          setCategories(fallback);
-          const map = {};
-          fallback.forEach((c) => (map[c.id] = c));
-          if (!cancelled) setCategoriesById(map);
-        }
-      }
-    }
-
-    loadCategories();
-    return () => {
-      cancelled = true;
-    };
-    // re-run when language changes to refresh t() for "all"
-  }, [i18n.language]);
+  // (categories loader useEffect removed)
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        // First try to include category_id if it exists
-        let rows, error;
-
-        ({ data: rows, error } = await supabase
-          .from('products')
-          .select('id, name, description, price, image_url, category_id, created_at')
-          .order('created_at', { ascending: false }));
-
-        if (error) {
-          // Retry without category_id for older schema
-          ({ data: rows, error } = await supabase
-            .from('products')
-            .select('id, name, description, price, image_url, created_at')
-            .order('created_at', { ascending: false }));
-          if (error) throw error;
-        }
-
-        const mapped = (rows || []).map((r) => normalizeProduct(r, i18n.language));
-
-        // Применяем фильтрацию по выбранной категории, если она не "all"
-        const filtered =
-          selectedCategory === 'all'
-            ? mapped
-            : mapped.filter((p) => {
-                if (!p.category_id) return false;
-                const cat = categoriesById[p.category_id];
-                return cat && (cat.slug === selectedCategory || cat.id === selectedCategory);
-              });
-
-        if (!cancelled) setProducts(filtered);
-      } catch (err) {
-        console.error('Supabase load products error:', err);
-        if (!cancelled) setProducts([]);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [i18n.language, selectedCategory, categoriesById]);
-
-  // Swipe hint useEffect (moved from below, before return)
-  useEffect(() => {
-    const el = catScrollRef.current;
-    if (!el) {
-      // Hide hint quickly if no scroller yet
-      const t = setTimeout(() => setShowSwipeHint(false), 1500);
-      return () => clearTimeout(t);
-    }
-
-    // Respect reduced motion
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // small nudge scroll: right then back
-    if (!prefersReduced) {
-      const originalLeft = el.scrollLeft;
-      const step = Math.min(80, el.scrollWidth - el.clientWidth);
-      if (step > 0) {
-        el.scrollTo({ left: originalLeft, behavior: 'auto' });
-        const t1 = setTimeout(() => el.scrollTo({ left: originalLeft + step, behavior: 'smooth' }), 300);
-        const t2 = setTimeout(() => el.scrollTo({ left: originalLeft, behavior: 'smooth' }), 1200);
-        const t3 = setTimeout(() => setShowSwipeHint(false), 2200);
-        return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-      }
-    }
-
-    const hide = setTimeout(() => setShowSwipeHint(false), 1500);
-    return () => clearTimeout(hide);
+    // Local catalog source (no backend)
+    const list = (catalogProducts || []).slice();
+    const moveToEnd = new Set([
+      'lyo-raspberry-white',
+      'figs-chocolate',
+      'signature-raspberry',
+      'signature-blueberry',
+    ]);
+    const head = list.filter((p) => !moveToEnd.has(p.id));
+    const tail = list.filter((p) => moveToEnd.has(p.id));
+    setProducts([...head, ...tail]);
   }, []);
 
   return (<>
     <div
       className="relative flex flex-col h-[100dvh] overflow-hidden overscroll-contain text-[#4B2E1D]"
-      style={{
-        background: [
-          'linear-gradient(120deg, #F7F0E8 0%, #EDE3D4 50%, #E4D8C6 100%)',
-          'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%)',
-          'radial-gradient(circle at 80% 80%, rgba(189,164,122,0.2) 0%, transparent 60%)'
-        ].join(', '),
-      }}
+      style={blogBackgroundStyle}
     >
       <div
         className="pointer-events-none absolute top-[120px] left-[100px] w-[160px] h-[400px] z-0 rotate-[12deg]"
@@ -356,63 +173,13 @@ const Shop = () => {
         }}
       />
       <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
-      {/* Категории */}
-      <div className="pt-24 pb-4">
-        <div
-          ref={catWrapRef}
-          className="relative mx-auto w-full"
-          style={{
-            maxWidth: '100%',
-            width: '1200px',
-          }}
-        >
-          <div
-            className="bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] rounded-[24px] px-2 py-1"
-            style={{
-              width: '1200px',
-              maxWidth: '100%',
-            }}
-          >
-            <div
-              ref={catScrollRef}
-              className="overflow-x-auto overscroll-contain touch-pan-x categories-scroll scrollbar-hide no-scrollbar"
-              style={{
-                WebkitOverflowScrolling: 'touch'
-              }}
-              onScroll={updateCategoryShadows}
-            >
-              <div
-                className="flex justify-start gap-4 px-4"
-                style={{
-                  paddingRight: '60px',
-                }}
-              >
-                {categories.map((cat) => (
-                  <button
-                    key={cat.slug || cat.id}
-                    onClick={() => setSelectedCategory(cat.slug || cat.id)}
-                    className={`shrink-0 text-sm sm:text-base px-4 py-2 rounded-full border backdrop-blur transition ${
-                      selectedCategory === (cat.slug || cat.id)
-                        ? 'bg-white/20 text-[#BDA47A] border-white/40'
-                        : 'bg-white/10 text-[#BDA47A] border-white/20 hover:bg-white/20'
-                    }`}
-                  >
-                    {cat.name || cat.slug}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Карточки */}
-      <div className="products-scroll overflow-y-auto h-[calc(100dvh-112px-120px)] pb-[calc(184px+var(--safe-area-inset-bottom,0px))]">
+      <div className="products-scroll overflow-y-auto mt-[calc(120px+var(--safe-area-inset-top,0px))] h-[calc(100dvh-120px-var(--safe-area-inset-top,0px))] pb-[calc(184px+var(--safe-area-inset-bottom,0px))]">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2 sm:px-4 pb-10 max-w-[1200px] mx-auto">
           {products.map((product) => (
             <div
               key={product.id}
-              onClick={() => navigate(`/product/${product.id}`)}
+              onClick={() => navigate(`/product/${product.slug || product.id}`)}
               className="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 shadow-2xl flex flex-col min-h-[320px] transition hover:scale-[1.02] overflow-hidden"
             >
               <div className="w-full h-56">
@@ -424,14 +191,14 @@ const Shop = () => {
               </div>
               <div className="p-4 flex flex-col justify-between flex-1">
                 <h3 className="text-base sm:text-lg font-[Inter] font-semibold tracking-wide mb-1 leading-tight text-[#4B2E1D]">
-                  {pickLocale(product.attributes.name, i18n.language)}
+                  {pickLocale(product.title, i18n.language)}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#7A4E35]/70 mb-3 leading-snug line-clamp-2">
-                  {pickLocale(product.attributes.description, i18n.language)}
+                  {pickLocale(product.description, i18n.language)}
                 </p>
                 <div className="flex items-center justify-between mt-auto">
                   <span className="text-sm sm:text-base font-[Inter] font-semibold text-[#BDA47A]">
-                    {Number(product.attributes.price) || 0} Kč
+                    {Number(product.price) || 0} Kč
                   </span>
                   <button
                     onClick={(e) => {
@@ -440,9 +207,8 @@ const Shop = () => {
                       try {
                         const item = {
                           id: product.id,
-                          title: pickLocale(product?.attributes?.name, i18n.language),
-                          price: Number(product?.attributes?.price) || 0,
-                          qty: 1,
+                          name: pickLocale(product?.title, i18n.language),
+                          price: Number(product?.price) || 0,
                           image: getMainImage(product),
                         };
                         addToCart(item);

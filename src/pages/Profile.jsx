@@ -5,6 +5,7 @@ import { Pencil, Trash, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AccountCard from '../components/AccountCard';
 import UserAvatar from '../components/cookie/UserAvatar';
+import { blogBackgroundStyle } from '../styles/blogBackground';
 
 const TABS = {
   PROFILE: 'profile',
@@ -392,19 +393,19 @@ export default function Profile() {
               <span className="font-semibold">«{t('common.add')}»</span>,&nbsp;
               {t('profile.policy.suffix')}&nbsp;
               <a
-                href="/privacy"
+                href="/privacy-policy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline text-[#BDA47A] hover:no-underline"
               >
-                политикой конфиденциальности
+                {t('privacyPolicy')}
               </a>
             </p>
             <p className="text-xs text-white mb-4">
-              <strong>Správce osobních údajů</strong><br />
-              David Oganesyan, IČO 10734562<br />
-              Ve Střešovičkách 445/53, 169 00 Praha 6<br />
-              E-mail: <a href="mailto:info.amuerose@gmail.com" className="underline">info.amuerose@gmail.com</a>
+              <strong>{t('dataControllerTitle')}</strong><br />
+              {t('dataControllerLine1')}<br />
+              {t('dataControllerLine2')}<br />
+              {t('dataControllerLine3')} <a href="mailto:info.amuerose@gmail.com" className="underline">info.amuerose@gmail.com</a>
             </p>
 
             <div className="flex justify-end gap-3">
@@ -444,20 +445,20 @@ export default function Profile() {
                 {t('profile.policy.prefix')}&nbsp;
                 <span className="font-semibold">«{t('common.add')}»</span>,&nbsp;
                 {t('profile.policy.suffix')}&nbsp;
-                <a
-                  href="/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline text-[#BDA47A] hover:no-underline"
-                >
-                  политикой конфиденциальности
-                </a>
-              </p>
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-[#BDA47A] hover:no-underline"
+              >
+                {t('privacyPolicy')}
+              </a>
+            </p>
               <p className="text-xs text-white mb-4">
-                <strong>Správce osobních údajů</strong><br />
-                David Oganesyan, IČO 10734562<br />
-                Ve Střešovičkách 445/53, 169 00 Praha 6<br />
-                E-mail: <a href="mailto:info.amuerose@gmail.com" className="underline">info.amuerose@gmail.com</a>
+                <strong>{t('dataControllerTitle')}</strong><br />
+                {t('dataControllerLine1')}<br />
+                {t('dataControllerLine2')}<br />
+                {t('dataControllerLine3')} <a href="mailto:info.amuerose@gmail.com" className="underline">info.amuerose@gmail.com</a>
               </p>
               <div className="flex justify-end gap-3">
                 <button
@@ -478,8 +479,11 @@ export default function Profile() {
           </div>
         </div>
       )}
-      <div className="flex flex-col items-center justify-center min-h-[100dvh] pt-[100px] px-4 pb-[80px] sm:pb-[160px] overflow-y-auto bg-[#2e1c12] bg-[url('/images/dark-chocolate-texture.jpg')] bg-cover bg-center bg-fixed">
-        <div className="relative max-w-6xl mx-auto bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 shadow-xl">
+      <div
+        className="flex flex-col items-center justify-center min-h-[100dvh] pt-[100px] px-4 pb-[80px] sm:pb-[160px] overflow-y-auto"
+        style={blogBackgroundStyle}
+      >
+        <div className="relative max-w-6xl mx-auto bg-[#2e1c12]/70 backdrop-blur-lg rounded-xl p-6 border border-white/10 shadow-xl text-white">
 
           <h1 className="text-3xl font-semibold text-[#BDA47A] mb-6 text-center">{t('profile.title')}</h1>
           <div className="mt-4 flex">

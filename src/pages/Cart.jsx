@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Link } from "react-router-dom";
 
 import { Trash2 } from "lucide-react";
+import { blogBackgroundStyle } from "../styles/blogBackground";
 
 // Resolve best image URL for a cart item (supports plain URLs, relative storage paths, and legacy shapes)
 function resolveCartItemImage(item) {
@@ -24,11 +25,16 @@ function resolveCartItemImage(item) {
   ];
 
   const raw = candidates.find((v) => typeof v === "string" && v.trim());
-  if (!raw) return "/placeholder.png";
+  if (!raw) return "/images/placeholder.svg";
 
   const url = raw.trim();
   // Absolute URL – return as is
   if (/^https?:\/\//i.test(url)) return url;
+  if (/^(data:|blob:)/i.test(url)) return url;
+
+  // Local public assets (e.g. /products/.., /images/.., /gallery/..)
+  if (url.startsWith("/")) return url;
+  if (/^(images|products|gallery)\//i.test(url)) return `/${url}`;
 
   // Already a Supabase storage path starting with /storage/...
   if (url.startsWith("/storage/")) {
@@ -37,6 +43,7 @@ function resolveCartItemImage(item) {
 
   // Fallback: treat as a filename/key inside the public bucket `product-images`
   const key = url.replace(/^\/+/, "");
+  if (!supa) return `/${key}`;
   return `${supa}/storage/v1/object/public/product-images/${key}`;
 }
 
@@ -108,14 +115,15 @@ function Cart() {
 
       // Normalize items to a clean, backend‑friendly shape
       const items = cartItems.map((item) => {
+        const rawName = item.name ?? item.title;
         const name =
-          typeof item.name === "object"
-            ? item.name[i18n.language] ||
-              item.name.cs ||
-              item.name.en ||
-              item.name.ru ||
+          typeof rawName === "object"
+            ? rawName[i18n.language] ||
+              rawName.cs ||
+              rawName.en ||
+              rawName.ru ||
               "Product"
-            : item.name;
+            : rawName || "Product";
 
         // Try flat price first, then nested price (for legacy objects)
         const price =
@@ -208,13 +216,7 @@ function Cart() {
     return (
       <div
         className="relative h-[100dvh] overflow-hidden pt-[55px] px-2 pb-[calc(90px+var(--safe-area-inset-bottom,0px))] sm:pt-[90px] sm:px-4 sm:pb-[calc(160px+var(--safe-area-inset-bottom,0px))]"
-        style={{
-          background: [
-            'linear-gradient(120deg, #F7F0E8 0%, #EDE3D4 50%, #E4D8C6 100%)',
-            'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%)',
-            'radial-gradient(circle at 80% 80%, rgba(189,164,122,0.2) 0%, transparent 60%)'
-          ].join(', '),
-        }}
+        style={blogBackgroundStyle}
       >
         <div className="w-full max-w-6xl mx-auto mt-[20px] mb-[80px] grid grid-cols-1 lg:grid-cols-2 gap-6 px-2">
         {/* Form panel */}
@@ -450,9 +452,9 @@ function Cart() {
       {t("deliveryInfoPickup", { defaultValue: "Osobní odběr zdarma – Ve Střešovičkách 445/53, Praha 6" })}
     </p>
     <p className="mt-2 text-[#4B2E1D]">
-      {t("outsideWorkingHours", { defaultValue: "Při objednávce mimo pracovní dobu nás prosím" })}{" "}
+      {t("outsideWorkingHours", { defaultValue: "Při objednávce mimo pracovní dobu prosím" })}{" "}
       <Link to="/contact" className="underline text-[#4B2E1D]">
-        kontaktujte
+        {t("contactUs", { defaultValue: "kontaktujte nás" })}
       </Link>.
     </p>
   </div>
@@ -470,13 +472,7 @@ function Cart() {
   return (
     <div
       className="relative h-[100dvh] overflow-hidden pt-[90px] px-4 pb-[calc(90px+var(--safe-area-inset-bottom,0px))] sm:pb-[calc(160px+var(--safe-area-inset-bottom,0px))]"
-      style={{
-        background: [
-          'linear-gradient(120deg, #F7F0E8 0%, #EDE3D4 50%, #E4D8C6 100%)',
-          'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%)',
-          'radial-gradient(circle at 80% 80%, rgba(189,164,122,0.2) 0%, transparent 60%)'
-        ].join(', '),
-      }}
+      style={blogBackgroundStyle}
     >
       <div className="relative max-w-4xl w-full mx-auto bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] rounded-[24px] px-6 py-3 h-[calc(100dvh-180px+var(--safe-area-inset-bottom,0px))] grid grid-rows-[1fr_auto]">
         {cartItems.length > 0 && (
@@ -497,7 +493,16 @@ function Cart() {
             </p>
           ) : (
             <ul className="space-y-3">
-              {cartItems.map((item, index) => (
+              {cartItems.map((item, index) => {
+                const rawName = item.name ?? item.title;
+                const displayName =
+                  (typeof rawName === "object"
+                    ? (rawName[i18n.language] || rawName.cs || rawName.en || rawName.ru)
+                    : rawName)
+                  || (item.attributes?.name?.[i18n.language] || item.attributes?.name?.en)
+                  || "Product";
+
+                return (
                 <li
                   key={index}
                   className="relative flex items-center gap-4 px-4 py-3 bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[16px] shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
@@ -505,24 +510,13 @@ function Cart() {
                   <div className="w-16 h-16 flex-shrink-0 overflow-hidden">
                     <img
                       src={resolveCartItemImage(item)}
-                      alt={
-                        // Localized name from normalized shape first
-                        (typeof item.name === "object"
-                          ? (item.name[i18n.language] || item.name.cs || item.name.en || item.name.ru)
-                          : item.name)
-                        || (item.attributes?.name?.[i18n.language] || item.attributes?.name?.en)
-                        || "Product image"
-                      }
+                      alt={displayName || "Product image"}
                       className="w-full h-full object-cover rounded"
                     />
                   </div>
                   <div className="pr-8">
                     <h2 className="text-sm sm:text-base font-semibold font-[Inter] leading-tight break-words text-[#4B2E1D]">
-                      {(typeof item.name === "object"
-                        ? (item.name[i18n.language] || item.name.cs || item.name.en || item.name.ru)
-                        : item.name)
-                        || (item.attributes?.name?.[i18n.language] || item.attributes?.name?.en)
-                        || "Product"}
+                      {displayName}
                     </h2>
                     <p className="text-[11px] font-medium font-[Inter] text-[#4B2E1D]">
                       {((item.price ?? item.attributes?.price ?? 0) * (item.quantity || 1))} Kč
@@ -531,7 +525,7 @@ function Cart() {
                     <button
                       onClick={() => removeFromCart(item)}
                       className="absolute top-2 right-2 hover:scale-110 transition"
-                      aria-label="Удалить товар"
+                      aria-label={t("removeItem", { defaultValue: "Remove item" })}
                     >
                       <Trash2 className="w-5 h-5 text-[#BDA47A]" aria-label={t("removeItem", { defaultValue: "Remove item" })} />
                     </button>
@@ -556,7 +550,8 @@ function Cart() {
                       </button>
                     </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>

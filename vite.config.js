@@ -16,8 +16,7 @@ export default ({ mode }) => {
     },
     optimizeDeps: {
       include: [
-        '@floating-ui/react',
-        '@supabase/supabase-js'
+        '@floating-ui/react'
       ]
     },
     build: {
@@ -29,7 +28,6 @@ export default ({ mode }) => {
             react: ['react', 'react-dom'],
             i18n: ['i18next', 'react-i18next'],
             ui: ['framer-motion'],
-            supabase: ['@supabase/supabase-js'],
             dateFns: ['date-fns'],
             datepickerLib: ['react-datepicker']
           }

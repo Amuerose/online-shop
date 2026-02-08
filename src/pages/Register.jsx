@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import { blogBackgroundStyle } from '../styles/blogBackground';
 
 function Register() {
   const { register, loginWithProvider } = useAuth();
@@ -52,19 +53,9 @@ function Register() {
   return (
     <main
       className="h-[100dvh] flex items-center justify-center px-4 py-10"
-      style={{
-        backgroundImage: [
-          'linear-gradient(180deg, #3b1f1d 0%, #8b4513 100%)',
-          'linear-gradient(90deg, #3b1f1d 0%, rgba(75,46,43,0) 100%)',
-          'linear-gradient(180deg, rgba(92,51,23,0.8) 0%, rgba(139,69,19,0.8) 100%)',
-          'linear-gradient(180deg, rgba(75,46,43,0.6) 0%, rgba(210,105,30,0.6) 100%)',
-          'linear-gradient(180deg, rgba(210,105,30,0.4) 0%, rgba(75,46,43,0.4) 100%)'
-        ].join(', '),
-        backgroundBlendMode: 'overlay',
-        backgroundSize: 'cover',
-      }}
+      style={blogBackgroundStyle}
     >
-      <div className="w-full max-w-md bg-white/10 backdrop-blur rounded-xl shadow border border-white/20 p-6">
+      <div className="w-full max-w-md bg-white/60 backdrop-blur rounded-xl shadow border border-white/40 p-6 text-[#4B2E1D]">
         <h2 className="text-2xl font-bold mb-6 text-center text-[#BDA47A]">{t('register.title')}</h2>
         <form onSubmit={handleRegister} className="flex flex-col gap-4">
           <input
@@ -72,7 +63,7 @@ function Register() {
             placeholder={t('register.namePlaceholder')}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-white/30 bg-white/10 text-white placeholder-white/50 px-4 py-2 rounded"
+            className="w-full border border-white/40 bg-white/50 text-[#4B2E1D] placeholder-[#4B2E1D]/50 px-4 py-2 rounded"
             required
           />
           <input
@@ -80,7 +71,7 @@ function Register() {
             placeholder={t('register.emailPlaceholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-white/30 bg-white/10 text-white placeholder-white/50 px-4 py-2 rounded"
+            className="w-full border border-white/40 bg-white/50 text-[#4B2E1D] placeholder-[#4B2E1D]/50 px-4 py-2 rounded"
             required
           />
           <input
@@ -88,7 +79,7 @@ function Register() {
             placeholder={t('register.passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-white/30 bg-white/10 text-white placeholder-white/50 px-4 py-2 rounded"
+            className="w-full border border-white/40 bg-white/50 text-[#4B2E1D] placeholder-[#4B2E1D]/50 px-4 py-2 rounded"
             required
           />
           <input
@@ -96,10 +87,10 @@ function Register() {
             placeholder={t('register.confirmPasswordPlaceholder')}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full border border-white/30 bg-white/10 text-white placeholder-white/50 px-4 py-2 rounded"
+            className="w-full border border-white/40 bg-white/50 text-[#4B2E1D] placeholder-[#4B2E1D]/50 px-4 py-2 rounded"
             required
           />
-          <label className="flex items-center gap-2 text-white text-sm">
+          <label className="flex items-center gap-2 text-[#4B2E1D] text-sm">
             <input
               type="checkbox"
               checked={agreePolicy}
@@ -118,7 +109,7 @@ function Register() {
             {t('register.registerButton')}
           </button>
         </form>
-        <p className="text-white text-center mt-6 mb-2">{t('register.orRegisterWith')}</p>
+        <p className="text-[#4B2E1D]/80 text-center mt-6 mb-2">{t('register.orRegisterWith')}</p>
         <div className="flex flex-col gap-4">
           <button
             type="button"

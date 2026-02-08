@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../Stripe-server"
+		}
+	],
+	"settings": {}
+}

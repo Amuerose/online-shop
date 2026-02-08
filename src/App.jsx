@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 function LocaleRedirect() {
   const location = useLocation();
@@ -9,7 +9,6 @@ function LocaleRedirect() {
   return <Navigate to={nextPath || "/"} replace />;
 }
 import { CartProvider } from './contexts/CartContext';
-import i18n from './i18n';
 import useConsentScripts from './hooks/useConsentScripts';
 
 import Home from './pages/Home';
@@ -22,6 +21,8 @@ import Profile from './pages/Profile';
 import Partnership from './pages/Partnership';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import Success from './pages/Success';
+import DataDeletion from './pages/DataDeletion';
 
 const ProductPage = lazy(() => import('./pages/productPage'));
 const Register = lazy(() => import('./pages/Register'));
@@ -33,10 +34,6 @@ import FloatingInfoPanel from './components/FloatingInfoPanel';
 import CookieBanner from './components/cookie/CookieBanner';
 
 function App() {
-  useEffect(() => {
-    i18n.changeLanguage('cs');
-  }, []);
-
   useConsentScripts();
 
   return (
@@ -48,6 +45,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/blog" element={<Navigate to="/" replace />} />
           <Route path="/shop" element={<Shop />} />
           <Route
             path="/product/:id"
@@ -79,12 +77,8 @@ function App() {
           <Route path="/partnership" element={<Partnership />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/data-deletion" element={<div style={{ padding: "2rem", textAlign: "center", color: "#4b3832" }}>
-            <h1>Удаление данных Facebook</h1>
-            <p>Если вы хотите удалить свои данные, полученные через вход с помощью Facebook,
-            пожалуйста, отправьте запрос на наш email: <a href="mailto:support@amuerose.cz">support@amuerose.cz</a>.</p>
-            <p>Мы удалим все данные, связанные с вашей учетной записью, в течение 30 дней после получения запроса.</p>
-          </div>} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/data-deletion" element={<DataDeletion />} />
         </Routes>
         <FloatingInfoPanel />
         <CookieBanner />

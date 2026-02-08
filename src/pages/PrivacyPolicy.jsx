@@ -1,19 +1,14 @@
 import React from "react";
+import { blogBackgroundStyle } from "../styles/blogBackground";
 
 export default function PrivacyPolicyPage() {
 
   return (
     <div
       className="relative h-screen pt-[90px] px-4 pb-[calc(90px+var(--safe-area-inset-bottom,0px))] sm:pb-[calc(160px+var(--safe-area-inset-bottom,0px))] overflow-hidden"
-      style={{
-        background: [
-          'linear-gradient(120deg, #F7F0E8 0%, #EDE3D4 50%, #E4D8C6 100%)',
-          'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 70%)',
-          'radial-gradient(circle at 80% 80%, rgba(189,164,122,0.2) 0%, transparent 60%)'
-        ].join(', '),
-      }}
+      style={blogBackgroundStyle}
     >
-      <div className="w-full max-w-[1000px] mx-auto bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[24px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] px-6 py-8 text-[#4B2E1D] h-full overflow-y-auto">
+      <div className="w-full max-w-[1000px] mx-auto bg-white/60 backdrop-blur-[22px] border border-white/40 rounded-[24px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] px-6 py-8 text-[#4B2E1D] h-full overflow-y-auto">
         <h1 className="text-2xl font-bold text-center text-[#BDA47A] mb-6">
           Zásady ochrany osobních údajů
         </h1>

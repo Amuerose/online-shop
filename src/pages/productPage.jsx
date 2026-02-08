@@ -2,9 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../contexts/CartContext";
 import { useState, useEffect, useMemo } from "react";
-import { supabase } from "../lib/supabaseClient";
 import useIsDesktop from "../hooks/useIsDesktop";
 import { Helmet } from "react-helmet-async";
+import { catalogProducts } from "../data/catalog";
+import { blogBackgroundStyle } from "../styles/blogBackground";
 
 // NOTE: Ensure global.css includes:
 // html, body {
@@ -32,7 +33,6 @@ function ProductPage() {
   const [reviews, setReviews] = useState([]);
   const [myRating, setMyRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   const reviewsCount = reviews.length;
   const avgRating = reviewsCount
@@ -44,91 +44,100 @@ function ProductPage() {
     []
   );
 
+  const USE_LOCAL_PRODUCTS = (import.meta?.env?.VITE_PRODUCTS_SOURCE || '').toLowerCase() === 'local';
+
+  // Auto-detect: if the route param matches a local catalog item (by id or slug), use local mode.
+  const LOCAL_CATALOG_MATCH = Array.isArray(catalogProducts)
+    ? catalogProducts.find(
+        (p) => String(p?.id) === String(id) || String(p?.slug) === String(id)
+      )
+    : null;
+
+  const SHOULD_USE_LOCAL = USE_LOCAL_PRODUCTS || Boolean(LOCAL_CATALOG_MATCH);
+
+  const parseMaybeJson = (v) => {
+    if (v == null) return null;
+    if (typeof v === 'string') {
+      try { return JSON.parse(v); } catch { return v; }
+    }
+    return v;
+  };
+
+  const normalizeLocalProduct = (row) => {
+    const parsedName = parseMaybeJson(row?.name);
+    const parsedDesc = parseMaybeJson(row?.description);
+
+    const name_obj = {
+      cs: row?.name_cs ?? (parsedName && parsedName.cs) ?? (typeof parsedName === 'string' ? parsedName : '') ?? '',
+      en: row?.name_en ?? (parsedName && parsedName.en) ?? '',
+      ru: row?.name_ru ?? (parsedName && parsedName.ru) ?? '',
+    };
+
+    const desc_obj = {
+      cs: row?.description_cs ?? (parsedDesc && parsedDesc.cs) ?? (typeof parsedDesc === 'string' ? parsedDesc : '') ?? '',
+      en: row?.description_en ?? (parsedDesc && parsedDesc.en) ?? '',
+      ru: row?.description_ru ?? (parsedDesc && parsedDesc.ru) ?? '',
+    };
+
+    const imageUrl =
+      row?.image_url ||
+      row?.imageUrl ||
+      row?.image ||
+      (Array.isArray(row?.gallery) && row.gallery[0]) ||
+      '';
+
+    return {
+      id: row?.id,
+      name: name_obj,
+      description: desc_obj,
+      price: row?.price ?? 0,
+      images: {
+        data: [{ attributes: { url: imageUrl } }],
+      },
+      _raw: row,
+    };
+  };
+
+  async function loadLocalProductById(productIdOrSlug) {
+    const list = Array.isArray(catalogProducts) ? catalogProducts : [];
+
+    // route param `/product/:id` can be slug OR id (Shop uses slug when present)
+    const found = list.find(
+      (p) => String(p?.id) === String(productIdOrSlug) || String(p?.slug) === String(productIdOrSlug)
+    );
+
+    const mapped = found ? normalizeLocalProduct(found) : null;
+
+    const relatedList = list
+      .filter((p) => String(p?.id) !== String(found?.id))
+      .slice(0, 8);
+
+    return {
+      product: mapped,
+      related: relatedList,
+    };
+  }
+
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       setLoading(true);
       try {
-        // 1) сам товар
-        const { data: row, error } = await supabase
-          .from("products")
-          .select("*")
-          .eq("id", id)
-          .single();
-        console.log("LOADED PRODUCT ROW:", row);
-        if (error) throw error;
-
-        // Принудительный парсинг JSON для name/description
-        const parsedName = typeof row.name === "string" ? JSON.parse(row.name) : row.name;
-        const parsedDesc = typeof row.description === "string" ? JSON.parse(row.description) : row.description;
-        const name_obj = {
-          cs: row.name_cs ?? (parsedName && parsedName.cs) ?? "",
-          en: row.name_en ?? (parsedName && parsedName.en) ?? "",
-          ru: row.name_ru ?? (parsedName && parsedName.ru) ?? "",
-        };
-        const desc_obj = {
-          cs: row.description_cs ?? (parsedDesc && parsedDesc.cs) ?? "",
-          en: row.description_en ?? (parsedDesc && parsedDesc.en) ?? "",
-          ru: row.description_ru ?? (parsedDesc && parsedDesc.ru) ?? "",
-        };
-        const mapped = row
-          ? {
-              id: row.id,
-              name: name_obj,
-              description: desc_obj,
-              price: row.price ?? 0,
-              images: {
-                data: [
-                  { attributes: { url: row.image_url ?? "" } },
-                ],
-              },
-            }
-          : null;
-
-        if (!cancelled) setProduct(mapped);
-
-        // 2) варианты (если есть)
-        const { data: v } = await supabase
-          .from("product_variants")
-          .select("id, product_id, name_cs, name_en, name_ru, qty, price, sort_order, is_default")
-          .eq("product_id", id)
-          .order("sort_order", { ascending: true });
-
-        if (!cancelled) {
-          setVariants(v || []);
-          setSelectedVariant((v || []).find(x => x.is_default) || (v && v[0]) || null);
-        }
-
-        // 3) похожие — просто последние другие товары (без product_categories)
-        const { data: rel } = await supabase
-          .from("products")
-          .select("id, name_cs, name_en, name_ru, price, image_url")
-          .neq("id", id)
-          .order("created_at", { ascending: false })
-          .limit(8);
-        if (!cancelled) setRelated(rel || []);
-
-        // 4) отзывы (загружаем отдельно и не ломаем общий рендер при ошибке)
-        try {
-          const { data: revs, error: revErr } = await supabase
-            .from("product_reviews")
-            .select("id, rating, comment, created_at, user_id")
-            .eq("product_id", Number(id) || id)
-            .order("created_at", { ascending: false })
-            .limit(50);
-          if (revErr) {
-            console.warn("load reviews failed:", revErr);
-            if (!cancelled) setReviews([]);
-          } else if (!cancelled) {
-            setReviews(revs || []);
+        if (SHOULD_USE_LOCAL) {
+          const { product: localProduct, related: localRelated } = await loadLocalProductById(id);
+          if (!cancelled) {
+            setProduct(localProduct);
+            setVariants([]);
+            setSelectedVariant(null);
+            setRelated(localRelated || []);
+            setReviews([]);
+            setQuantity(1);
           }
-        } catch (e) {
-          console.warn("load reviews failed:", e);
-          if (!cancelled) setReviews([]);
+          return;
         }
       } catch (err) {
-        console.error("Supabase load product error:", err);
+        console.error("Product load error:", err);
         if (!cancelled) {
           setProduct(null);
           setVariants([]);
@@ -183,44 +192,6 @@ function ProductPage() {
     addToCart({ id: r.id, name, price, image });
   };
 
-  async function handleSubmitReview(e) {
-    e.preventDefault();
-    if (!myRating || !reviewText.trim()) return;
-
-    setSubmitting(true);
-    try {
-      const { data: auth } = await supabase.auth.getUser();
-      const userId = auth?.user?.id;
-      if (!userId) {
-        alert(t("pleaseLoginToReview") || "Please log in to leave a review.");
-        return;
-      }
-
-      const payload = {
-        product_id: Number(id) || id,
-        rating: Math.max(1, Math.min(5, Number(myRating))),
-        comment: reviewText.trim().slice(0, 2000),
-        user_id: userId,
-      };
-
-      const { data, error } = await supabase
-        .from("product_reviews")
-        .insert(payload)
-        .select("id, rating, comment, created_at, user_id")
-        .single();
-
-      if (error) throw error;
-
-      setReviews((prev) => [data, ...prev]);
-      setMyRating(0);
-      setReviewText("");
-    } catch (err) {
-      console.error("submit review failed:", err);
-      alert(t("reviewSubmitError") || "Failed to submit review.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   return (
     <>
@@ -251,10 +222,17 @@ function ProductPage() {
         })}
       </script>
     </Helmet>
-    <main className="flex flex-col h-screen overflow-hidden pt-[env(safe-area-inset-top)] lg:pt-0">
-      <section className={isDesktop
-        ? "w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-6 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible"
-        : "w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-14 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible"}>
+    <main
+      className="flex flex-col h-screen overflow-hidden pt-[env(safe-area-inset-top)] lg:pt-0"
+      style={blogBackgroundStyle}
+    >
+      <section
+        className={
+          isDesktop
+            ? "w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-6 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible"
+            : "w-full max-w-[1400px] mx-auto px-6 flex-1 flex flex-col z-10 pt-14 lg:pt-[80px] pb-6 lg:pb-[100px] overflow-visible"
+        }
+      >
         <div
           className={
             isDesktop
@@ -311,7 +289,7 @@ function ProductPage() {
                           className={`px-3 py-1.5 rounded-full border transition backdrop-blur
                             ${selected
                               ? "bg-[#BDA47A]/20 border-[#BDA47A] text-[#BDA47A]"
-                              : "bg:white/10 border-white/20 text-[#5C3A2E] hover:bg-white/20"}`}
+                              : "bg-white/10 border-white/20 text-[#5C3A2E] hover:bg-white/20"}`}
                           aria-pressed={selected}
                         >
                           {localVariantName(v)}{v.qty ? ` (${v.qty})` : ""}
@@ -419,10 +397,109 @@ function ProductPage() {
                           </div>
                         </>
                       ) : (
-                        <div className="p-4 text-sm text-[#5C3A2E]/70">
-                          {t("noReviews") || "Пока нет отзывов."}
-                        </div>
-                      )}
+  <div
+    role="tabpanel"
+    id="tab-panel-reviews"
+    aria-labelledby="tab-reviews"
+    className="flex-1 overflow-y-auto overscroll-contain scrollbar-none px-4 pt-4 pb-4 text-sm text-[#5C3A2E]"
+  >
+    <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="flex items-center gap-2">
+        <div className="text-[#BDA47A] font-semibold">
+          {avgRating ? avgRating.toFixed(1) : "0.0"}
+        </div>
+        <div className="text-[#5C3A2E]/70">
+          {t("tab.reviews") || "Отзывы"}: {reviewsCount}
+        </div>
+      </div>
+      <div className="text-[#5C3A2E]/60 text-xs">
+        {reviewsCount ? (t("basedOn") || "На основе") + ` ${reviewsCount}` : (t("noReviews") || "Пока нет отзывов.")}
+      </div>
+    </div>
+
+    {/* List */}
+    {reviewsCount > 0 ? (
+      <div className="flex flex-col gap-3">
+        {reviews.map((r) => (
+          <div
+            key={r.id}
+            className="rounded-2xl border border-white/20 bg-white/5 backdrop-blur-md p-3"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1 text-[#BDA47A]">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} aria-hidden>
+                    {i < Number(r.rating || 0) ? "★" : "☆"}
+                  </span>
+                ))}
+              </div>
+              <div className="text-xs text-[#5C3A2E]/60">
+                {r.created_at ? new Date(r.created_at).toLocaleDateString("cs-CZ") : ""}
+              </div>
+            </div>
+            {r.comment && (
+              <div className="mt-2 text-sm whitespace-pre-line text-[#5C3A2E]">
+                {r.comment}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-[#5C3A2E]/70 mb-4">
+        {t("noReviews") || "Пока нет отзывов."}
+      </div>
+    )}
+
+    {/* Form */}
+    <div className="mt-5 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-md p-4">
+      <div className="text-sm font-medium text-[#BDA47A] mb-2">
+        {t("leaveReview") || "Оставить отзыв"}
+      </div>
+      <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-3">
+        <div className="flex items-center justify-center md:justify-start gap-1">
+          {Array.from({ length: 5 }).map((_, i) => {
+            const val = i + 1;
+            const active = myRating >= val;
+            return (
+              <button
+                key={val}
+                type="button"
+                onClick={() => setMyRating(val)}
+                className={`text-xl leading-none transition ${active ? "text-[#BDA47A]" : "text-[#5C3A2E]/40 hover:text-[#BDA47A]/70"}`}
+                aria-label={`${t("rating") || "Рейтинг"}: ${val}`}
+              >
+                ★
+              </button>
+            );
+          })}
+        </div>
+
+        <textarea
+          value={reviewText}
+          onChange={(e) => setReviewText(e.target.value)}
+          rows={3}
+          maxLength={2000}
+          placeholder={t("reviewPlaceholder") || "Напишите отзыв..."}
+          className="w-full rounded-2xl bg-white/10 border border-white/20 px-3 py-2 text-sm text-[#5C3A2E] placeholder:text-[#5C3A2E]/50 focus:outline-none focus:ring-2 focus:ring-[#BDA47A]/30"
+        />
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xs text-[#5C3A2E]/60">
+            {reviewText.length}/2000
+          </div>
+          <button
+            type="submit"
+            disabled={!myRating || !reviewText.trim()}
+            className="h-9 px-5 text-sm rounded-full backdrop-blur-md bg-[#BDA47A]/10 border border-[#BDA47A]/40 text-[#BDA47A] hover:bg-[#BDA47A]/20 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {t("submitReview") || "Отправить"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
                     </div>
                   </div>
                 </div>

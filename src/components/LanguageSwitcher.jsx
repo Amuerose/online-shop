@@ -12,6 +12,7 @@ function LanguageSwitcher() {
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const current = (i18n.resolvedLanguage || i18n.language || "").split("-")[0];
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -42,7 +43,7 @@ function LanguageSwitcher() {
                 setOpen(false);
               }}
               className={`block w-full px-4 py-[11px] text-center hover:bg-white/20 ${
-                i18n.language === code ? "bg-white/20 font-semibold" : ""
+                current === code ? "bg-white/20 font-semibold" : ""
               }`}
             >
               {label}

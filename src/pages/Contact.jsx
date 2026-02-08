@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet';
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { blogBackgroundStyle } from "../styles/blogBackground";
 
 function PageWithSafeAreaColors({ topColor, bottomColor, children }) {
   return (
@@ -73,39 +74,31 @@ function Contact() {
   }, [showForm]);
   return (
     <PageWithSafeAreaColors
-      topColor="#2e1c12"
-      bottomColor="rgba(46,28,18,0.95)"
+      topColor="#F8EFE6"
+      bottomColor="#F8EFE6"
     >
       <Helmet>
-        <meta name="theme-color" content="#2e1c12" />
+        <meta name="theme-color" content="#F8EFE6" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </Helmet>
       <div
-        className="flex flex-col items-center justify-center px-6 py-12 text-white text-center"
+        className="flex flex-col items-center justify-center px-6 py-12 text-[#4B2E1D] text-center"
         style={{
-          backgroundImage: [
-            'linear-gradient(180deg, #3b1f1d 0%, #8b4513 100%)',
-            'linear-gradient(90deg, #3b1f1d 0%, rgba(75,46,43,0) 100%)',
-            'linear-gradient(180deg, rgba(92,51,23,0.8) 0%, rgba(139,69,19,0.8) 100%)',
-            'linear-gradient(180deg, rgba(75,46,43,0.6) 0%, rgba(210,105,30,0.6) 100%)',
-            'linear-gradient(180deg, rgba(210,105,30,0.4) 0%, rgba(75,46,43,0.4) 100%)'
-          ].join(', '),
-          backgroundBlendMode: 'overlay',
-          backgroundSize: 'cover',
+          ...blogBackgroundStyle,
           minHeight: '100dvh',
         }}
       >
         <h1 className="text-4xl font-bold mb-6 text-[#BDA47A]">{t("contactPageTitle", "Свяжитесь с нами")}</h1>
-        <p className="text-lg max-w-xl mb-4">
+        <p className="text-lg max-w-xl mb-4 text-[#4B2E1D]/80">
           {t("contactPageDescription", "Если у вас есть вопросы, предложения или хотите обсудить сотрудничество — свяжитесь с нами любым удобным способом.")}
         </p>
         <section className="w-full flex flex-col items-center">
           <p className="text-[#BDA47A] mb-2">
-            {t("contactEmailLabel")}: <a href="mailto:info@amuerose.cz" className="text-white underline">info@amuerose.cz</a>
+            {t("contactEmailLabel")}: <a href="mailto:info@amuerose.cz" className="text-[#4B2E1D] underline">info@amuerose.cz</a>
           </p>
           <p className="text-[#BDA47A] mb-4">
-            {t("contactPhoneLabel")}: <a href="tel:+420603319872" className="text-white underline">+420 603 319 872</a>
+            {t("contactPhoneLabel")}: <a href="tel:+420603319872" className="text-[#4B2E1D] underline">+420 603 319 872</a>
           </p>
           {!showForm ? (
             <button

@@ -88,11 +88,11 @@ function Home() {
             className="fixed bottom-0 left-0 w-full z-40 px-6 py-3 text-sm bg-white/10 backdrop-blur-md border-t border-white/20 text-white flex flex-col md:flex-row justify-between items-center gap-2"
           >
             <span className="text-xs md:text-sm text-white/80">
-              David Oganesyan · ičo: 10734562 · © 2025 Amuerose · Все права защищены
+              {t("footerSignature")}
             </span>
             <div className="flex gap-4 text-xs md:text-sm">
-              <a href="/privacy" className="hover:underline">
-                Политика конфиденциальности
+              <a href="/privacy-policy" className="hover:underline">
+                {t("privacyPolicy")}
               </a>
               <a href="mailto:amuerose@gmail.com">amuerose@gmail.com</a>
               <a href="tel:+420603319872">+420 603 319 872</a>

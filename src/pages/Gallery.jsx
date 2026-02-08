@@ -1,67 +1,57 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { supabase } from '../lib/supabaseClient';
-import Masonry from 'react-masonry-css';
-
-const PAGE_SIZE = 24; // how many objects per batch
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { blogBackgroundStyle } from '../styles/blogBackground';
 
 // Known extensions
 const IMAGE_EXT = ['jpg','jpeg','png','heic','gif','bmp','webp','tiff','svg'];
 const VIDEO_EXT = ['mp4','mov','webm'];
 
-// Public bucket base URL (unchanged)
-const BUCKET_BASE = 'https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/object/public/product-images';
-
-function useIntersection(ref, { root = null, rootMargin = '0px', threshold = 0.1 } = {}) {
-  const [isIntersecting, setIntersecting] = useState(false);
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    const obs = new IntersectionObserver(([entry]) => setIntersecting(entry.isIntersecting), { root, rootMargin, threshold });
-    obs.observe(node);
-    return () => obs.disconnect();
-  }, [ref, root, rootMargin, threshold]);
-  return isIntersecting;
-}
+// Public folder source
+// Put files into: /public/gallery/
+// Provide /public/gallery/manifest.json with an array of filenames, e.g. ["1.jpg","2.webp","video.mp4"]
+const BASE_URL = import.meta.env.BASE_URL || '/';
+const NORMALIZED_BASE = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+const GALLERY_BASE = `${NORMALIZED_BASE}/gallery`;
+const MANIFEST_URL = `${GALLERY_BASE}/manifest.json`;
+const DIRECTORY_URL = `${GALLERY_BASE}/`;
 
 function MediaItem({ item, onSelect }) {
   const { type, url, title } = item;
-  const ref = useRef(null);
-  const visible = useIntersection(ref, { threshold: 0.15, rootMargin: '200px' });
-
   const [src, setSrc] = useState(item.url);
+  const [loaded, setLoaded] = useState(false);
 
   // render lightweight skeleton until visible
   return (
     <div
-      ref={ref}
-      className="mb-4 break-inside-avoid rounded overflow-hidden cursor-pointer"
-      onClick={() => type === 'image' && onSelect(src)}
-      style={{ contentVisibility: 'auto', containIntrinsicSize: '300px' }}
+      className="mb-4 break-inside-avoid rounded-2xl overflow-hidden cursor-pointer bg-white/10 border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.35),0_10px_28px_rgba(0,0,0,0.12)]"
+      onClick={() => onSelect(item)}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 420px' }}
     >
-      {!visible ? (
-        <div className="animate-pulse bg-neutral-200/70 dark:bg-neutral-800/50 w-full h-[260px] rounded" />
-      ) : type === 'image' ? (
+      {type === 'image' ? (
         <img
           src={src}
           alt={title || 'Gallery item'}
           loading="lazy"
           decoding="async"
           fetchPriority="low"
-          className="w-full h-auto object-cover block"
+          className={`w-full h-auto object-cover block transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setLoaded(true)}
           onError={() => {
             if (item.fallbackUrl && src !== item.fallbackUrl) setSrc(item.fallbackUrl);
+            else setLoaded(true);
           }}
         />
       ) : type === 'video' ? (
         <video
-          // delay loading until visible to avoid heavy bandwidth
           src={url}
-          className="w-full h-auto object-cover block"
+          className={`w-full h-auto object-cover block transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           muted
+          autoPlay
           playsInline
           loop
           controls={false}
-          preload="none"
+          preload="metadata"
+          onLoadedData={() => setLoaded(true)}
         />
       ) : null}
     </div>
@@ -69,107 +59,168 @@ function MediaItem({ item, onSelect }) {
 }
 
 function Gallery() {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
-  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [loadError, setLoadError] = useState('');
+  const [selectedMedia, setSelectedMedia] = useState(null);
 
-  const sentinelRef = useRef(null);
-  const sentinelVisible = useIntersection(sentinelRef, { rootMargin: '600px' });
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setLoadError('');
+      try {
+        const shuffle = (arr) => {
+          const copy = [...arr];
+          for (let i = copy.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+          }
+          return copy;
+        };
+        const toItems = (list) => {
+          return (list || [])
+            .filter((name) => typeof name === 'string' && name && !name.startsWith('.'))
+            .map((name) => {
+              const ext = name.split('.').pop().toLowerCase();
+              let type = null;
+              if (IMAGE_EXT.includes(ext)) type = 'image';
+              else if (VIDEO_EXT.includes(ext)) type = 'video';
+              if (!type) return null;
+              const encoded = encodeURIComponent(name);
+              const url = `${GALLERY_BASE}/${encoded}`;
+              return { title: name, url, type };
+            })
+            .filter(Boolean);
+        };
 
-  const mapFiles = useCallback((list) => {
-    return (list ?? [])
-      .filter((file) => !!file.name && !file.name.startsWith('.'))
-      .map((file) => {
-        const ext = file.name.split('.').pop().toLowerCase();
-        let type = null;
-        if (IMAGE_EXT.includes(ext)) type = 'image';
-        else if (VIDEO_EXT.includes(ext)) type = 'video';
-        if (!type) return null;
-        const encoded = encodeURIComponent(file.name);
-        const objectUrl = `${BUCKET_BASE}/${encoded}`;
-        if (type === 'image') {
-          const renderUrl = `https://hqputwaqghrbsprtanqo.supabase.co/storage/v1/render/image/public/product-images/${encoded}?width=800&quality=75&format=webp`;
-          return { title: file.name, url: renderUrl, fallbackUrl: objectUrl, type };
+        // 1) Preferred: manifest.json with an array of filenames
+        let list = null;
+        const manifestRes = await fetch(MANIFEST_URL, { cache: 'no-store' });
+        if (manifestRes.ok) {
+          const json = await manifestRes.json();
+          if (!Array.isArray(json)) throw new Error('manifest is not an array');
+          list = json;
+        } else {
+          // 2) Fallback: try to parse a server-provided directory listing at /gallery/
+          const dirRes = await fetch(DIRECTORY_URL, { cache: 'no-store' });
+          if (!dirRes.ok) {
+            throw new Error(`manifest not found (${manifestRes.status}) and directory fetch failed (${dirRes.status})`);
+          }
+
+          const contentType = dirRes.headers.get('content-type') || '';
+          const text = await dirRes.text();
+
+          // Only attempt HTML parsing when the server returns HTML
+          if (!contentType.includes('text/html')) {
+            throw new Error('directory listing is not available (non-HTML response)');
+          }
+
+          const doc = new DOMParser().parseFromString(text, 'text/html');
+          const hrefs = Array.from(doc.querySelectorAll('a[href]'))
+            .map((a) => a.getAttribute('href') || '')
+            .map((h) => h.split('?')[0].split('#')[0])
+            .filter((h) => h && !h.startsWith('/') && !h.startsWith('..') && h !== './');
+
+          // Clean up common index formats (may include trailing slashes)
+          list = hrefs
+            .map((h) => (h.endsWith('/') ? h.slice(0, -1) : h))
+            .filter((name) => {
+              const ext = name.split('.').pop().toLowerCase();
+              return IMAGE_EXT.includes(ext) || VIDEO_EXT.includes(ext);
+            });
+
+          if (!list.length) {
+            throw new Error('directory listing parsed, but no media links found');
+          }
         }
-        // video
-        return { title: file.name, url: objectUrl, type };
-      })
-      .filter(Boolean);
+
+        const mapped = toItems(list);
+        if (!cancelled) setItems(shuffle(mapped));
+      } catch (e) {
+        console.error('Gallery load error:', e);
+        if (!cancelled) {
+          setItems([]);
+          setLoadError(
+            t('galleryLoadError', {
+              defaultValue:
+                'Не удалось получить список файлов галереи. Варианты: (1) добавь /public/gallery/manifest.json (массив имён файлов), или (2) включи листинг директории /gallery/ на сервере.',
+            })
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-  const fetchPage = useCallback(async () => {
-    if (loading || !hasMore) return;
-    setLoading(true);
-    const { data, error } = await supabase.storage.from('product-images').list(null, {
-      limit: PAGE_SIZE,
-      offset,
-      sortBy: { column: 'name', order: 'asc' },
-    });
-    if (error) {
-      console.error('Error fetching files:', error);
-      setLoading(false);
-      return;
-    }
-    const batch = mapFiles(data);
-    setItems((prev) => [...prev, ...batch]);
-    setOffset((prev) => prev + (data?.length || 0));
-    setHasMore((data?.length || 0) === PAGE_SIZE);
-    setLoading(false);
-  }, [offset, hasMore, loading, mapFiles]);
-
-  // initial load
-  useEffect(() => {
-    fetchPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // load next page when sentinel appears
-  useEffect(() => {
-    if (sentinelVisible) fetchPage();
-  }, [sentinelVisible, fetchPage]);
-
-  const masonryCols = useMemo(() => ({ default: 5, 1400: 4, 900: 3, 700: 2, 500: 2 }), []);
 
   return (
     <div
       className="relative min-h-[100dvh] overflow-y-auto pt-[calc(100px+var(--safe-area-inset-top,0px))] pb-[calc(80px+var(--safe-area-inset-bottom,0px))]"
-      style={{
-        backgroundImage:
-          'linear-gradient(135deg, #f8e6e0 0%, #e8d8c3 100%), linear-gradient(315deg, #ffe4e1 0%, #ffeacd 100%)',
-        backgroundBlendMode: 'soft-light',
-        backgroundSize: 'cover',
-      }}
+      style={blogBackgroundStyle}
     >
-      <Masonry breakpointCols={masonryCols} className="flex gap-4 p-4" columnClassName="bg-clip-padding">
-        {items.map((item, idx) => (
-          <MediaItem key={`${item.title}-${idx}`} item={item} onSelect={setSelectedImage} />
-        ))}
-      </Masonry>
+      <div className="px-4 pb-6">
+        <div
+          className="columns-2 sm:columns-3 lg:columns-4 2xl:columns-5"
+          style={{ columnGap: '16px' }}
+        >
+          {items.map((item, idx) => (
+            <MediaItem key={`${item.title}-${idx}`} item={item} onSelect={setSelectedMedia} />
+          ))}
+        </div>
+      </div>
 
-      {/* Load more sentinel */}
-      <div ref={sentinelRef} className="h-10 w-full" />
-
-      {/* Subtle loader */}
-      {loading && (
-        <div className="p-4 text-center text-sm text-neutral-500">Загрузка…</div>
+      {loadError && (
+        <div className="px-4 pb-4 text-center text-sm text-red-600">
+          {loadError}
+        </div>
       )}
 
-      {selectedImage && (
+      {!loading && !loadError && items.length === 0 && (
+        <div className="px-4 pb-4 text-center text-sm text-neutral-500">
+          {t('galleryEmpty', {
+            defaultValue: 'В папке /public/gallery нет элементов (или manifest пустой).',
+          })}
+        </div>
+      )}
+
+      {loading && (
+        <div className="p-4 text-center text-sm text-neutral-500">
+          {t('galleryLoading', { defaultValue: 'Загрузка…' })}
+        </div>
+      )}
+
+      {selectedMedia && (
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setSelectedMedia(null)}
         >
-          <img
-            src={selectedImage}
-            alt="Full view"
-            className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {selectedMedia.type === 'video' ? (
+            <video
+              src={selectedMedia.url}
+              className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg"
+              controls
+              autoPlay
+              playsInline
+              loop
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img
+              src={selectedMedia.url}
+              alt="Full view"
+              className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           <button
             className="absolute top-6 right-6 text-white text-3xl"
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedMedia(null)}
           >
             &times;
           </button>

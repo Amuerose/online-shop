@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Info } from "lucide-react";
 
 function FloatingInfoPanel() {
+  const { t } = useTranslation();
   const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
@@ -78,9 +80,9 @@ function FloatingInfoPanel() {
                   href="/privacy-policy"
                   className="underline hover:opacity-100 transition-opacity"
                 >
-                  Политика конфиденциальности
+                  {t("privacyPolicy")}
                 </a>
-                <p className="opacity-70">© 2025 Amuerose · Все права защищены</p>
+                <p className="opacity-70">{t("footerRights")}</p>
               </div>
 
               {/* Right */}
