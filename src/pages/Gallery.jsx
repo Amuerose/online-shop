@@ -18,14 +18,11 @@ const DIRECTORY_URL = `${GALLERY_BASE}/`;
 function MediaItem({ item, onSelect }) {
   const { type, url, title } = item;
   const [src, setSrc] = useState(item.url);
-  const [loaded, setLoaded] = useState(false);
 
-  // render lightweight skeleton until visible
   return (
     <div
       className="mb-4 break-inside-avoid rounded-2xl overflow-hidden cursor-pointer bg-white/10 border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.35),0_10px_28px_rgba(0,0,0,0.12)]"
       onClick={() => onSelect(item)}
-      style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 420px' }}
     >
       {type === 'image' ? (
         <img
@@ -34,24 +31,21 @@ function MediaItem({ item, onSelect }) {
           loading="lazy"
           decoding="async"
           fetchPriority="low"
-          className={`w-full h-auto object-cover block transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setLoaded(true)}
+          className="w-full h-auto object-cover block"
           onError={() => {
             if (item.fallbackUrl && src !== item.fallbackUrl) setSrc(item.fallbackUrl);
-            else setLoaded(true);
           }}
         />
       ) : type === 'video' ? (
         <video
           src={url}
-          className={`w-full h-auto object-cover block transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className="w-full h-auto object-cover block"
           muted
           autoPlay
           playsInline
           loop
           controls={false}
           preload="metadata"
-          onLoadedData={() => setLoaded(true)}
         />
       ) : null}
     </div>
