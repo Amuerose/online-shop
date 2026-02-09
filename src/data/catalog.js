@@ -103,70 +103,70 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/kameja.png',
+      '/products/sticker 11.webp',
     ],
   },
 
   {
-    id: 'dates-berries-selection-premium',
-    slug: 'dates-berries-selection',
+    id: 'Old Prague',
+    slug: 'Old Prague',
     title: {
-      cs: 'Datle & Berries Selection',
-      ru: 'Datle & Berries Selection',
-      en: 'Datle & Berries Selection',
+      cs: 'Old Prague',
+      ru: 'Old Prague',
+      en: 'Old Prague',
     },
-    price: 3000,
+    price: 3090,
     currency: 'CZK',
     description: {
-      cs: 'Kulatá prémiová kompozice z datlí, jahod, malin a borůvek v čokoládě. Vyvážená struktura chutí a textur, ruční zpracování a klidná, sebevědomá estetika Amuerose.',
-      ru: 'Круглая премиальная композиция из фиников, клубники, малины и голубики в шоколаде. Выверенный баланс вкусов и текстур, ручная работа и спокойная, уверенная эстетика Amuerose.',
-      en: 'A round premium composition of dates, strawberries, raspberries, and blueberries in chocolate. Balanced flavors and textures, handcrafted execution, and calm, confident Amuerose aesthetics.',
+      cs: 'Mlécná cokoláda6-9 jahod, 6 plnënych datlí, (orechová / syrová náplñ), 200 g malin v cokoláde, 200 g borüvek v cokoláde, Luxusní dárkové balení.',
+      ru: 'Молочный шоколад: 6–9 клубник, 6 фиников с начинкой-(ореховая / сырная начинка), 200 г малины в шоколаде, 200 г голубики в шоколаде, роскошная подарочная упаковка',
+      en: 'Milk chocolate: 6–9 strawberries, 6 stuffed dates (nut / cheese filling), 200 g raspberries in chocolate, 200 g blueberries in chocolate, luxury gift packaging.',
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_7726.PNG'
+      '/products/sticker 3.webp'
     ],
   },
 
   {
     id: 'reserve-heart',
-    slug: 'reserve',
+    slug: 'Matcha Love',
     title: {
-      cs: 'Reserve',
-      ru: 'Reserve',
-      en: 'Reserve',
+      cs: 'Matcha Love',
+      ru: 'Matcha Love',
+      en: 'Matcha Love',
     },
-    price: 2500,
+    price: 2190,
     currency: 'CZK',
     description: {
-      cs: 'Srdce s jahodami v čokoládě v zeleném provedení, doplněné lyofilizovaným fíkem. Střídmá estetika, odstup a charakter pro ty, kteří volí vědomě.',
-      ru: 'Сердце с клубникой в шоколаде в зелёном исполнении, дополненное сублимированным инжиром. Сдержанная эстетика, дистанция и характер для тех, кто выбирает осознанно.',
-      en: 'A heart-shaped set of strawberries in chocolate in a green edition, finished with freeze-dried fig. Reserved aesthetics and character for those who choose selectively.',
+      cs: '16 jahod v matcha čokoládě, Dekorace z lyofilizovaných fíků a zlatých střikanců, Luxusní dárkové balení.',
+      ru: '16 клубник в шоколаде матча, декор из лиофилизированных инжиров и золотых брызг, роскошная подарочная упаковка.',
+      en: '16 strawberries in matcha chocolate, decoration with freeze-dried figs and golden splashes, luxury gift packaging.',
     },
     allergens: '6, 7',
     gallery: [
-      '/products/rubi.png'
+      '/products/sticker 7.webp'
     ]
   },
 
   {
     id: 'desire-heart',
-    slug: 'desire',
+    slug: 'Crimson Kiss',
     title: {
-      cs: 'Desire',
-      ru: 'Desire',
-      en: 'Desire',
+      cs: 'Crimson Kiss',
+      ru: 'Crimson Kiss',
+      en: 'Crimson Kiss',
     },
-    price: 2500,
+    price: 2190,
     currency: 'CZK',
     description: {
-      cs: 'Srdce s jahodami v mléčné čokoládě, ručně dekorované lyofilizovanou malinou. Intenzivní, hřejivá kompozice s výraznou emocí.',
-      ru: 'Сердце с клубникой в молочном шоколаде, вручную декорированное сублимированной малиной. Тёплая, насыщенная композиция с ярко выраженной эмоцией.',
-      en: 'A heart-shaped composition of strawberries in milk chocolate, hand-finished with freeze-dried raspberry. Warm, intense character with a clear emotional accent.',
+      cs: '16 jahod v hořké čokoládě, lyofilizovanych malin, Luxusní dárkové balení.',
+      ru: '16 клубник в тёмном шоколаде, лиофилизированная малина, роскошная подарочная упаковка.',
+      en: '16 strawberries in dark chocolate, freeze-dried raspberries, luxury gift packaging.',
     },
     allergens: '6, 7',
     gallery: [
-      '/products/desire.png'
+      '/products/sticker 8.webp'
     ],
   },
   {
@@ -186,7 +186,7 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_7718.PNG',
+      '/products/sticker100.webp',
     ],
   },
   {
@@ -206,7 +206,7 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_7766.PNG',
+      '/products/sticker 14.webp',
     ],
   },
   {
@@ -246,7 +246,7 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_8270.PNG',
+      '/products/sticker.webp',
     ],
   },
   {
@@ -266,7 +266,7 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_8269.PNG',
+      '/products/sticker 14.webp',
     ],
   },
   {
@@ -286,7 +286,7 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_8268.PNG',
+      '/products/sticker 13.webp',
     ],
   },
   {
@@ -306,7 +306,7 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_8267.PNG',
+      '/products/sticker 10.webp',
     ],
   },
   {
@@ -326,7 +326,67 @@ export const catalogProducts = [
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_8265.PNG',
+      '/products/sticker 15.webp',
+    ],
+  },
+  {
+    id: 'Duo Eclat',
+    slug: 'duo-eclat',
+    title: {
+      cs: 'Duo Eclat',
+      ru: 'Duo Eclat',
+      en: 'Duo Eclat',
+    },
+    price: 2290,
+    currency: 'CZK',
+    description: {
+      cs: '16 jahod v bílé a mléčné čokoládě, Zlaté stříkance, Luxusní dárkové balení',
+      ru: '16 клубник в белом и молочном шоколаде, золотые брызги, роскошная подарочная упаковка.',
+      en: '16 strawberries in white and milk chocolate, golden splashes, luxury gift packaging.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 4.webp',
+    ],
+  },
+  {
+    id: 'Rose Embrace',
+    slug: 'rose-embrace',
+    title: {
+      cs: 'Rose Embrace',
+      ru: 'Rose Embrace',
+      en: 'Rose Embrace',
+    },
+    price: 5990,
+    currency: 'CZK',
+    description: {
+      cs: '40 jahod v růžové čokoládě, Dekorace z lyofilizovaných fíků a čerstvých květů, Luxusní dárkové balení.',
+      ru: '40 клубник в розовом шоколаде, декор из лиофилизированных инжиров и свежих цветов, роскошная подарочная упаковка.',
+      en: '40 strawberries in pink chocolate, decoration with freeze-dried figs and fresh flowers, luxury gift packaging.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 5.webp',
+    ],
+  },
+  {
+    id: 'Velvet Evening',
+    slug: 'velvet-evening',
+    title: {
+      cs: 'Velvet Evening',
+      ru: 'Velvet Evening',
+      en: 'Velvet Evening',
+    },
+    price: 2590,
+    currency: 'CZK',
+    description: {
+      cs: '22 jahody v mléčné čokoládě, Dekorace ze zlatých stříkanců a malin v čokoládě, Luxusní dárkové balení.',
+      ru: '22 клубники в молочном шоколаде, декор из золотых брызг и малины в шоколаде, роскошная подарочная упаковка.',
+      en: '22 strawberries in milk chocolate with decoration of gold splashes and raspberries in chocolate, luxury gift packaging.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 6.webp',
     ],
   },
 ];

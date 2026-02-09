@@ -174,19 +174,19 @@ const Shop = () => {
       />
       <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
       {/* Карточки */}
-      <div className="products-scroll overflow-y-auto mt-[calc(120px+var(--safe-area-inset-top,0px))] h-[calc(100dvh-120px-var(--safe-area-inset-top,0px))] pb-[calc(184px+var(--safe-area-inset-bottom,0px))]">
+      <div className="products-scroll products-scroll-fade overflow-y-auto mt-[calc(120px+var(--safe-area-inset-top,0px))] h-[calc(100dvh-120px-var(--safe-area-inset-top,0px))] pt-6 pb-[calc(184px+var(--safe-area-inset-bottom,0px))]">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2 sm:px-4 pb-10 max-w-[1200px] mx-auto">
           {products.map((product) => (
             <div
               key={product.id}
               onClick={() => navigate(`/product/${product.slug || product.id}`)}
-              className="cursor-pointer bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 shadow-2xl flex flex-col min-h-[320px] transition hover:scale-[1.02] overflow-hidden"
+              className="group cursor-pointer rounded-3xl flex flex-col min-h-[320px] overflow-hidden transition duration-300 hover:scale-[1.02] bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)]"
             >
-              <div className="w-full h-56">
+              <div className="w-full h-56 px-3 pt-5 pb-2 border-b border-white/15 bg-transparent flex items-center justify-center">
                 <img
                   src={getMainImage(product)}
                   alt=""
-                  className="w-full h-full object-cover"
+                  className="max-w-full max-h-full object-contain object-center"
                 />
               </div>
               <div className="p-4 flex flex-col justify-between flex-1">
@@ -216,7 +216,7 @@ const Shop = () => {
                         console.error("❌ Error adding to cart:", error);
                       }
                     }}
-                    className="text-sm font-[Inter] px-4 py-1 rounded-full border border-white/20 bg-white/20 backdrop-blur-sm hover:bg-white/30 transition text-[#BDA47A]"
+                    className="text-sm font-[Inter] px-4 py-1 rounded-full border border-white/20 bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4)] hover:bg-white/10 transition text-[#BDA47A]"
                   >
                     {t('buttons.addToCart')}
                   </button>
@@ -246,6 +246,14 @@ const Shop = () => {
   .animate-finger-swipe {
     animation: finger-swipe 2.1s ease-in-out 1 both;
     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+  }
+  .products-scroll-fade {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, rgba(0, 0, 0, 0.42) 18px, #000 52px, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0px, rgba(0, 0, 0, 0.42) 18px, #000 52px, #000 100%);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
   }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }

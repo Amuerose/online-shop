@@ -15,6 +15,8 @@ function Partnership() {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
   const formRef = useRef(null);
+  const liquidGlassClass =
+    "bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)]";
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.textContent = heartbeatStyles;
@@ -57,7 +59,7 @@ function Partnership() {
       </h1>
       <div className="h-full overflow-hidden max-w-[1400px] mx-auto py-16 space-y-16">
       <div
-        className="h-full overflow-y-auto scrollbar-none mx-auto max-w-[1400px] bg-[rgba(255,255,255,0.04)] backdrop-blur-[22px] border border-white/20 rounded-[32px] p-16 space-y-16 mt-8 mb-8"
+        className="h-full overflow-y-auto scrollbar-none mx-auto max-w-[1400px] rounded-[32px] p-16 space-y-16 mt-8 mb-8"
         style={{ scrollbarWidth: 'none' }}
       >
         <p className="text-[#4B2E1D] text-2xl text-center max-w-2xl mx-auto -mt-10">
@@ -69,17 +71,17 @@ function Partnership() {
             {t("partnershipEventsTitle")}
           </h2>
           <div className="flex flex-col sm:flex-row gap-8 mt-6">
-            <div className="flex-1 flex flex-col items-center justify-center bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[24px] p-4 text-center">
+            <div className={`flex-1 flex flex-col items-center justify-center rounded-[24px] p-4 text-center ${liquidGlassClass}`}>
               <p className="text-[#4B2E1D]">
                 {t("partnershipDetail1", "Предлагайте своим клиентам высококачественные ягоды в шоколаде.")}
               </p>
             </div>
-            <div className="flex-1 flex flex-col items-center justify-center bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[24px] p-4 text-center">
+            <div className={`flex-1 flex flex-col items-center justify-center rounded-[24px] p-4 text-center ${liquidGlassClass}`}>
               <p className="text-[#4B2E1D]">
                 {t("partnershipDetail2", "Индивидуальная упаковка для корпоративных клиентов и мероприятий.")}
               </p>
             </div>
-            <div className="flex-1 flex flex-col items-center justify-center bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[24px] p-4 text-center">
+            <div className={`flex-1 flex flex-col items-center justify-center rounded-[24px] p-4 text-center ${liquidGlassClass}`}>
               <p className="text-[#4B2E1D]">
                 {t("partnershipDetail3", "Гибкие оптовые цены и быстрая доставка по Праге.")}
               </p>
@@ -98,13 +100,13 @@ function Partnership() {
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="px-3 py-1 bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[24px] text-[#BDA47A] transition-transform ease-in-out duration-[1200ms] hover:scale-110 -mb-6"
+              className={`px-3 py-1 rounded-[24px] text-[#BDA47A] transition-transform ease-in-out duration-[1200ms] hover:scale-110 -mb-6 ${liquidGlassClass}`}
               style={{ animation: "heartbeat 1.2s ease-in-out infinite" }}
             >
               {t("contactUs", "Связаться")}
             </button>
           ) : (
-            <form ref={formRef} className="mt-6 space-y-4 rounded-[24px] bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 p-6 transition-all duration-300">
+            <form ref={formRef} className={`mt-6 space-y-4 rounded-[24px] p-6 transition-all duration-300 ${liquidGlassClass}`}>
               <input
                 type="text"
                 name="company"
@@ -124,7 +126,7 @@ function Partnership() {
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-white/5 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto"
+                className={`px-4 py-2 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto ${liquidGlassClass}`}
               >
                 {t("submitApplication", "Submit Application")}
               </button>
@@ -132,9 +134,9 @@ function Partnership() {
           )}
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-y-4 max-w-[1400px] mx-auto items-start justify-items-center">
-          <section className="mb-8">
-            <div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-[1400px] mx-auto items-stretch">
+          <section className="w-full">
+            <div className={`h-full rounded-[24px] p-6 ${liquidGlassClass}`}>
               <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] mb-4">
                 {t("partnershipBenefitsTitle", "Преимущества сотрудничества")}
               </h2>
@@ -146,8 +148,8 @@ function Partnership() {
             </div>
           </section>
 
-          <section className="mb-8">
-            <div>
+          <section className="w-full">
+            <div className={`h-full rounded-[24px] p-6 ${liquidGlassClass}`}>
               <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] mb-4">
                 {t("howItWorksTitle", "Как это работает")}
               </h2>
@@ -160,12 +162,12 @@ function Partnership() {
             </div>
           </section>
 
-          <section className="mb-8 w-full lg:col-span-2">
-            <div>
-              <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] mb-4 text-center">
+          <section className="w-auto lg:col-span-2 justify-self-start">
+            <div className={`inline-block max-w-[860px] rounded-[24px] p-6 ${liquidGlassClass}`}>
+              <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] mb-4 text-left">
                 {t("partnershipLevelsTitle", "Условия и уровни сотрудничества")}
               </h2>
-              <ul className="list-disc list-inside text-[#4B2E1D] space-y-2 -mb-10 text-center">
+              <ul className="list-disc list-inside text-[#4B2E1D] space-y-2 mb-0 text-left">
                 <li>{t("level1", "Стандартный опт — минимум 100 шт, оплата в течение 10 дней.")}</li>
                 <li>{t("level2", "Премиум-партнёрство — индивидуальная упаковка и приоритетная доставка.")}</li>
                 <li>{t("level3", "Эксклюзив — совместная разработка продуктов и упоковок с вашим брендом + персональный менеджер.")}</li>

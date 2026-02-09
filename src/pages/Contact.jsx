@@ -103,7 +103,7 @@ function Contact() {
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="px-3 py-1 bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 rounded-[24px] text-[#BDA47A] transition-transform ease-in-out duration-[1200ms] hover:scale-110 -mb-6"
+              className="px-6 py-2 rounded-full bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-[#BDA47A]/60 text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] transition-transform ease-in-out duration-[1200ms] hover:scale-110 hover:bg-white/10 -mb-6"
               style={{ animation: "heartbeat 1.2s ease-in-out infinite" }}
             >
               {t("contactUs", "Связаться")}
@@ -129,7 +129,7 @@ function Contact() {
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-white/5 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto"
+                className="px-6 py-2 rounded-full bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-[#BDA47A]/60 text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] hover:bg-white/10 transition-all duration-200 mx-auto"
               >
                 {t("submitContact", "Отправить")}
               </button>

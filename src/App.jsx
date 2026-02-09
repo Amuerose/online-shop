@@ -23,6 +23,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Success from './pages/Success';
 import DataDeletion from './pages/DataDeletion';
+import Valentine from './pages/Valentine';
 
 const ProductPage = lazy(() => import('./pages/productPage'));
 const Register = lazy(() => import('./pages/Register'));
@@ -74,8 +75,9 @@ function App() {
               </Suspense>
             }
           />
-          <Route path="/partnership" element={<Partnership />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/partnership" element={<Partnership />} />
+        <Route path="/valentine" element={<Valentine />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/success" element={<Success />} />
           <Route path="/data-deletion" element={<DataDeletion />} />

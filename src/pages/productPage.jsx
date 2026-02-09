@@ -244,14 +244,14 @@ function ProductPage() {
           <div
             className={
               isDesktop
-                ? "relative shrink-0 w-[560px] h-[560px] rounded-3xl overflow-hidden shadow-xl"
-                : "relative w-full h-[44%] max-w-full rounded-2xl overflow-hidden shadow-xl"
+                ? "relative shrink-0 w-[560px] h-[560px] p-4"
+                : "relative w-full h-[44%] max-w-full p-3"
             }
           >
             <img
               src={product.images.data[0]?.attributes.url}
               alt={localName(product.name)}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </div>
           {/* Контент */}
