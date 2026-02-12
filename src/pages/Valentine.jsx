@@ -24,7 +24,7 @@ function Valentine() {
         canonicalPath="/valentine"
       />
       <main className="min-h-[100dvh] bg-[#5E1D28] px-4 sm:px-6 pt-[calc(86px+var(--safe-area-inset-top,0px))] pb-[calc(96px+var(--safe-area-inset-bottom,0px))]">
-      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="mx-auto max-w-6xl space-y-6">
         <section className="overflow-hidden rounded-[28px] bg-[#5E1D28] px-4 py-4 sm:px-8 sm:py-6">
           <div className="mx-auto flex items-center justify-center gap-3 sm:gap-6">
             <img
@@ -63,8 +63,8 @@ function Valentine() {
             </div>
           ))}
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
     </>
   );
 }

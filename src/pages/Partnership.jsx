@@ -50,34 +50,37 @@ function Partnership() {
         canonicalPath="/partnership"
       />
       <div
-      className="
-        relative
-        w-screen left-1/2 -translate-x-1/2
-        h-[calc(100dvh+env(safe-area-inset-top)+env(safe-area-inset-bottom))]
-        overflow-hidden
-        pt-[calc(80px+env(safe-area-inset-top))]
-        pb-[calc(15px+env(safe-area-inset-bottom))]
-        px-4
-      "
-      style={blogBackgroundStyle}
-    >
-      <h1 className="text-4xl font-[Inter] font-semibold text-center text-[#BDA47A] -mb-20 mt-2" >
-        {t("partnershipTitle", "Сотрудничайте с нами")}
-      </h1>
-      <div className="h-full overflow-hidden max-w-[1400px] mx-auto py-16 space-y-16">
-      <div
-        className="h-full overflow-y-auto scrollbar-none mx-auto max-w-[1400px] rounded-[32px] p-16 space-y-16 mt-8 mb-8"
-        style={{ scrollbarWidth: 'none' }}
+        className="
+          relative
+          w-screen left-1/2 -translate-x-1/2
+          h-[calc(100dvh+env(safe-area-inset-top)+env(safe-area-inset-bottom))]
+          overflow-hidden
+          pt-[calc(80px+env(safe-area-inset-top))]
+          pb-[calc(15px+env(safe-area-inset-bottom))]
+          px-4
+        "
+        style={blogBackgroundStyle}
       >
-        <p className="text-[#4B2E1D] text-2xl text-center max-w-2xl mx-auto -mt-10">
-          {t("partnershipIntro", "Мы всегда открыты к сотрудничеству с местными компаниями, кафе, организаторами мероприятий и розничными магазинами.")}
-        </p>
+        <h1 className="text-4xl font-[Inter] font-semibold text-center text-[#BDA47A] -mb-20 mt-2">
+          {t("partnershipTitle", "Сотрудничайте с нами")}
+        </h1>
+        <div className="h-full overflow-hidden max-w-[1400px] mx-auto py-16 space-y-16">
+          <div
+            className="h-full overflow-y-auto scrollbar-none mx-auto max-w-[1400px] rounded-[32px] p-16 space-y-16 mt-8 mb-8"
+            style={{ scrollbarWidth: "none" }}
+          >
+            <p className="text-[#4B2E1D] text-2xl text-center max-w-2xl mx-auto -mt-10">
+              {t(
+                "partnershipIntro",
+                "Мы всегда открыты к сотрудничеству с местными компаниями, кафе, организаторами мероприятий и розничными магазинами."
+              )}
+            </p>
 
-        <section className="max-w-[1400px] w-full">
-          <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] mb-4 text-center -mt-6">
-            {t("partnershipEventsTitle")}
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-8 mt-6">
+            <section className="max-w-[1400px] w-full">
+              <h2 className="text-2xl font-[Inter] font-semibold text-[#BDA47A] mb-4 text-center -mt-6">
+                {t("partnershipEventsTitle")}
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-8 mt-6">
             <div className={`flex-1 flex flex-col items-center justify-center rounded-[24px] p-4 text-center ${liquidGlassClass}`}>
               <p className="text-[#4B2E1D]">
                 {t("partnershipDetail1", "Предлагайте своим клиентам высококачественные ягоды в шоколаде.")}
