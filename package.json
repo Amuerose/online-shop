@@ -9,6 +9,7 @@
     "prebuild": "node scripts/generate-sitemap.js",
     "build": "vite build",
     "deploy": "git add .;git commit -m \"Обновление проекта: много всякого всего, навигации и мелкие корректировки\";git push",
+    "deploy:local": "wrangler pages deploy ./dist --project-name=amuerose --branch=local",
     "preview": "vite preview",
     "analyze": "vite build && npx rollup-plugin-visualizer --open"
   },
