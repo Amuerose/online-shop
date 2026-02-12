@@ -53,23 +53,24 @@ function Valentine() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {cards.map((card) => (
-            <div key={card.src} className="w-full">
-              <img
-                src={card.src}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="block h-auto w-full rounded-[24px] shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
-              />
-              <div className="mt-4 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => navigate(card.productPath)}
-                  className="w-full max-w-[360px] rounded-full border border-[#BDA47A]/70 bg-[rgba(189,164,122,0.14)] px-6 py-2.5 text-center text-[15px] font-semibold text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.45),0_6px_18px_rgba(0,0,0,0.18)] backdrop-blur-[18px] transition hover:bg-[rgba(189,164,122,0.22)]"
-                >
-                  Заказать этот набор
-                </button>
+            <div key={card.src} className="w-full flex flex-col items-center gap-4">
+              <div className="relative w-full rounded-[24px] shadow-[0_18px_40px_rgba(0,0,0,0.35)] overflow-hidden bg-[#5E1D28]">
+                <img
+                  src={card.src}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="block h-auto w-full"
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#5E1D28] via-[#5E1D28]/80 to-transparent" />
               </div>
+              <button
+                type="button"
+                onClick={() => navigate(card.productPath)}
+                className="w-full max-w-[360px] rounded-full border border-[#BDA47A]/70 bg-[rgba(189,164,122,0.14)] px-6 py-2.5 text-center text-[15px] font-semibold text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.45),0_6px_18px_rgba(0,0,0,0.18)] backdrop-blur-[18px] transition hover:bg-[rgba(189,164,122,0.22)]"
+              >
+                Заказать этот набор
+              </button>
             </div>
           ))}
         </div>
