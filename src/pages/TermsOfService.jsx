@@ -2,10 +2,17 @@
 
 import React from "react";
 import { blogBackgroundStyle } from "../styles/blogBackground";
+import Seo from "../components/Seo";
 
 function TermsOfService() {
   return (
-    <div
+    <>
+      <Seo
+        title="Uživatelská smlouva"
+        description="Правила использования сайта Amuerose, включая registraci, platby и ochranu osobních údajů."
+        canonicalPath="/terms-of-service"
+      />
+      <div
       className="min-h-[100dvh] px-4 pt-[calc(90px+var(--safe-area-inset-top,0px))] pb-[calc(90px+var(--safe-area-inset-bottom,0px))]"
       style={blogBackgroundStyle}
     >
@@ -48,6 +55,7 @@ function TermsOfService() {
         </p>
       </div>
     </div>
+    </>
   );
 }
 

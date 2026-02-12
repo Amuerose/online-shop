@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useTranslation } from "react-i18next";
 import { blogBackgroundStyle } from "../styles/blogBackground";
+import Seo from "../components/Seo";
 
 function Success() {
   const { clearCart } = useCart();
@@ -14,7 +15,13 @@ function Success() {
   }, [clearCart]);
 
   return (
-    <div
+    <>
+      <Seo
+        title="Заказ оформлен"
+        description="Спасибо за заказ — мы уже готовим ваши ягоды Amuerose к доставке."
+        canonicalPath="/success"
+      />
+      <div
       className="min-h-[100dvh] px-4 pt-[calc(90px+var(--safe-area-inset-top,0px))] pb-[calc(90px+var(--safe-area-inset-bottom,0px))]"
       style={blogBackgroundStyle}
     >
@@ -31,6 +38,7 @@ function Success() {
         </button>
       </div>
     </div>
+    </>
   );
 }
 

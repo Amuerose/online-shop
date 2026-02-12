@@ -5,9 +5,9 @@ import { useTranslation } from "react-i18next";
 const DatePicker = lazy(() => import("react-datepicker"));
 import "react-datepicker/dist/react-datepicker.css";
 import { Link } from "react-router-dom";
-
 import { Trash2 } from "lucide-react";
 import { blogBackgroundStyle } from "../styles/blogBackground";
+import Seo from "../components/Seo";
 
 // Resolve best image URL for a cart item (supports plain URLs, relative storage paths, and legacy shapes)
 function resolveCartItemImage(item) {
@@ -470,6 +470,13 @@ function Cart() {
   }
 
   return (
+    <>
+      <Seo
+        title="Корзина"
+        description="Проверьте товары, выберите дату доставки и оформите заказ Amuerose."
+        canonicalPath="/cart"
+      />
+
     <div
       className="relative h-[100dvh] overflow-hidden pt-[90px] px-4 pb-[calc(90px+var(--safe-area-inset-bottom,0px))] sm:pb-[calc(160px+var(--safe-area-inset-bottom,0px))]"
       style={blogBackgroundStyle}
@@ -570,6 +577,7 @@ function Cart() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

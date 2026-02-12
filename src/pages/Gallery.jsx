@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blogBackgroundStyle } from '../styles/blogBackground';
+import Seo from '../components/Seo';
 
 // Known extensions
 const IMAGE_EXT = ['jpg','jpeg','png','heic','gif','bmp','webp','tiff','svg'];
@@ -154,7 +155,13 @@ function Gallery() {
   }, []);
 
   return (
-    <div
+    <>
+      <Seo
+        title="Галерея Amuerose"
+        description="Фотографии шоколадных ягод, коллекций и упаковки Amuerose — вдохновение для подарков и мероприятий."
+        canonicalPath="/gallery"
+      />
+      <div
       className="relative min-h-[100dvh] overflow-y-auto pt-[calc(100px+var(--safe-area-inset-top,0px))] pb-[calc(80px+var(--safe-area-inset-bottom,0px))]"
       style={blogBackgroundStyle}
     >
@@ -221,6 +228,7 @@ function Gallery() {
         </div>
       )}
     </div>
+  </>
   );
 }
 

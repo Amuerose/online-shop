@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "generate:sitemap": "node scripts/generate-sitemap.js",
+    "prebuild": "node scripts/generate-sitemap.js",
     "build": "vite build",
     "deploy": "git add .;git commit -m \"Обновление проекта: много всякого всего, навигации и мелкие корректировки\";git push",
     "preview": "vite preview",

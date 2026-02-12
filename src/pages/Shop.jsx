@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { catalogProducts } from '../data/catalog';
 import { blogBackgroundStyle } from '../styles/blogBackground';
+import Seo from '../components/Seo';
 
 
 // Pick a localized value from {cs,en,ru} or accept plain strings
@@ -160,6 +161,11 @@ const Shop = () => {
   }, []);
 
   return (<>
+    <Seo
+      title="Магазин Amuerose"
+      description="Каталог продуктов Amuerose: шоколадные ягоды, подарочные наборы и сезонные коллекции с доставкой по Праге и всей Чехии."
+      canonicalPath="/shop"
+    />
     <div
       className="relative flex flex-col h-[100dvh] overflow-hidden overscroll-contain text-[#4B2E1D]"
       style={blogBackgroundStyle}
@@ -216,7 +222,7 @@ const Shop = () => {
                         console.error("❌ Error adding to cart:", error);
                       }
                     }}
-                    className="text-sm font-[Inter] px-4 py-1 rounded-full border border-white/20 bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4)] hover:bg-white/10 transition text-[#BDA47A]"
+                    className="text-sm font-[Inter] font-semibold px-4 py-1 rounded-full border border-[#BDA47A]/70 bg-[rgba(189,164,122,0.18)] backdrop-blur-[22px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.45),0_4px_16px_rgba(0,0,0,0.14)] hover:bg-[rgba(189,164,122,0.26)] transition text-[#8E6A3D]"
                   >
                     {t('buttons.addToCart')}
                   </button>

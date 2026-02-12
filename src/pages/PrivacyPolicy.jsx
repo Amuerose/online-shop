@@ -1,10 +1,17 @@
 import React from "react";
 import { blogBackgroundStyle } from "../styles/blogBackground";
+import Seo from "../components/Seo";
 
 export default function PrivacyPolicyPage() {
 
   return (
-    <div
+    <>
+      <Seo
+        title="Zásady ochrany osobních údajů"
+        description="Как Amuerose обрабатывает персональные данные: цели, právní základy, cookies и práva subjektů."
+        canonicalPath="/privacy-policy"
+      />
+      <div
       className="relative h-screen pt-[90px] px-4 pb-[calc(90px+var(--safe-area-inset-bottom,0px))] sm:pb-[calc(160px+var(--safe-area-inset-bottom,0px))] overflow-hidden"
       style={blogBackgroundStyle}
     >
@@ -121,5 +128,6 @@ export default function PrivacyPolicyPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }

@@ -1,73 +1,71 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Seo from "../components/Seo";
 
-const images = [
-  "/valentine/IMG_8519.PNG",
-  "/valentine/IMG_8520.PNG",
-  "/valentine/IMG_8521.PNG",
-  "/valentine/IMG_8522.PNG",
-  "/valentine/IMG_8523.PNG",
-  "/valentine/IMG_8524.PNG",
-  "/valentine/IMG_8525.PNG",
-  "/valentine/IMG_8526.PNG",
+const cards = [
+  { src: "/valentine/IMG_8519.PNG", productPath: "/product/velvet-love" },
+  { src: "/valentine/IMG_8520.PNG", productPath: "/product/rose-embrace" },
+  { src: "/valentine/IMG_8521.PNG", productPath: "/product/desire-heart" },
+  { src: "/valentine/IMG_8522.PNG", productPath: "/product/duo-eclat" },
+  { src: "/valentine/IMG_8523.PNG", productPath: "/product/reserve-heart" },
+  { src: "/valentine/IMG_8524.PNG", productPath: "/product/velvet-evening" },
+  { src: "/valentine/IMG_8525.PNG", productPath: "/product/Old%20Prague" },
+  { src: "/valentine/IMG_8526.PNG", productPath: "/shop" },
 ];
 
 function Valentine() {
   const navigate = useNavigate();
 
   return (
-    <main className="h-[100dvh] overflow-hidden bg-[#5E1D28] px-4 sm:px-6">
-      <div className="valentine-scroll valentine-scroll-fade overflow-y-auto mt-[calc(120px+var(--safe-area-inset-top,0px))] h-[calc(100dvh-120px-var(--safe-area-inset-top,0px))] pb-[calc(120px+var(--safe-area-inset-bottom,0px))]">
-        <div className="mx-auto max-w-6xl space-y-8">
-          <section className="overflow-hidden rounded-[28px] bg-[#5E1D28] px-4 py-6 sm:px-8 sm:py-8">
-            <div className="mx-auto flex items-center justify-center gap-3 sm:gap-6">
-              <img
-                src="/valentine/sticker.webp"
-                alt=""
-                className="w-[88px] shrink-0 sm:w-[130px] md:w-[165px]"
-              />
-              <h1
-                className="text-center leading-none text-[#BDA47A] text-[40px] sm:text-[68px] md:text-[84px]"
-                style={{ fontFamily: '"Great Vibes", "Alex Brush", cursive', fontWeight: 400 }}
-              >
-                Valentine Collection
-              </h1>
-            </div>
-          </section>
+    <>
+      <Seo
+        title="Valentine Collection 2026"
+        description="Особая коллекция Amuerose к Дню святого Валентина: эксклюзивные ягоды и десерты, оформленные вручную."
+        canonicalPath="/valentine"
+      />
+      <main className="min-h-[100dvh] bg-[#5E1D28] px-4 sm:px-6 pt-[calc(86px+var(--safe-area-inset-top,0px))] pb-[calc(96px+var(--safe-area-inset-bottom,0px))]">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <section className="overflow-hidden rounded-[28px] bg-[#5E1D28] px-4 py-4 sm:px-8 sm:py-6">
+          <div className="mx-auto flex items-center justify-center gap-3 sm:gap-6">
+            <img
+              src="/valentine/sticker.webp"
+              alt=""
+              className="w-[76px] shrink-0 sm:w-[120px] md:w-[150px]"
+            />
+            <h1
+              className="text-center leading-none text-[#BDA47A] text-[36px] sm:text-[60px] md:text-[76px]"
+              style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif', fontWeight: 500 }}
+            >
+              Valentine Collection 2026
+            </h1>
+          </div>
+        </section>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            {images.map((src) => (
-              <div key={src} className="group relative mx-auto w-full max-w-[520px]">
-                <img
-                  src={src}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                  className="block h-auto w-full [clip-path:inset(0_0_2px_0)]"
-                />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {cards.map((card) => (
+            <div key={card.src} className="w-full">
+              <img
+                src={card.src}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-full rounded-[24px] shadow-[0_18px_40px_rgba(0,0,0,0.35)]"
+              />
+              <div className="mt-4 flex justify-center">
                 <button
                   type="button"
-                  onClick={() => navigate("/shop")}
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#BDA47A] bg-[rgba(255,255,255,0.06)] px-6 py-2 text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.2)] backdrop-blur-[22px] transition hover:bg-white/10 md:pointer-events-none md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:opacity-100"
+                  onClick={() => navigate(card.productPath)}
+                  className="w-full max-w-[360px] rounded-full border border-[#BDA47A]/70 bg-[rgba(189,164,122,0.14)] px-6 py-2.5 text-center text-[15px] font-semibold text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.45),0_6px_18px_rgba(0,0,0,0.18)] backdrop-blur-[18px] transition hover:bg-[rgba(189,164,122,0.22)]"
                 >
-                  Купить
+                  Заказать этот набор
                 </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
-      <style>{`
-        .valentine-scroll-fade {
-          -webkit-mask-image: linear-gradient(to bottom, transparent 0px, rgba(0, 0, 0, 0.4) 18px, #000 52px, #000 100%);
-          mask-image: linear-gradient(to bottom, transparent 0px, rgba(0, 0, 0, 0.4) 18px, #000 52px, #000 100%);
-          -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-          -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-        }
-      `}</style>
     </main>
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { blogBackgroundStyle } from "../styles/blogBackground";
+import Seo from "../components/Seo";
 
 // Heartbeat animation keyframes
 const heartbeatStyles = `
@@ -42,7 +43,13 @@ function Partnership() {
   }, [showForm]);
 
   return (
-    <div
+    <>
+      <Seo
+        title="Корпоративное сотрудничество"
+        description="Предлагаем индивидуальные предложения для кафе, мероприятий и ритейл-партнёров: эксклюзивные ягоды в шоколаде, опт и брендированные подарки."
+        canonicalPath="/partnership"
+      />
+      <div
       className="
         relative
         w-screen left-1/2 -translate-x-1/2
@@ -177,8 +184,9 @@ function Partnership() {
 
         </div>
       </div>
-      </div>
     </div>
+  </div>
+  </>
   );
 }
 

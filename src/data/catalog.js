@@ -97,9 +97,9 @@ export const catalogProducts = [
     price: 875,
     currency: 'CZK',
     description: {
-      cs: 'Exkluzivní sada jahod v bílé čokoládě, zdobená ručně vyráběnými čokoládovými růžemi a retro kamejemi. Luxusní dárek.',
-      ru: 'Эксклюзивный набор клубники в белом шоколаде с ручной шоколадной декорацией и ретро-камеями.',
-      en: 'An exclusive set of strawberries in white chocolate, adorned with handcrafted chocolate roses and retro cameos.',
+      cs: 'Set z 9 jahod v bílé čokoládě, zdobený ručně vyráběnými čokoládovými květy a retro kamejemi.',
+      ru: 'набор из 9 клубник в белом шоколаеде, украшенный шоколадными цветами и ретро-камеями ручной работы.',
+      en: 'A set of 9 strawberries in white chocolate, decorated with handmade chocolate flowers and retro cameo accents.',
     },
     allergens: '6, 7',
     gallery: [
@@ -200,9 +200,9 @@ export const catalogProducts = [
     price: 2075,
     currency: 'CZK',
     description: {
-      cs: '4 datle s ořechovou náplní + 4 datle s karamelovým sýrem + 8 jahod v mléčné čokoládě. Ořechový posyp, drcený biskvit, zlaté stříkance. Borůvky (100 g) a maliny (100 g) v čokoládě.',
-      ru: '4 финика с ореховой начинкой + 4 финика с карамельным сыром + 8 ягод клубники в молочном шоколаде. Ореховая посыпка, дроблёный бисквит, золотые брызги. Голубика (100 г) и малина (100 г) в шоколаде.',
-      en: '4 dates with nut filling + 4 dates with caramel cheese + 8 strawberries in milk chocolate. Nut topping, crushed biscuit, gold splashes. Blueberries (100 g) and raspberries (100 g) in chocolate.',
+      cs: '4 datle s ořechovou náplní + 4 datle s karamelovým sýrem + 8 jahod v mléčné čokoládě. Ořechový posyp, drcený biskvit, zlaté stříkance. Borůvky a maliny v čokoládě.',
+      ru: '4 финика с ореховой начинкой + 4 финика с карамельным сыром + 8 ягод клубники в молочном шоколаде. Ореховая посыпка, дроблёный бисквит, золотые брызги. Голубика и малина в шоколаде.',
+      en: '4 dates with nut filling + 4 dates with caramel cheese + 8 strawberries in milk chocolate. Nut topping, crushed biscuit, gold splashes. Blueberries and raspberries in chocolate.',
     },
     allergens: '6, 7',
     gallery: [
@@ -220,13 +220,13 @@ export const catalogProducts = [
     price: 1175,
     currency: 'CZK',
     description: {
-      cs: '9 jahod v mléčné čokoládě, dekor z liofilizovaných fíků a zlaté stříkance. Borůvky v čokoládě double porce (200 g).',
-      ru: '9 ягод клубники в молочном шоколаде, декор из сублимированных инжиров и золотые брызги. Голубика в шоколаде двойная порция (200 г).',
-      en: '9 strawberries in milk chocolate, finished with freeze-dried figs and gold splashes. Blueberries in chocolate, double portion (200 g).',
+      cs: '9 jahod v mléčné čokoládě, dekor z liofilizovaných fíků a zlaté stříkance. Borůvky v čokoládě.',
+      ru: '9 ягод клубники в молочном шоколаде, декор из сублимированных инжиров и золотые брызги. Голубика в шоколаде.',
+      en: '9 strawberries in milk chocolate, finished with freeze-dried figs and gold splashes. Blueberries in chocolate,',
     },
     allergens: '6, 7',
     gallery: [
-      '/images/IMG_8271.PNG',
+      '/products/sticker 17.webp',
     ],
   },
   {
@@ -260,13 +260,53 @@ export const catalogProducts = [
     price: 1175,
     currency: 'CZK',
     description: {
-      cs: '3 banány + 6 jahod v mléčné čokoládě. Ořechový posyp, dekor z liofilizovaných fíků, zlaté stříkance. Borůvky v čokoládě double porce (200 g).',
-      ru: '3 банана + 6 ягод клубники в молочном шоколаде. Ореховая посыпка, декор из сублимированных инжиров, золотые брызги. Голубика в шоколаде двойная порция (200 г).',
-      en: '3 bananas + 6 strawberries in milk chocolate. Nut topping, freeze-dried fig decor, gold splashes. Blueberries in chocolate, double portion (200 g).',
+      cs: '3 banány + 6 jahod v mléčné čokoládě. Ořechový posyp, dekor z liofilizovaných fíků, zlaté stříkance. Borůvky v čokoládě.',
+      ru: '3 банана + 6 ягод клубники в молочном шоколаде. Ореховая посыпка, декор из сублимированных инжиров, золотые брызги. Голубика в шоколаде.',
+      en: '3 bananas + 6 strawberries in milk chocolate. Nut topping, freeze-dried fig decor, gold splashes. Blueberries in chocolate',
     },
     allergens: '6, 7',
     gallery: [
-      '/products/sticker 14.webp',
+      '/products/sticker 9.webp',
+    ],
+  },
+  {
+    id: 'yahody a boruvky včokoládě',
+    slug: 'yahody-a-boruvky-v-cokolade',
+    title: {
+      cs: 'Embrace Heart',
+      ru: 'Embrace Heart',
+      en: 'Embrace Heart',
+    },
+    price: 2490,
+    currency: 'CZK',
+    description: {
+      cs: '16 jahod v růžové čokoládě, dekorace z lyofilizovaných fíků a čerstvých květů, luxusní dárkové balení',
+      ru: '16 ягод клубники в розовом шоколаде, декор из сублимированных инжиров и свежих цветов, роскошная подарочная упаковка.',
+      en: '16 strawberries in pink chocolate, decorated with freeze-dried figs and fresh flowers, luxury gift packaging.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 25.webp',
+    ],
+  },
+  {
+    id: 'ahody, banány a datle v čokoládě',
+    slug: 'ahody-banany-a-datle-v-cokolade',
+    title: {
+      cs: 'Jahody, banány a datle v čokoládě',
+      ru: 'Клубника, бананы и финики в шоколаде',
+      en: 'Strawberries, bananas and dates in chocolate',
+    },
+    price: 2695,
+    currency: 'CZK',
+    description: {
+      cs: '5 datlí se sýrovou náplní, 15 jahod a 5 banánů v mléčné čokoládě, dekorace z lyofilizovaných fíků, zlaté stříkance, borůvky v čokoládě',
+      ru: '5 фиников с сырной начинкой, 15 ягод клубники и 5 бананов в молочном шоколаде, декор из сублимированного инжира, золотые брызги, голубика в шоколаде.',
+      en: '5 dates with cheese filling, 15 strawberries and 5 bananas in milk chocolate, decorated with freeze-dried figs, gold splashes, blueberries in chocolate.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 26.webp',
     ],
   },
   {
@@ -297,7 +337,7 @@ export const catalogProducts = [
       ru: 'Клубничный торт',
       en: 'Strawberry cake',
     },
-    price: 2250,
+    price: 2590,
     currency: 'CZK',
     description: {
       cs: '27 jahod v mléčné čokoládě, ruční dekor květů z oplatkového papíru, zlaté stříkance.',
@@ -387,6 +427,166 @@ export const catalogProducts = [
     allergens: '6, 7',
     gallery: [
       '/products/sticker 6.webp',
+    ],
+  },
+  {
+    id: 'yahody v čokoládě',
+    slug: 'yahody-v-cokolade-9-lyo-gold',
+    title: {
+      cs: 'Jahody v čokoládě',
+      ru: 'Клубника в шоколаде',
+      en: 'Strawberries in chocolate',
+    },
+    price: 775,
+    currency: 'CZK',
+    description: {
+      cs: '9 jahod v mléčné čokoládě, Posyp a dekor ze liofilizovaných malin, Zlaté strikance. ',
+      ru: '9 клубник в молочном шоколаде, посыпка и декор из лиофилизированной малины, золотые брызги.',
+      en: '9 strawberries in milk chocolate with a topping and decoration of freeze-dried raspberries and gold splashes.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 12.webp',
+    ],
+  },
+  {
+    id: 'yahody v čokoládě',
+    slug: 'violet-mood',
+    title: {
+      cs: 'Violet Mood',
+      ru: 'Violet Mood',
+      en: 'Violet Mood',
+    },
+    price: 2190,
+    currency: 'CZK',
+    description: {
+      cs: '16 jahod v mléčné čokoládě, dekorace z lyofilizovaných jedlých květů, zlaté stříkance a borůvky v mléčné čokoládě, luxusní dárkové balení',
+      ru: '16 ягод клубники в молочном шоколаде, декор из сублимированных съедобных цветов, золотые брызги и голубика в молочном шоколаде, роскошная подарочная упаковка.',
+      en: '16 strawberries in milk chocolate with decoration of freeze-dried flowers, golden splashes and blueberries in milk chocolate, luxury gift packaging.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 24.webp',
+    ],
+  },
+  {
+    id: 'yahody v čokoládě',
+    slug: 'yahody-v-cokolade-9-nut-decor',
+    title: {
+      cs: 'Jahody v čokoládě',
+      ru: 'Клубника в шоколаде',
+      en: 'Strawberries in chocolate',
+    },
+    price: 975,
+    currency: 'CZK',
+    description: {
+      cs: '9 jahod, ruční dekor z mléčné čokolády, ořechový posyp.',
+      ru: '9 ягод клубники, ручной декор из молочного шоколада, ореховая посыпка.',
+      en: '9 strawberries, handmade milk-chocolate decoration, nut topping.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 18.webp',
+    ],
+  },
+   {
+    id: 'yahody v čokoládě',
+    slug: 'yahody-v-cokolade-16-kvety',
+    title: {
+      cs: 'Jahody v čokoládě',
+      ru: 'Клубника в шоколаде',
+      en: 'Strawberries in chocolate',
+    },
+    price: 1500,
+    currency: 'CZK',
+    description: {
+      cs: '16 jahod, mléčná čokoláda, dekor z lyofilizovaných jedlých květů, ořechový posyp, borůvky v čokoládě',
+      ru: '16 ягод клубники, молочный шоколад, декор из сублимированных цветов, ореховая посыпка, голубика в шоколаде.',
+      en: '16 strawberries in milk chocolate with decoration of freeze-dried flowers, golden splashes, nut topping and blueberries in chocolate.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 20.webp',
+    ],
+  },
+  {
+    id: 'yahody a banany v čokoládě',
+    slug: 'yahody-a-banany-v-cokolade',
+    title: {
+      cs: 'Jahody a banány v čokoládě',
+      ru: 'Клубника и бананы в шоколаде',
+      en: 'Strawberries and bananas in chocolate',
+    },
+    price: 1600,
+    currency: 'CZK',
+    description: {
+      cs: '8 banánů v bílé čokoládě, 8 jahod v mléčné čokoládě, dekor z lyofilizovaných fíků, zlaté stříkance, ořechový posyp, borůvky v mléčné a bílé čokoládě',
+      ru: '8 бананов в белом шоколаде, 8 ягод клубники в молочном шоколаде, декор из сублимированного инжира, золотые брызги, ореховая посыпка, голубика в молочном и белом шоколаде.',
+      en: '8 bananas in white chocolate, 8 strawberries in milk chocolate, decoration of freeze-dried figs, golden splashes, nut topping, blueberries in milk and white chocolate.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 22.webp',
+    ],
+  },
+  {
+    id: 'Jahody a banány v čokoládě',
+    slug: 'jahody-a-banany-v-cokolade',
+    title: {
+      cs: 'Jahody a banány v čokoládě',
+      ru: 'Клубника и бананы в шоколаде',
+      en: 'Strawberries and bananas in chocolate',
+    },
+    price: 975,
+    currency: 'CZK',
+    description: {
+      cs: '9 jahod, dekor z lyofilizovaných květů, zlaté stříkance, ořechový posyp, borůvky v mléčné čokoládě.',
+      ru: '9 ягод клубники, декор из сублимированных цветов, золотые брызги, ореховая посыпка, голубика в молочном шоколаде.',
+      en: '9 strawberries with decoration of freeze-dried flowers, golden splashes, nut topping and blueberries in milk chocolate.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 19.webp',
+    ],
+  },
+  {
+    id: 'Jahody, banány a datle v čokoládě',
+    slug: 'jahody-banany-a-datle-v-cokolade',
+    title: {
+      cs: 'Jahody, banány a datle v čokoládě',
+      ru: 'Клубника, бананы и инжир в шоколаде',
+      en: 'Strawberries, bananas and figs in chocolate',
+    },
+    price: 1795,
+    currency: 'CZK',
+    description: {
+      cs: '4 datle s ořechovou náplní v horké čokoládě, 4 banány v horké čokoládě, 8 jahod v mléčné čokoládě, ruční dekor z horké čokolády, ořechový posyp a zlaté stříkance, borůvky v horké a mléčné čokoládě',
+      ru: '4 финика с ореховой начинкой в тёмном шоколаде, 4 банана в тёмном шоколаде, 8 ягод клубники в молочном шоколаде, ручной декор из тёмного шоколада, ореховая посыпка и золотые брызги, голубика в тёмном и молочном шоколаде.',
+      en: '4 dates with nut filling in dark chocolate, 4 bananas in dark chocolate, 8 strawberries in milk chocolate, handmade dark-chocolate decoration, nut topping and golden splashes, blueberries in dark and milk chocolate.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 23.webp',
+    ],
+  },
+  {
+    id: 'Jahody v čokoládě',
+    slug: 'jahody-v-cokolade',
+    title: {
+      cs: 'Jahody v čokoládě',
+      ru: 'Клубника в шоколаде',
+      en: 'Strawberries in chocolate',
+    },
+    price: 1500,
+    currency: 'CZK',
+    description: {
+      cs: '16 jahod, mléčná čokoláda, dekor z lyofilizovaných jedlých květů, zlaté stříkance, borůvky v čokoládě',
+      ru: '16 ягод клубники, молочный шоколад, декор из сублимированных цветов, золотые брызги, голубика в шоколаде.',
+      en: '16 strawberries in milk chocolate, decoration of freeze-dried edible flowers, golden splashes, blueberries in chocolate.',
+    },
+    allergens: '6, 7',
+    gallery: [
+      '/products/sticker 21.webp',
     ],
   },
 ];

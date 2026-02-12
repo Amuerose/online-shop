@@ -1,11 +1,18 @@
 import { Trans, useTranslation } from "react-i18next";
 import { blogBackgroundStyle } from "../styles/blogBackground";
+import Seo from "../components/Seo";
 
 export default function DataDeletion() {
   const { t } = useTranslation();
 
   return (
-    <div
+    <>
+      <Seo
+        title="Удаление данных"
+        description="Как запросить удаление персональных данных в Amuerose и какие данные мы храним."
+        canonicalPath="/data-deletion"
+      />
+      <div
       className="min-h-[100dvh] px-4 pt-[calc(90px+var(--safe-area-inset-top,0px))] pb-[calc(90px+var(--safe-area-inset-bottom,0px))]"
       style={blogBackgroundStyle}
     >
@@ -20,5 +27,6 @@ export default function DataDeletion() {
         <p className="text-sm sm:text-base">{t("dataDeletionBody2")}</p>
       </div>
     </div>
+    </>
   );
 }
