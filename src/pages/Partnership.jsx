@@ -15,6 +15,7 @@ const heartbeatStyles = `
 function Partnership() {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
+  const [status, setStatus] = useState("");
   const formRef = useRef(null);
   const liquidGlassClass =
     "bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)]";
@@ -41,6 +42,19 @@ function Partnership() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showForm]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const company = formData.get("company")?.trim() || "Компания";
+    const email = formData.get("email")?.trim() || "не указан";
+    const message = formData.get("message")?.trim() || "Без сообщения";
+    const subject = encodeURIComponent(`Партнёрство — ${company}`);
+    const body = encodeURIComponent(`Компания: ${company}\nEmail: ${email}\n\nСообщение:\n${message}`);
+    window.location.href = `mailto:partner@amuerose.cz?cc=info@amuerose.cz&subject=${subject}&body=${body}`;
+    setStatus(t("partnershipFormSent", "Сообщение отправлено. Мы свяжемся с вами."));
+    event.target.reset();
+  };
 
   return (
     <>
@@ -116,31 +130,40 @@ function Partnership() {
               {t("contactUs", "Связаться")}
             </button>
           ) : (
-            <form ref={formRef} className={`mt-6 space-y-4 rounded-[24px] p-6 transition-all duration-300 ${liquidGlassClass}`}>
-              <input
-                type="text"
-                name="company"
-                placeholder={t("companyName", "Company Name")}
-                className="w-full px-4 py-2 rounded-lg text-black"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder={t("contactEmail", "Contact Email")}
-                className="w-full px-4 py-2 rounded-lg text-black"
-              />
-              <textarea
-                name="message"
-                placeholder={t("yourMessage", "Your Message")}
-                className="w-full px-4 py-2 rounded-lg text-black h-24"
-              />
-              <button
-                type="submit"
-                className={`px-4 py-2 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto ${liquidGlassClass}`}
+            <>
+              {status && (
+                <p className="mb-2 text-sm text-[#4B2E1D]">{status}</p>
+              )}
+              <form
+                ref={formRef}
+                className={`mt-6 space-y-4 rounded-[24px] p-6 transition-all duration-300 ${liquidGlassClass}`}
+                onSubmit={handleSubmit}
               >
-                {t("submitApplication", "Submit Application")}
-              </button>
-            </form>
+                <input
+                  type="text"
+                  name="company"
+                  placeholder={t("companyName", "Company Name")}
+                  className="w-full px-4 py-2 rounded-lg text-black"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={t("contactEmail", "Contact Email")}
+                  className="w-full px-4 py-2 rounded-lg text-black"
+                />
+                <textarea
+                  name="message"
+                  placeholder={t("yourMessage", "Your Message")}
+                  className="w-full px-4 py-2 rounded-lg text-black h-24"
+                />
+                <button
+                  type="submit"
+                  className={`px-4 py-2 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto ${liquidGlassClass}`}
+                >
+                  {t("submitApplication", "Submit Application")}
+                </button>
+              </form>
+            </>
           )}
         </section>
 

@@ -55,6 +55,7 @@ function Contact() {
   `;
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
+  const [status, setStatus] = useState(null);
   const formRef = useRef(null);
   useEffect(() => {
     const styleTag = document.createElement("style");
@@ -72,6 +73,19 @@ function Contact() {
     else document.removeEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showForm]);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const name = formData.get('name')?.trim() || 'Имя не указано';
+    const email = formData.get('email');
+    const message = formData.get('message')?.trim() || 'Без сообщения';
+    const subject = encodeURIComponent(`Контактная форма — ${name}`);
+    const body = encodeURIComponent(`Имя: ${name}\nEmail: ${email || '—'}\n\n${message}`);
+    window.location.href = `mailto:info@amuerose.cz?subject=${subject}&body=${body}`;
+    setStatus(t('contactFormSent', 'Спасибо, мы свяжемся с вами!'));
+    event.target.reset();
+  };
+
   return (
     <PageWithSafeAreaColors
       topColor="#F8EFE6"
@@ -109,14 +123,22 @@ function Contact() {
               {t("contactUs", "Связаться")}
             </button>
           ) : (
-            <form ref={formRef} className="mt-6 space-y-4 rounded-[24px] bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 p-6 transition-all duration-300">
-              <input
-                type="text"
-                name="name"
-                placeholder={t("yourName", "Your Name")}
-                className="w-full px-4 py-2 rounded-lg text-black"
-              />
-              <input
+            <>
+              {status && (
+                <p className="mb-2 text-sm text-[#4B2E1D]">{status}</p>
+              )}
+              <form
+                ref={formRef}
+                className="mt-6 space-y-4 rounded-[24px] bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 p-6 transition-all duration-300"
+                onSubmit={handleSubmit}
+              >
+                <input
+                  type="text"
+                  name="name"
+                  placeholder={t("yourName", "Your Name")}
+                  className="w-full px-4 py-2 rounded-lg text-black"
+                />
+                <input
                 type="email"
                 name="email"
                 placeholder={t("contactEmail", "Contact Email")}
@@ -133,7 +155,8 @@ function Contact() {
               >
                 {t("submitContact", "Отправить")}
               </button>
-            </form>
+              </form>
+            </>
           )}
         </section>
       </div>
