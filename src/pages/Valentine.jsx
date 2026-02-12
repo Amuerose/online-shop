@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Seo from "../components/Seo";
 
@@ -15,6 +15,13 @@ const cards = [
 
 function Valentine() {
   const navigate = useNavigate();
+  useEffect(() => {
+    const originalBg = document.body.style.background;
+    document.body.style.background = "#5E1D28";
+    return () => {
+      document.body.style.background = originalBg;
+    };
+  }, []);
 
   return (
     <>
@@ -23,7 +30,10 @@ function Valentine() {
         description="Особая коллекция Amuerose к Дню святого Валентина: эксклюзивные ягоды и десерты, оформленные вручную."
         canonicalPath="/valentine"
       />
-      <main className="min-h-[100dvh] bg-[#5E1D28] px-4 sm:px-6 pt-[calc(86px+var(--safe-area-inset-top,0px))] pb-[calc(96px+var(--safe-area-inset-bottom,0px))]">
+      <main
+        className="min-h-[100dvh] bg-[#5E1D28] px-4 sm:px-6 pt-[calc(86px+var(--safe-area-inset-top,0px))] pb-[calc(96px+var(--safe-area-inset-bottom,0px))]"
+        style={{ backgroundColor: "#5E1D28" }}
+      >
         <div className="mx-auto max-w-6xl space-y-6">
         <section className="overflow-hidden rounded-[28px] bg-[#5E1D28] px-4 py-4 sm:px-8 sm:py-6">
           <div className="mx-auto flex items-center justify-center gap-3 sm:gap-6">
