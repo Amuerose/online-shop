@@ -55,7 +55,8 @@ function Contact() {
   `;
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
   const formRef = useRef(null);
   useEffect(() => {
     const styleTag = document.createElement("style");
@@ -73,14 +74,22 @@ function Contact() {
     else document.removeEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showForm]);
+  const validateEmail = (value) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || "");
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const name = formData.get('name')?.trim() || 'Имя не указано';
-    const email = formData.get('email');
+    const email = formData.get('email')?.trim();
     const message = formData.get('message')?.trim() || 'Без сообщения';
+    if (!validateEmail(email)) {
+      setError(t('contactFormInvalidEmail', 'Пожалуйста, укажите корректный email.'));
+      return;
+    }
+    setError("");
     const subject = encodeURIComponent(`Контактная форма — ${name}`);
-    const body = encodeURIComponent(`Имя: ${name}\nEmail: ${email || '—'}\n\n${message}`);
+    const body = encodeURIComponent(`Имя: ${name}\nEmail: ${email}\n\n${message}`);
     window.location.href = `mailto:info@amuerose.cz?subject=${subject}&body=${body}`;
     setStatus(t('contactFormSent', 'Спасибо, мы свяжемся с вами!'));
     event.target.reset();
@@ -124,7 +133,10 @@ function Contact() {
             </button>
           ) : (
             <>
-              {status && (
+              {error && (
+                <p className="mb-2 text-sm text-red-600">{error}</p>
+              )}
+              {status && !error && (
                 <p className="mb-2 text-sm text-[#4B2E1D]">{status}</p>
               )}
               <form
@@ -137,13 +149,15 @@ function Contact() {
                   name="name"
                   placeholder={t("yourName", "Your Name")}
                   className="w-full px-4 py-2 rounded-lg text-black"
+                  required
                 />
                 <input
-                type="email"
-                name="email"
-                placeholder={t("contactEmail", "Contact Email")}
-                className="w-full px-4 py-2 rounded-lg text-black"
-              />
+                  type="email"
+                  name="email"
+                  placeholder={t("contactEmail", "Contact Email")}
+                  className="w-full px-4 py-2 rounded-lg text-black"
+                  required
+                />
               <textarea
                 name="message"
                 placeholder={t("yourMessage", "Your Message")}
