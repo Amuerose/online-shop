@@ -78,6 +78,22 @@ const resources = {
       blogPost3Tag2: "Limitované",
       blogPost3Tag3: "Poslední šance",
       privacyPolicy: "Zásady ochrany osobních údajů",
+      returnsPolicy: "Vracení a reklamace",
+      relatedProducts: "Doporučené produkty",
+      goToShop: "Do obchodu",
+      returns: {
+        title: "Vracení a reklamace",
+        lead1:
+          "Po doručení zboží neprovádíme výměnu ani vrácení, protože se jedná o čerstvé a rychle se kazící produkty.",
+        lead2:
+          "Pokud však dorazí zásilka poškozená, nesprávná nebo neúplná, napište nám prosím do 2 hodin od doručení. Přiložte fotografie a krátký popis.",
+        bullet1: "číslo objednávky",
+        bullet2: "popis problému",
+        bullet3: "fotografie balení a obsahu",
+        resolution:
+          "Každý případ řešíme individuálně. Nabídneme výměnu nebo vrácení peněz.",
+        contactTitle: "Kontakt"
+      },
       footerSignature: "David Oganesyan · IČO: 10734562 · © 2025 Amuerose · Všechna práva vyhrazena",
       footerRights: "© 2025 Amuerose · Všechna práva vyhrazena",
       notFoundMessage: "Stránka nebyla nalezena",
@@ -410,6 +426,22 @@ const resources = {
       blogPost3Tag2: "Лимит",
       blogPost3Tag3: "Последний шанс",
       privacyPolicy: "Политика конфиденциальности",
+      returnsPolicy: "Возврат и рекламации",
+      relatedProducts: "Рекомендуемые товары",
+      goToShop: "Перейти в магазин",
+      returns: {
+        title: "Возврат и рекламации",
+        lead1:
+          "После доставки обмен и возврат не производим, так как продукты свежие и скоропортящиеся.",
+        lead2:
+          "Если заказ пришёл повреждённый, не тот или неполный — напишите нам в течение 2 часов после доставки, приложите фото и краткое описание.",
+        bullet1: "номер заказа",
+        bullet2: "описание проблемы",
+        bullet3: "фото упаковки и содержимого",
+        resolution:
+          "Каждый случай решаем индивидуально. Возможна замена или возврат средств.",
+        contactTitle: "Контакты"
+      },
       footerSignature: "David Oganesyan · IČO: 10734562 · © 2025 Amuerose · Все права защищены",
       footerRights: "© 2025 Amuerose · Все права защищены",
       notFoundMessage: "Страница не найдена",
@@ -742,6 +774,22 @@ const resources = {
       blogPost3Tag2: "Limited",
       blogPost3Tag3: "Last Call",
       privacyPolicy: "Privacy policy",
+      returnsPolicy: "Returns & claims",
+      relatedProducts: "Recommended products",
+      goToShop: "Go to shop",
+      returns: {
+        title: "Returns & claims",
+        lead1:
+          "After delivery we do not accept returns or exchanges because products are fresh and perishable.",
+        lead2:
+          "If the order arrives damaged, incorrect, or incomplete, contact us within 2 hours after delivery and attach photos with a short description.",
+        bullet1: "order number",
+        bullet2: "problem description",
+        bullet3: "photos of packaging and contents",
+        resolution:
+          "We review each case individually and offer a replacement or refund.",
+        contactTitle: "Contact"
+      },
       footerSignature: "David Oganesyan · IČO: 10734562 · © 2025 Amuerose · All rights reserved",
       footerRights: "© 2025 Amuerose · All rights reserved",
       notFoundMessage: "Page not found",

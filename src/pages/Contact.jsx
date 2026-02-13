@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet';
 import { useState, useEffect, useRef } from "react";
+import Seo from "../components/Seo";
 import { useTranslation } from "react-i18next";
 import { blogBackgroundStyle } from "../styles/blogBackground";
 
@@ -58,12 +59,15 @@ function Contact() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const formRef = useRef(null);
+  const [sending, setSending] = useState(false);
+
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.textContent = heartbeatStyles;
     document.head.appendChild(styleTag);
     return () => document.head.removeChild(styleTag);
   }, []);
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (formRef.current && !formRef.current.contains(event.target)) {
@@ -74,25 +78,61 @@ function Contact() {
     else document.removeEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showForm]);
+
   const validateEmail = (value) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || "");
 
-  const handleSubmit = (event) => {
+  // ✅ ПРАВКА: корректный AJAX endpoint + проверка res.ok + нормальные headers + _replyto
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     const formData = new FormData(event.target);
     const name = formData.get('name')?.trim() || 'Имя не указано';
     const email = formData.get('email')?.trim();
     const message = formData.get('message')?.trim() || 'Без сообщения';
+
     if (!validateEmail(email)) {
       setError(t('contactFormInvalidEmail', 'Пожалуйста, укажите корректный email.'));
+      setStatus('');
       return;
     }
-    setError("");
-    const subject = encodeURIComponent(`Контактная форма — ${name}`);
-    const body = encodeURIComponent(`Имя: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:info@amuerose.cz?subject=${subject}&body=${body}`;
-    setStatus(t('contactFormSent', 'Спасибо, мы свяжемся с вами!'));
-    event.target.reset();
+
+    setError('');
+    setSending(true);
+
+    try {
+      const payload = {
+        name,
+        email,
+        message,
+        _subject: `Контактная форма — ${name}`,
+        _template: 'table',
+        _replyto: email, // чтобы тебе было удобно отвечать прямо из письма
+      };
+
+      const res = await fetch('https://formsubmit.co/ajax/info@amuerose.cz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data?.message || `FormSubmit error: ${res.status}`);
+      }
+
+      setStatus(t('contactFormSent', 'Спасибо, мы свяжемся с вами!'));
+      event.target.reset();
+    } catch (err) {
+      console.error(err);
+      setError(t('contactFormError', 'Что-то пошло не так, попробуйте снова.'));
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -105,6 +145,13 @@ function Contact() {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </Helmet>
+
+      <Seo
+        title="Контакты — Amuerose"
+        description="Напишите или позвоните в Amuerose — поможем с заказом ягод в бельгийском шоколаде и подарочными наборами."
+        canonicalPath="/contact"
+      />
+
       <div
         className="flex flex-col items-center justify-center px-6 py-12 text-[#4B2E1D] text-center"
         style={{
@@ -112,17 +159,29 @@ function Contact() {
           minHeight: '100dvh',
         }}
       >
-        <h1 className="text-4xl font-bold mb-6 text-[#BDA47A]">{t("contactPageTitle", "Свяжитесь с нами")}</h1>
+        <h1 className="text-4xl font-bold mb-6 text-[#BDA47A]">
+          {t("contactPageTitle", "Свяжитесь с нами")}
+        </h1>
+
         <p className="text-lg max-w-xl mb-4 text-[#4B2E1D]/80">
           {t("contactPageDescription", "Если у вас есть вопросы, предложения или хотите обсудить сотрудничество — свяжитесь с нами любым удобным способом.")}
         </p>
+
         <section className="w-full flex flex-col items-center">
           <p className="text-[#BDA47A] mb-2">
-            {t("contactEmailLabel")}: <a href="mailto:info@amuerose.cz" className="text-[#4B2E1D] underline">info@amuerose.cz</a>
+            {t("contactEmailLabel")}:{" "}
+            <a href="mailto:info@amuerose.cz" className="text-[#4B2E1D] underline">
+              info@amuerose.cz
+            </a>
           </p>
+
           <p className="text-[#BDA47A] mb-4">
-            {t("contactPhoneLabel")}: <a href="tel:+420603319872" className="text-[#4B2E1D] underline">+420 603 319 872</a>
+            {t("contactPhoneLabel")}:{" "}
+            <a href="tel:+420603319872" className="text-[#4B2E1D] underline">
+              +420 603 319 872
+            </a>
           </p>
+
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
@@ -139,6 +198,7 @@ function Contact() {
               {status && !error && (
                 <p className="mb-2 text-sm text-[#4B2E1D]">{status}</p>
               )}
+
               <form
                 ref={formRef}
                 className="mt-6 space-y-4 rounded-[24px] bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 p-6 transition-all duration-300"
@@ -151,6 +211,7 @@ function Contact() {
                   className="w-full px-4 py-2 rounded-lg text-black"
                   required
                 />
+
                 <input
                   type="email"
                   name="email"
@@ -158,17 +219,20 @@ function Contact() {
                   className="w-full px-4 py-2 rounded-lg text-black"
                   required
                 />
-              <textarea
-                name="message"
-                placeholder={t("yourMessage", "Your Message")}
-                className="w-full px-4 py-2 rounded-lg text-black h-24"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 rounded-full bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-[#BDA47A]/60 text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] hover:bg-white/10 transition-all duration-200 mx-auto"
-              >
-                {t("submitContact", "Отправить")}
-              </button>
+
+                <textarea
+                  name="message"
+                  placeholder={t("yourMessage", "Your Message")}
+                  className="w-full px-4 py-2 rounded-lg text-black h-24"
+                />
+
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="px-6 py-2 rounded-full bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-[#BDA47A]/60 text-[#BDA47A] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)] hover:bg-white/10 transition-all duration-200 mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {sending ? t("contactFormSending", "Отправка...") : t("submitContact", "Отправить")}
+                </button>
               </form>
             </>
           )}

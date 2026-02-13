@@ -17,6 +17,7 @@ function Partnership() {
   const [showForm, setShowForm] = useState(false);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
   const formRef = useRef(null);
   const liquidGlassClass =
     "bg-[rgba(255,255,255,0.06)] backdrop-blur-[22px] border border-white/20 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.4),0_4px_20px_rgba(0,0,0,0.3)]";
@@ -47,7 +48,7 @@ function Partnership() {
   const validateEmail = (value) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || "");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const company = formData.get("company")?.trim() || "Компания";
@@ -60,9 +61,27 @@ function Partnership() {
       return;
     }
     setError("");
-    window.location.href = `mailto:partner@amuerose.cz?cc=info@amuerose.cz&subject=${subject}&body=${body}`;
-    setStatus(t("partnershipFormSent", "Сообщение отправлено. Мы свяжемся с вами."));
-    event.target.reset();
+    setSending(true);
+    try {
+      const payload = new URLSearchParams({
+        company,
+        email,
+        message,
+        _subject: `Партнёрство — ${company}`,
+        _template: "table",
+      });
+      await fetch("https://formsubmit.co/partner@amuerose.cz", {
+        method: "POST",
+        body: payload,
+        headers: { "Accept": "application/json" },
+      });
+      setStatus(t("partnershipFormSent", "Сообщение отправлено. Мы свяжемся с вами."));
+      event.target.reset();
+    } catch (err) {
+      setError(t("partnershipFormError", "Не удалось отправить, попробуйте позже."));
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -172,9 +191,10 @@ function Partnership() {
                 />
                 <button
                   type="submit"
-                  className={`px-4 py-2 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto ${liquidGlassClass}`}
+                  disabled={sending}
+                  className={`px-4 py-2 text-[#BDA47A] rounded-full hover:bg-white/10 transition-all duration-200 mx-auto ${liquidGlassClass} disabled:opacity-60 disabled:cursor-not-allowed`}
                 >
-                  {t("submitApplication", "Submit Application")}
+                  {sending ? t("partnershipFormSending", "Отправка...") : t("submitApplication", "Submit Application")}
                 </button>
               </form>
             </>

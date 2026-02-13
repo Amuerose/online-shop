@@ -82,6 +82,12 @@ function FloatingInfoPanel() {
                 >
                   {t("privacyPolicy")}
                 </a>
+                <a
+                  href="/vraceni"
+                  className="underline hover:opacity-100 transition-opacity"
+                >
+                  {t("returnsPolicy")}
+                </a>
                 <p className="opacity-70">{t("footerRights")}</p>
               </div>
 

@@ -24,6 +24,7 @@ import TermsOfService from './pages/TermsOfService';
 import Success from './pages/Success';
 import DataDeletion from './pages/DataDeletion';
 import Valentine from './pages/Valentine';
+import Returns from './pages/Returns';
 
 const ProductPage = lazy(() => import('./pages/productPage'));
 const Register = lazy(() => import('./pages/Register'));
@@ -77,6 +78,8 @@ function App() {
           />
         <Route path="/partnership" element={<Partnership />} />
         <Route path="/valentine" element={<Valentine />} />
+        <Route path="/vraceni" element={<Returns />} />
+        <Route path="/returns" element={<Navigate to="/vraceni" replace />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/success" element={<Success />} />

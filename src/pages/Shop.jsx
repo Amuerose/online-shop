@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -55,12 +55,45 @@ const pickLocale = (val, lang) => {
   return '';
 };
 
+const CATEGORY_LABELS = {
+  all: { cs: 'Vše', ru: 'Все', en: 'All' },
+  premium: { cs: 'Prémiové balení', ru: 'Премиум упаковка', en: 'Premium Packaging' },
+  gift: { cs: 'Dárkové balení', ru: 'Подарочные упаковки', en: 'Gift Box' },
+  holidays: { cs: 'Svátky', ru: 'Праздники', en: 'Holidays' },
+  mom: { cs: 'Dárek pro maminku', ru: 'Подарок для мамы', en: 'For Mom' },
+  signature: { cs: 'Signature', ru: 'Signature', en: 'Signature' },
+  classic: { cs: 'Klasika', ru: 'Классика', en: 'Classic' },
+  freeze: { cs: 'Lyofilizované', ru: 'Сублимированные', en: 'Freeze-dried' },
+  banana: { cs: 'S banány', ru: 'С бананами', en: 'With Bananas' },
+  dates: { cs: 'S datlemi', ru: 'С финиками', en: 'With Dates' },
+  raspberry: { cs: 'S malinami', ru: 'С малинами', en: 'With Raspberries' },
+  blueberry: { cs: 'S borůvkami', ru: 'С голубикой', en: 'With Blueberries' },
+  fig: { cs: 'S fíky', ru: 'С инжиром', en: 'With Figs' },
+};
+
+const CATEGORY_ORDER = [
+  'all',
+  'premium',
+  'gift',
+  'holidays',
+  'mom',
+  'signature',
+  'classic',
+  'banana',
+  'dates',
+  'raspberry',
+  'blueberry',
+  'fig',
+  'freeze',
+];
+
 
 const Shop = () => {
   const { addToCart } = useCart();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('all');
 
   // === Horizontal scroll affordance for categories ===
   const catScrollRef = useRef(null);
@@ -160,6 +193,24 @@ const Shop = () => {
     setProducts([...head, ...tail]);
   }, []);
 
+  const categoryKeys = useMemo(() => {
+    const counts = {};
+    products.forEach((p) => {
+      (p?.categories || []).forEach((c) => {
+        counts[c] = (counts[c] || 0) + 1;
+      });
+    });
+    return CATEGORY_ORDER.filter((key) => key === 'all' || counts[key]);
+  }, [products]);
+
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === 'all') return products;
+    return products.filter((p) => (p?.categories || []).includes(activeCategory));
+  }, [products, activeCategory]);
+
+  const labelForCategory = (key) =>
+    CATEGORY_LABELS[key]?.[i18n.language] || CATEGORY_LABELS[key]?.en || key;
+
   return (<>
     <Seo
       title="Магазин Amuerose"
@@ -181,8 +232,32 @@ const Shop = () => {
       <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full bg-white/30 blur-[120px] opacity-50 z-0" />
       {/* Карточки */}
       <div className="products-scroll products-scroll-fade overflow-y-auto mt-[calc(120px+var(--safe-area-inset-top,0px))] h-[calc(100dvh-120px-var(--safe-area-inset-top,0px))] pt-6 pb-[calc(184px+var(--safe-area-inset-bottom,0px))]">
+        <div className="px-2 sm:px-4 pb-4 max-w-[1200px] mx-auto">
+          <div
+            ref={catScrollRef}
+            className="categories-scroll no-scrollbar flex items-center gap-2 overflow-x-auto pb-1"
+          >
+            {categoryKeys.map((key) => {
+              const active = key === activeCategory;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setActiveCategory(key)}
+                  className={`whitespace-nowrap text-xs sm:text-sm px-4 py-2 rounded-full border transition backdrop-blur-md ${
+                    active
+                      ? 'bg-[#BDA47A]/25 border-[#BDA47A]/60 text-[#6A4A2D]'
+                      : 'bg-white/10 border-white/30 text-[#7A4E35]/80 hover:text-[#5C3A2E] hover:bg-white/20'
+                  }`}
+                >
+                  {labelForCategory(key)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-2 sm:px-4 pb-10 max-w-[1200px] mx-auto">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               onClick={() => navigate(`/product/${product.slug || product.id}`)}
@@ -230,7 +305,7 @@ const Shop = () => {
               </div>
             </div>
           ))}
-          {products.length === 0 && (
+          {filteredProducts.length === 0 && (
             <div className="col-span-full text-center text-[#7A4E35]/70 py-10">
               {t('messages.noProducts', 'Пока нет товаров.')} 
             </div>
