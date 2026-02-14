@@ -381,7 +381,7 @@ export const catalogProducts = [
       ru: '16 ягод клубники в смеси молочного и белого шоколада, ореховая посыпка. Сдержанная классика для ежедневного удовольствия.',
       en: '16 strawberries in a mix of milk and white chocolate with a nut topping. A balanced classic for everyday indulgence.',
     },
-    categories: ['gift', 'classic'],
+    categories: ['gift', 'classic', 'strawberry'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 15.webp',
@@ -402,7 +402,7 @@ export const catalogProducts = [
       ru: '16 клубник в белом и молочном шоколаде, золотые брызги, роскошная подарочная упаковка. Двойная гармония вкусов в элегантной подаче Amuerose.',
       en: '16 strawberries in white and milk chocolate, golden splashes, luxury gift packaging. A double harmony of flavors in elegant Amuerose presentation.',
     },
-    categories: ['premium', 'holidays', 'mom'],
+    categories: ['premium', 'holidays', 'gift'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 4.webp',
@@ -423,7 +423,7 @@ export const catalogProducts = [
       ru: '40 клубник в розовом шоколаде, декор из лиофилизированных инжиров и свежих цветов, роскошная подарочная упаковка. Великолепный розовый сет Amuerose для особых торжеств.',
       en: '40 strawberries in pink chocolate, decoration with freeze-dried figs and fresh flowers, luxury gift packaging. A grand Amuerose pink set for exceptional celebrations.',
     },
-    categories: ['premium', 'holidays', 'mom', 'fig'],
+    categories: ['premium', 'holidays', 'mom', 'gift', 'heart'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 5.webp',
@@ -444,7 +444,7 @@ export const catalogProducts = [
       ru: '22 клубники в молочном шоколаде, декор из золотых брызг и малины в шоколаде, роскошная подарочная упаковка. Вечерняя элегантность с тёплым какао‑тоном.',
       en: '22 strawberries in milk chocolate with decoration of gold splashes and raspberries in chocolate, luxury gift packaging. Evening elegance with warm cocoa notes.',
     },
-    categories: ['premium', 'holidays', 'raspberry'],
+    categories: ['premium', 'holidays', 'raspberry', 'strawberry', 'gift'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 6.webp',
@@ -465,7 +465,7 @@ export const catalogProducts = [
       ru: '9 клубник в молочном шоколаде, посыпка и декор из лиофилизированной малины, золотые брызги. Малиновая лёгкость и утончённый праздничный штрих.',
       en: '9 strawberries in milk chocolate with a topping and decoration of freeze-dried raspberries and gold splashes. A light raspberry accent with a festive glow.',
     },
-    categories: ['gift', 'raspberry'],
+    categories: ['gift', 'raspberry', 'srtawberry'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 12.webp',
@@ -486,7 +486,7 @@ export const catalogProducts = [
       ru: '16 ягод клубники в молочном шоколаде, декор из сублимированных съедобных цветов, золотые брызги и голубика в молочном шоколаде, роскошная подарочная упаковка. Цветочная поэзия Amuerose в элегантном исполнении.',
       en: '16 strawberries in milk chocolate with decoration of freeze-dried flowers, golden splashes and blueberries in milk chocolate, luxury gift packaging. Amuerose floral poetry in refined form.',
     },
-    categories: ['premium', 'holidays', 'mom', 'blueberry'],
+    categories: ['premium', 'holidays', 'gift', 'blueberry', 'strawberry', 'heart'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 24.webp',
@@ -507,7 +507,7 @@ export const catalogProducts = [
       ru: '9 ягод клубники, ручной декор из молочного шоколада, ореховая посыпка. Небольшой, но выразительный сет в классическом стиле.',
       en: '9 strawberries, handmade milk-chocolate decoration, nut topping. A compact yet expressive classic.',
     },
-    categories: ['gift', 'classic'],
+    categories: ['gift', 'classic', 'strawberry'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 18.webp',
@@ -549,7 +549,7 @@ export const catalogProducts = [
       ru: '8 бананов в белом шоколаде, 8 ягод клубники в молочном шоколаде, декор из сублимированного инжира, золотые брызги, ореховая посыпка, голубика в молочном и белом шоколаде. Щедрый фруктовый сет с богатой текстурой.',
       en: '8 bananas in white chocolate, 8 strawberries in milk chocolate, decoration of freeze-dried figs, golden splashes, nut topping, blueberries in milk and white chocolate. A generous fruit set with rich texture.',
     },
-    categories: ['gift', 'banana', 'fig', 'blueberry'],
+    categories: ['gift', 'banana', 'blueberry', 'strawberry'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 22.webp',
@@ -570,7 +570,7 @@ export const catalogProducts = [
       ru: '9 ягод клубники, декор из сублимированных цветов, золотые брызги, ореховая посыпка, голубика в молочном шоколаде. Лёгкий сет с цветочным акцентом.',
       en: '9 strawberries with decoration of freeze-dried flowers, golden splashes, nut topping and blueberries in milk chocolate. A light set with a floral accent.',
     },
-    categories: ['gift', 'banana', 'blueberry'],
+    categories: ['gift', 'banana', 'blueberry', 'strawberry'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 19.webp',
@@ -612,7 +612,7 @@ export const catalogProducts = [
       ru: '16 ягод клубники в молочном шоколаде, декор из сублимированных цветов, золотые брызги, голубика в шоколаде. Элегантная классика с цветочным штрихом.',
       en: '16 strawberries in milk chocolate, decoration of freeze-dried edible flowers, golden splashes, blueberries in chocolate. An elegant classic with a floral touch.',
     },
-    categories: ['gift', 'classic', 'blueberry'],
+    categories: ['gift', 'classic', 'blueberry', 'strawberry'],
     allergens: '6, 7',
     gallery: [
       '/products/sticker 21.webp',
